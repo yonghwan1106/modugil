@@ -1,5 +1,6 @@
 import { fetchPublicData } from '@/lib/api/client';
 import { ENDPOINTS } from '@/lib/api/endpoints';
+import * as mockData from '@/lib/api/mock-data';
 import type {
   TrafficLightCrossroad,
   TrafficLightStatus,
@@ -11,6 +12,8 @@ import type {
   LibrarySeat,
   CivilOffice,
   CivilOfficeWait,
+  Locker,
+  LockerRealtime,
 } from '@/lib/api/types';
 
 // =============================================
@@ -123,6 +126,29 @@ const REGION_CODES: Record<string, string> = {
 };
 
 // =============================================
+// 실제 API + Mock fallback 헬퍼
+// =============================================
+
+async function fetchWithFallback<T>(
+  endpoint: string,
+  params: Record<string, string>,
+  fallback: T[],
+): Promise<{ items: T[]; source: 'live' | 'mock' }> {
+  try {
+    const items = await fetchPublicData<T>(endpoint, params);
+    return { items, source: 'live' };
+  } catch {
+    return { items: fallback, source: 'mock' };
+  }
+}
+
+// lat/lot → lat/lng 변환 (프론트엔드 지도 마커용)
+function normalizeLngLat<T extends object>(item: T): T & { lng: number } {
+  const rec = item as Record<string, unknown>;
+  return { ...item, lng: rec.lot as number };
+}
+
+// =============================================
 // 도구 실행 함수
 // =============================================
 
@@ -132,108 +158,171 @@ export async function executeToolCall(
 ): Promise<unknown> {
   const regionInput = (input.region as string) ?? '';
   const stdgCd = REGION_CODES[regionInput] ?? regionInput;
+  const apiParams: Record<string, string> = stdgCd ? { stdgCd } : {};
 
   switch (toolName) {
     case 'get_traffic_light_status': {
-      const [crossroads, statuses] = await Promise.all([
-        fetchPublicData<TrafficLightCrossroad>(ENDPOINTS.trafficLight.crossroads, { stdgCd }),
-        fetchPublicData<TrafficLightStatus>(ENDPOINTS.trafficLight.status, { stdgCd }),
+      const [crossroadsResult, statusesResult] = await Promise.all([
+        fetchWithFallback<TrafficLightCrossroad>(
+          ENDPOINTS.trafficLight.crossroads,
+          apiParams,
+          mockData.MOCK_TRAFFIC_LIGHTS,
+        ),
+        fetchWithFallback<TrafficLightStatus>(
+          ENDPOINTS.trafficLight.status,
+          apiParams,
+          mockData.MOCK_TRAFFIC_LIGHT_STATUS,
+        ),
       ]);
 
-      const statusMap = new Map(statuses.map((s) => [s.crsrdId, s]));
-      const result = crossroads.map((c) => ({
+      const crossroads = crossroadsResult.items;
+      const statuses = statusesResult.items;
+      const source = crossroadsResult.source === 'live' ? 'live' : 'mock';
+
+      const statusMap = new Map<string, TrafficLightStatus[]>();
+      for (const s of statuses) {
+        const list = statusMap.get(s.crsrdId) ?? [];
+        list.push(s);
+        statusMap.set(s.crsrdId, list);
+      }
+
+      const items = crossroads.map((c) => ({
         crossroadId: c.crsrdId,
         crossroadName: c.crsrdNm,
         lat: c.lat,
         lot: c.lot,
-        status: statusMap.get(c.crsrdId) ?? null,
+        lng: c.lot,
+        directions: (statusMap.get(c.crsrdId) ?? []).map((s) => ({
+          direction: s.drctCd,
+          remainSeconds: s.rmdrCs,
+          signal: s.lgtStts,
+        })),
       }));
 
-      return {
-        region: regionInput,
-        count: result.length,
-        crossroads: result,
-      };
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 신호등 교차로 ${items.length}개 조회`
+        : `${regionInput} 신호등 교차로 ${items.length}개 실시간 조회 완료`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
     }
 
     case 'get_accessible_transport': {
-      const [centers, availability] = await Promise.all([
-        fetchPublicData<TransportCenter>(ENDPOINTS.transport.centers, { stdgCd }),
-        fetchPublicData<TransportVehicleUse>(ENDPOINTS.transport.availability, { stdgCd }),
+      const [centersResult, availResult] = await Promise.all([
+        fetchWithFallback<TransportCenter>(
+          ENDPOINTS.transport.centers,
+          apiParams,
+          mockData.MOCK_TRANSPORT_CENTERS,
+        ),
+        fetchWithFallback<TransportVehicleUse>(
+          ENDPOINTS.transport.availability,
+          apiParams,
+          mockData.MOCK_TRANSPORT_AVAILABILITY,
+        ),
       ]);
 
-      const availMap = new Map(availability.map((a) => [a.centerId, a]));
-      const result = centers.map((c) => ({
-        centerId: c.centerId,
-        centerName: c.centerNm,
-        lat: c.lat,
-        lot: c.lot,
-        tel: c.telNo,
-        availability: availMap.get(c.centerId) ?? null,
-      }));
+      const centers = centersResult.items;
+      const availability = availResult.items;
+      const source = centersResult.source === 'live' ? 'live' : 'mock';
 
-      return {
-        region: regionInput,
-        count: result.length,
-        centers: result,
-      };
+      const availMap = new Map(availability.map((a) => [a.centerId, a]));
+
+      const items = centers.map((c) => {
+        const avail = availMap.get(c.centerId);
+        return {
+          centerId: c.centerId,
+          centerName: c.centerNm,
+          lat: c.lat,
+          lot: c.lot,
+          lng: c.lot,
+          tel: c.telNo,
+          operVehicles: avail?.operVhcleCnt ?? 0,
+          availableVehicles: avail?.usePsbltVhcleCnt ?? 0,
+          reservations: avail?.rsrvtnCnt ?? 0,
+          waiting: avail?.wtngCnt ?? 0,
+        };
+      });
+
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 교통약자 이동지원센터 ${items.length}개 조회`
+        : `${regionInput} 교통약자 이동지원센터 ${items.length}개 실시간 조회 완료`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
     }
 
     case 'get_bus_realtime_location': {
       const routeNo = input.routeNo as string | undefined;
-      const routes = await fetchPublicData<BusRoute>(ENDPOINTS.bus.routes, { stdgCd });
 
-      const filteredRoutes = routeNo
-        ? routes.filter((r) => r.routeNo === routeNo)
-        : routes;
-
-      const locationResults = await Promise.all(
-        filteredRoutes.slice(0, 10).map(async (route) => {
-          try {
-            const locations = await fetchPublicData<BusLocation>(ENDPOINTS.bus.locations, {
-              stdgCd,
-              routeId: route.routeId,
-            });
-            return { route, locations };
-          } catch {
-            return { route, locations: [] };
-          }
-        }),
+      const routesResult = await fetchWithFallback<BusRoute>(
+        ENDPOINTS.bus.routes,
+        apiParams,
+        mockData.MOCK_BUS_ROUTES,
       );
 
-      return {
-        region: regionInput,
-        routeCount: filteredRoutes.length,
-        buses: locationResults.map(({ route, locations }) => ({
-          routeId: route.routeId,
-          routeNo: route.routeNo,
-          routeType: route.routeTp,
-          startStop: route.stNm,
-          endStop: route.edNm,
-          realtimeLocations: locations,
-        })),
-      };
+      const filteredRoutes = routeNo
+        ? routesResult.items.filter((r) => r.routeNo === routeNo)
+        : routesResult.items;
+
+      const locationsResult = await fetchWithFallback<BusLocation>(
+        ENDPOINTS.bus.locations,
+        apiParams,
+        mockData.MOCK_BUS_LOCATIONS,
+      );
+
+      const source = routesResult.source === 'live' ? 'live' : 'mock';
+
+      const locationsByRoute = new Map<string, BusLocation[]>();
+      for (const loc of locationsResult.items) {
+        const list = locationsByRoute.get(loc.routeId) ?? [];
+        list.push(loc);
+        locationsByRoute.set(loc.routeId, list);
+      }
+
+      const items = filteredRoutes.slice(0, 10).map((route) => ({
+        routeId: route.routeId,
+        routeNo: route.routeNo,
+        routeType: route.routeTp,
+        startStop: route.stNm,
+        endStop: route.edNm,
+        realtimeLocations: (locationsByRoute.get(route.routeId) ?? []).map(normalizeLngLat),
+      }));
+
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 버스 노선 ${items.length}개 조회`
+        : `${regionInput} 버스 노선 ${items.length}개 실시간 위치 조회 완료`;
+
+      return { source, region: regionInput, routeCount: items.length, summary, items };
     }
 
     case 'get_library_seats': {
       const libraryName = input.libraryName as string | undefined;
-      const [libraries, seats] = await Promise.all([
-        fetchPublicData<Library>(ENDPOINTS.library.info, { stdgCd }),
-        fetchPublicData<LibrarySeat>(ENDPOINTS.library.seats, { stdgCd }),
+
+      const [librariesResult, seatsResult] = await Promise.all([
+        fetchWithFallback<Library>(
+          ENDPOINTS.library.info,
+          apiParams,
+          mockData.MOCK_LIBRARIES,
+        ),
+        fetchWithFallback<LibrarySeat>(
+          ENDPOINTS.library.seats,
+          apiParams,
+          mockData.MOCK_LIBRARY_SEATS,
+        ),
       ]);
 
+      const source = librariesResult.source === 'live' ? 'live' : 'mock';
+
       const filteredLibraries = libraryName
-        ? libraries.filter((l) => l.lbrryNm.includes(libraryName))
-        : libraries;
+        ? librariesResult.items.filter((l) => l.lbrryNm.includes(libraryName))
+        : librariesResult.items;
 
       const seatsByLibrary = new Map<string, LibrarySeat[]>();
-      for (const seat of seats) {
+      for (const seat of seatsResult.items) {
         const list = seatsByLibrary.get(seat.lbrryId) ?? [];
         list.push(seat);
         seatsByLibrary.set(seat.lbrryId, list);
       }
 
-      const result = filteredLibraries.map((lib) => {
+      const items = filteredLibraries.map((lib) => {
         const libSeats = seatsByLibrary.get(lib.lbrryId) ?? [];
         const totalSeats = libSeats.reduce((sum, s) => sum + s.totSeatCnt, 0);
         const usedSeats = libSeats.reduce((sum, s) => sum + s.useSeatCnt, 0);
@@ -243,6 +332,7 @@ export async function executeToolCall(
           address: lib.roadNmAddr,
           lat: lib.lat,
           lot: lib.lot,
+          lng: lib.lot,
           totalSeats,
           usedSeats,
           availableSeats: totalSeats - usedSeats,
@@ -255,28 +345,39 @@ export async function executeToolCall(
         };
       });
 
-      return {
-        region: regionInput,
-        count: result.length,
-        libraries: result,
-      };
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 도서관 ${items.length}개 좌석 현황 조회`
+        : `${regionInput} 도서관 ${items.length}개 실시간 좌석 조회 완료`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
     }
 
     case 'get_civil_office_wait': {
       const taskName = input.taskName as string | undefined;
-      const [offices, waitList] = await Promise.all([
-        fetchPublicData<CivilOffice>(ENDPOINTS.civil.info, { stdgCd }),
-        fetchPublicData<CivilOfficeWait>(ENDPOINTS.civil.realtime, { stdgCd }),
+
+      const [officesResult, waitResult] = await Promise.all([
+        fetchWithFallback<CivilOffice>(
+          ENDPOINTS.civil.info,
+          apiParams,
+          mockData.MOCK_CIVIL_OFFICES,
+        ),
+        fetchWithFallback<CivilOfficeWait>(
+          ENDPOINTS.civil.realtime,
+          apiParams,
+          mockData.MOCK_CIVIL_WAIT,
+        ),
       ]);
 
+      const source = officesResult.source === 'live' ? 'live' : 'mock';
+
       const waitByOffice = new Map<string, CivilOfficeWait[]>();
-      for (const w of waitList) {
+      for (const w of waitResult.items) {
         const list = waitByOffice.get(w.csoSn) ?? [];
         list.push(w);
         waitByOffice.set(w.csoSn, list);
       }
 
-      const result = offices.map((office) => {
+      const items = officesResult.items.map((office) => {
         let tasks = waitByOffice.get(office.csoSn) ?? [];
         if (taskName) {
           tasks = tasks.filter((t) => t.taskNm.includes(taskName));
@@ -287,6 +388,7 @@ export async function executeToolCall(
           address: office.roadNmAddr,
           lat: office.lat,
           lot: office.lot,
+          lng: office.lot,
           openTime: office.wkdyOperBgngTm,
           closeTime: office.wkdyOperEndTm,
           tasks: tasks.map((t) => ({
@@ -297,11 +399,53 @@ export async function executeToolCall(
         };
       });
 
-      return {
-        region: regionInput,
-        count: result.length,
-        offices: result,
-      };
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 민원실 ${items.length}개 대기 현황 조회`
+        : `${regionInput} 민원실 ${items.length}개 실시간 대기 조회 완료`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
+    }
+
+    case 'get_locker_availability': {
+      const [lockersResult, realtimeResult] = await Promise.all([
+        fetchWithFallback<Locker>(
+          ENDPOINTS.locker.info,
+          apiParams,
+          mockData.MOCK_LOCKERS,
+        ),
+        fetchWithFallback<LockerRealtime>(
+          ENDPOINTS.locker.realtime,
+          apiParams,
+          mockData.MOCK_LOCKER_REALTIME,
+        ),
+      ]);
+
+      const source = lockersResult.source === 'live' ? 'live' : 'mock';
+
+      const realtimeMap = new Map(realtimeResult.items.map((r) => [r.lckrId, r]));
+
+      const items = lockersResult.items.map((locker) => {
+        const rt = realtimeMap.get(locker.lckrId);
+        return {
+          lockerId: locker.lckrId,
+          lockerName: locker.lckrNm,
+          address: locker.roadNmAddr,
+          lat: locker.lat,
+          lot: locker.lot,
+          lng: locker.lot,
+          available: {
+            large: rt?.lgLckrUsePsbltCnt ?? 0,
+            medium: rt?.mdLckrUsePsbltCnt ?? 0,
+            small: rt?.smLckrUsePsbltCnt ?? 0,
+          },
+        };
+      });
+
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 물품보관함 ${items.length}개 가용 현황 조회`
+        : `${regionInput} 물품보관함 ${items.length}개 실시간 가용 조회 완료`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
     }
 
     default:

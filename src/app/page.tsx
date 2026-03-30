@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Header from '@/components/ui/Header';
-import KakaoMap from '@/components/map/KakaoMap';
+import NaverMap from '@/components/map/NaverMap';
 import ChatPanel from '@/components/chat/ChatPanel';
 
 // MapMarker 타입 정의
@@ -49,7 +49,7 @@ export default function Home() {
       <div className="flex-1 flex overflow-hidden">
         {/* 지도 영역 (70%) */}
         <div className="flex-1 relative">
-          <KakaoMap markers={markers} onMarkerClick={setSelectedMarker} />
+          <NaverMap markers={markers} onMarkerClick={setSelectedMarker} />
         </div>
         {/* 챗봇 패널 (30%, min 360px) */}
         <div className="w-[400px] min-w-[360px] border-l border-gray-200 flex flex-col">
