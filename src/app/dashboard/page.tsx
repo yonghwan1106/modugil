@@ -181,6 +181,26 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* 공영자전거 대여소 현황 BarChart */}
+        <div className="bg-white rounded-xl border border-gray-200 p-5 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="font-semibold text-gray-800">공영자전거 대여소 현황</h3>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">실시간</span>
+          </div>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={bikeChartData} margin={{ top: 4, right: 8, left: -16, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
+              <Tooltip />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Bar dataKey="거치대" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="대여가능" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="반납가능" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
         {/* 민원실 대기 현황 테이블 */}
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <h3 className="font-semibold text-gray-800 mb-4">민원실 실시간 대기 현황</h3>
