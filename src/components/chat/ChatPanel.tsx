@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import MessageBubble from './MessageBubble';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
@@ -10,6 +10,7 @@ interface Message {
   content: string;
   toolResults?: unknown[];
   isLoading?: boolean;
+  isError?: boolean;
 }
 
 interface ChatPanelProps {
@@ -17,28 +18,38 @@ interface ChatPanelProps {
 }
 
 const SUGGESTED_QUESTIONS = [
+  '강남역 근처 신호등 잔여시간과 교통약자 차량 현황을 알려줘',
   '종로구 교통약자 이동지원 차량 현황 알려줘',
-  '강남역 근처 신호등 잔여시간 보여줘',
-  '주변 도서관 빈자리 확인해줘',
+  '종로구 도서관 중 빈자리가 있는 곳은?',
+  '서울역 근처 민원실 대기시간이 짧은 곳은?',
+  '강남역 근처 저상버스 노선 알려줘',
 ];
 
 export default function ChatPanel({ onToolResults }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastUserText, setLastUserText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, []);
 
-  const sendMessage = async (text: string) => {
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
+
+    const trimmed = text.trim();
+    setLastUserText(trimmed);
 
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       role: 'user',
-      content: text.trim(),
+      content: trimmed,
     };
 
     const loadingMessage: Message = {
@@ -54,7 +65,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
 
     try {
       const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      history.push({ role: 'user', content: text.trim() });
+      history.push({ role: 'user', content: trimmed });
 
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -62,9 +73,20 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
         body: JSON.stringify({ messages: history }),
       });
 
-      if (!res.ok) throw new Error(`서버 오류: ${res.status}`);
+      const data = await res.json() as { message?: string; content?: string; toolResults?: unknown[]; error?: boolean };
 
-      const data = await res.json();
+      if (!res.ok || data.error) {
+        const errContent = data.message ?? `서버 오류 (${res.status}). 다시 시도해 주세요.`;
+        const errorMessage: Message = {
+          id: `error-${Date.now()}`,
+          role: 'assistant',
+          content: errContent,
+          isError: true,
+        };
+        setMessages((prev) => prev.filter((m) => !m.isLoading).concat(errorMessage));
+        return;
+      }
+
       const assistantContent: string = data.content ?? data.message ?? '응답을 받지 못했습니다.';
       const toolResults: unknown[] = data.toolResults ?? [];
 
@@ -85,17 +107,45 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
         id: `error-${Date.now()}`,
         role: 'assistant',
         content: err instanceof Error ? err.message : '오류가 발생했습니다. 다시 시도해주세요.',
+        isError: true,
       };
       setMessages((prev) => prev.filter((m) => !m.isLoading).concat(errorMessage));
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isLoading, messages, onToolResults]);
+
+  const handleRetry = useCallback(() => {
+    if (lastUserText) {
+      // Remove last error message then resend
+      setMessages((prev) => {
+        const withoutLastError = [...prev];
+        for (let i = withoutLastError.length - 1; i >= 0; i--) {
+          if (withoutLastError[i].isError) {
+            withoutLastError.splice(i, 1);
+            break;
+          }
+        }
+        return withoutLastError;
+      });
+      void sendMessage(lastUserText);
+    }
+  }, [lastUserText, sendMessage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    sendMessage(input);
+    void sendMessage(input);
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !isLoading && input.trim()) {
+      e.preventDefault();
+      void sendMessage(input);
+    }
+  };
+
+  const lastMessage = messages[messages.length - 1];
+  const showRetry = lastMessage?.isError && !isLoading;
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
@@ -121,7 +171,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
               {SUGGESTED_QUESTIONS.map((q) => (
                 <button
                   key={q}
-                  onClick={() => sendMessage(q)}
+                  onClick={() => void sendMessage(q)}
                   className="w-full text-left text-sm bg-white border border-blue-100 text-blue-700 rounded-xl px-4 py-3 hover:bg-blue-50 hover:border-blue-300 transition-colors font-medium shadow-sm"
                 >
                   {q}
@@ -140,6 +190,16 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
             />
           ))
         )}
+        {showRetry && (
+          <div className="flex justify-center">
+            <button
+              onClick={handleRetry}
+              className="text-sm text-blue-600 border border-blue-300 rounded-xl px-4 py-2 hover:bg-blue-50 transition-colors"
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -150,6 +210,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="이동 관련 질문을 입력하세요..."
             disabled={isLoading}
             className="flex-1 text-sm rounded-xl border border-gray-200 px-4 py-2.5 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:opacity-50 disabled:bg-gray-50"

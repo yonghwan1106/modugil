@@ -2,6 +2,8 @@ import { fetchPublicData } from '@/lib/api/client';
 import { ENDPOINTS } from '@/lib/api/endpoints';
 import * as mockData from '@/lib/api/mock-data';
 import type {
+  BikeStation,
+  BikeAvailability,
   TrafficLightCrossroad,
   TrafficLightStatus,
   TransportCenter,
@@ -15,6 +17,44 @@ import type {
   Locker,
   LockerRealtime,
 } from '@/lib/api/types';
+
+// =============================================
+// 지역명 → 자전거 API lcgvmnInstCd 매핑
+// =============================================
+
+const BIKE_REGION_CODES: Record<string, string> = {
+  '서울': '1100000000',
+  '서울특별시': '1100000000',
+  '서울 종로구': '1100000000',
+  '서울 중구': '1100000000',
+  '서울 용산구': '1100000000',
+  '서울 성동구': '1100000000',
+  '서울 광진구': '1100000000',
+  '서울 동대문구': '1100000000',
+  '서울 중랑구': '1100000000',
+  '서울 성북구': '1100000000',
+  '서울 강북구': '1100000000',
+  '서울 도봉구': '1100000000',
+  '서울 노원구': '1100000000',
+  '서울 은평구': '1100000000',
+  '서울 서대문구': '1100000000',
+  '서울 마포구': '1100000000',
+  '서울 양천구': '1100000000',
+  '서울 강서구': '1100000000',
+  '서울 구로구': '1100000000',
+  '서울 금천구': '1100000000',
+  '서울 영등포구': '1100000000',
+  '서울 동작구': '1100000000',
+  '서울 관악구': '1100000000',
+  '서울 서초구': '1100000000',
+  '서울 강남구': '1100000000',
+  '서울 송파구': '1100000000',
+  '서울 강동구': '1100000000',
+  '대전': '3000000000',
+  '대전광역시': '3000000000',
+  '세종': '3600000000',
+  '세종시': '3600000000',
+};
 
 // =============================================
 // 지역명 → 지자체코드 매핑
@@ -148,6 +188,27 @@ function normalizeLngLat<T extends object>(item: T): T & { lng: number } {
   return { ...item, lng: rec.lot as number };
 }
 
+// 자전거 API는 응답 구조가 다름 (response 래퍼 없음, item 단수, lat/lot 문자열)
+interface BikeApiResponse<T> {
+  header: { resultCode: string; resultMsg: string };
+  body: { totalCount: number; pageNo: number; numOfRows: number; item: T[] };
+}
+
+async function fetchBikeApi<T>(endpoint: string, params: Record<string, string>): Promise<T[]> {
+  const serviceKey = process.env.DATA_API_KEY;
+  if (!serviceKey) throw new Error('DATA_API_KEY 환경변수가 설정되지 않았습니다.');
+
+  const query = new URLSearchParams({ serviceKey, type: 'json', pageNo: '1', numOfRows: '50', ...params });
+  const res = await fetch(`${endpoint}?${query.toString()}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+  if (!res.ok) throw new Error(`자전거 API 요청 실패: HTTP ${res.status}`);
+
+  const json = (await res.json()) as BikeApiResponse<T>;
+  if (json.header.resultCode !== 'K0' && json.header.resultCode !== '00') {
+    throw new Error(`자전거 API 오류 [${json.header.resultCode}]: ${json.header.resultMsg}`);
+  }
+  return json.body.item ?? [];
+}
+
 // =============================================
 // 도구 실행 함수
 // =============================================
@@ -161,6 +222,51 @@ export async function executeToolCall(
   const apiParams: Record<string, string> = stdgCd ? { stdgCd } : {};
 
   switch (toolName) {
+    case 'get_bicycle_availability': {
+      const lcgvmnInstCd = BIKE_REGION_CODES[regionInput] ?? '1100000000';
+      const bikeParams = { lcgvmnInstCd };
+
+      let stations: (BikeStation & { lat: string | number; lot: string | number })[] = [];
+      let availabilities: (BikeAvailability & { lat?: string | number; lot?: string | number })[] = [];
+      let source: 'live' | 'mock' = 'mock';
+
+      try {
+        const [stationsRaw, availRaw] = await Promise.all([
+          fetchBikeApi<BikeStation & { lat: string; lot: string }>(ENDPOINTS.bicycle.stations, bikeParams),
+          fetchBikeApi<BikeAvailability & { lat?: string; lot?: string }>(ENDPOINTS.bicycle.availability, bikeParams),
+        ]);
+        stations = stationsRaw;
+        availabilities = availRaw;
+        source = 'live';
+      } catch {
+        stations = mockData.MOCK_BIKE_STATIONS as typeof stations;
+        availabilities = mockData.MOCK_BIKE_AVAILABILITY as typeof availabilities;
+      }
+
+      const availMap = new Map(availabilities.map((a) => [a.rntstnId, a]));
+
+      const items = stations.slice(0, 20).map((s) => {
+        const avail = availMap.get(s.rntstnId);
+        return {
+          stationId: s.rntstnId,
+          stationName: s.rntstnNm,
+          address: s.roadNmAddr,
+          lat: Number(s.lat),
+          lot: Number(s.lot),
+          lng: Number(s.lot),
+          totalSlots: Number(avail?.bcyclTpkctNocs ?? 0),
+          availableBikes: Number(avail?.rntNocs ?? 0),
+          availableSlots: Number(avail?.rtnNocs ?? 0),
+        };
+      });
+
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 공영자전거 대여소 ${items.length}개 조회`
+        : `${regionInput} 공영자전거 대여소 ${items.length}개 실시간 조회 완료 (총 ${stations.length}개 중 상위 20개)`;
+
+      return { source, region: regionInput, count: items.length, summary, items };
+    }
+
     case 'get_traffic_light_status': {
       const [crossroadsResult, statusesResult] = await Promise.all([
         fetchWithFallback<TrafficLightCrossroad>(

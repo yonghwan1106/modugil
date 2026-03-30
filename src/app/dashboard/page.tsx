@@ -22,6 +22,8 @@ import {
   MOCK_CIVIL_OFFICES,
   MOCK_CIVIL_WAIT,
   MOCK_TRAFFIC_LIGHTS,
+  MOCK_BIKE_STATIONS,
+  MOCK_BIKE_AVAILABILITY,
 } from '@/lib/api/mock-data';
 import Header from '@/components/ui/Header';
 
@@ -44,6 +46,20 @@ export default function DashboardPage() {
   }, []);
 
   const totalTrafficLights = MOCK_TRAFFIC_LIGHTS.length;
+
+  // --- 자전거 대여소 현황 차트 데이터 ---
+  const bikeChartData = useMemo(() => {
+    return MOCK_BIKE_STATIONS.map((station) => {
+      const avail = MOCK_BIKE_AVAILABILITY.find((a) => a.rntstnId === station.rntstnId);
+      const shortName = station.rntstnNm.replace(/^\d+\.\s*/, '').slice(0, 10);
+      return {
+        name: shortName,
+        거치대: avail?.bcyclTpkctNocs ?? 0,
+        대여가능: avail?.rntNocs ?? 0,
+        반납가능: avail?.rtnNocs ?? 0,
+      };
+    });
+  }, []);
 
   // --- 교통약자 차량 현황 차트 데이터 ---
   const transportChartData = useMemo(() => {
@@ -78,7 +94,7 @@ export default function DashboardPage() {
         <h2 className="text-xl font-bold text-gray-900 mb-6">실시간 현황 대시보드</h2>
 
         {/* 요약 카드 4개 */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <SummaryCard
             title="교통약자 이동지원 센터"
             value={`${totalTransportCenters}개소`}
@@ -110,7 +126,7 @@ export default function DashboardPage() {
         </div>
 
         {/* 차트 2개 나란히 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* 교통약자 차량 현황 BarChart */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <h3 className="font-semibold text-gray-800 mb-4">교통약자 차량 현황</h3>

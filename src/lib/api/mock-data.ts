@@ -4,6 +4,8 @@
 // =============================================
 
 import type {
+  BikeStation,
+  BikeAvailability,
   TransportCenter,
   TransportVehicleUse,
   Library,
@@ -17,6 +19,28 @@ import type {
   Locker,
   LockerRealtime,
 } from './types';
+
+// =============================================
+// 공영자전거 대여소 (fallback mock)
+// =============================================
+
+export const MOCK_BIKE_STATIONS: BikeStation[] = [
+  { rntstnId: 'ST-10',  rntstnNm: '108. 서교동 사거리',        lat: 37.5527, lot: 126.9186, roadNmAddr: '서울특별시 마포구 양화로 93' },
+  { rntstnId: 'ST-11',  rntstnNm: '109. 합정역 1번출구 앞',    lat: 37.5498, lot: 126.9141, roadNmAddr: '서울특별시 마포구 양화로 92' },
+  { rntstnId: 'ST-12',  rntstnNm: '110. 망원역 2번출구 앞',    lat: 37.5560, lot: 126.9100, roadNmAddr: '서울특별시 마포구 포은로 109' },
+  { rntstnId: 'ST-20',  rntstnNm: '201. 광화문역 5번출구 앞',  lat: 37.5719, lot: 126.9769, roadNmAddr: '서울특별시 종로구 세종대로 189' },
+  { rntstnId: 'ST-21',  rntstnNm: '202. 경복궁역 1번출구 앞', lat: 37.5752, lot: 126.9769, roadNmAddr: '서울특별시 종로구 사직로 130' },
+  { rntstnId: 'ST-30',  rntstnNm: '301. 강남역 10번출구 앞',   lat: 37.4979, lot: 127.0276, roadNmAddr: '서울특별시 강남구 강남대로 396' },
+];
+
+export const MOCK_BIKE_AVAILABILITY: BikeAvailability[] = [
+  { rntstnId: 'ST-10', bcyclTpkctNocs: 9,  rntNocs: 5, rtnNocs: 4 },
+  { rntstnId: 'ST-11', bcyclTpkctNocs: 12, rntNocs: 7, rtnNocs: 5 },
+  { rntstnId: 'ST-12', bcyclTpkctNocs: 8,  rntNocs: 3, rtnNocs: 5 },
+  { rntstnId: 'ST-20', bcyclTpkctNocs: 15, rntNocs: 10, rtnNocs: 5 },
+  { rntstnId: 'ST-21', bcyclTpkctNocs: 10, rntNocs: 6, rtnNocs: 4 },
+  { rntstnId: 'ST-30', bcyclTpkctNocs: 20, rntNocs: 12, rtnNocs: 8 },
+];
 
 // =============================================
 // 교통약자 이동지원 센터

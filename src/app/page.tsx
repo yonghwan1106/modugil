@@ -75,9 +75,9 @@ export default function Home() {
   return (
     <div className="h-full flex flex-col">
       <Header />
-      <div className="flex-1 flex overflow-hidden">
-        {/* 지도 영역 (70%) */}
-        <div className="flex-1 relative">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* 지도 영역 (데스크톱 70%, 모바일 50vh) */}
+        <div className="flex-1 relative h-[50vh] md:h-auto">
           <NaverMap markers={markers} onMarkerClick={setSelectedMarker} />
           {selectedMarker?.type === 'trafficLight' && selectedMarker.info && (
             <div className="absolute top-4 right-4 z-10">
@@ -95,8 +95,8 @@ export default function Home() {
             </div>
           )}
         </div>
-        {/* 챗봇 패널 (30%, min 360px) */}
-        <div className="w-[400px] min-w-[360px] border-l border-gray-200 flex flex-col">
+        {/* 챗봇 패널 (데스크톱 30%/min 360px, 모바일 full/50vh) */}
+        <div className="w-full md:w-[400px] md:min-w-[360px] h-[50vh] md:h-auto border-t md:border-t-0 md:border-l border-gray-200 flex flex-col">
           <ChatPanel onToolResults={handleToolResults} />
         </div>
       </div>

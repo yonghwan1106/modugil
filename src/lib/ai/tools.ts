@@ -77,6 +77,22 @@ export const AI_TOOLS: Anthropic.Messages.Tool[] = [
     },
   },
   {
+    name: 'get_bicycle_availability',
+    description:
+      '특정 지역의 공영자전거 대여소 위치와 실시간 대여 가능 자전거 수를 조회합니다. ' +
+      '따릉이(서울), 타슈(대전) 등 지자체 공영자전거 대여소명, 주소, 위치(위도·경도), 거치대 수를 반환합니다.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        region: {
+          type: 'string',
+          description: '지역명 (예: "서울 종로구", "서울 마포구", "서울"). 서울은 lcgvmnInstCd=1100000000으로 조회됩니다.',
+        },
+      },
+      required: ['region'],
+    },
+  },
+  {
     name: 'get_civil_office_wait',
     description:
       '특정 지역 민원실의 업무별 실시간 대기 인원수와 예상 대기 시간을 조회합니다. ' +
