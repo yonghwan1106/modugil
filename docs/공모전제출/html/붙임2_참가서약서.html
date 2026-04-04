@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>붙임2. 참가서약서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 20mm;
+  }
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 0;
+      width: auto;
+      min-height: auto;
+    }
+  }
+
+  :root {
+    --navy: #0f172a;
+    --navy-light: #1e293b;
+    --blue: #2563eb;
+    --gold: #d4a853;
+    --gold-light: #f5e6c8;
+    --warm-white: #faf9f7;
+    --warm-gray: #f1efe9;
+    --text: #1a1a1a;
+    --text-light: #64748b;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    font-size: 10.5pt;
+    line-height: 1.7;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 20mm;
+    background: var(--warm-white);
+  }
+
+  /* ── Header Banner ── */
+  .header-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #2d3a4f 100%);
+    color: #fff;
+    text-align: center;
+    padding: 16px 24px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37 15L30 30L23 15Z' fill='none' stroke='rgba(212,168,83,0.08)' stroke-width='0.5'/%3E%3Cpath d='M0 30L7 45L0 60L-7 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cpath d='M60 30L67 45L60 60L53 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cline x1='0' y1='30' x2='60' y2='30' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3Cline x1='30' y1='0' x2='30' y2='60' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+  .header-banner .year-badge {
+    display: inline-block;
+    background: rgba(212,168,83,0.2);
+    border: 1px solid rgba(212,168,83,0.4);
+    color: var(--gold);
+    padding: 1px 16px;
+    font-size: 9.5pt;
+    font-weight: 500;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
+  }
+  .header-banner h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-banner .gold-line {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Document Title ── */
+  .doc-title-area {
+    text-align: center;
+    margin: 16px 0 10px;
+  }
+  .doc-title-area .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), #c49b3d);
+    color: var(--navy);
+    font-size: 8.5pt;
+    font-weight: 700;
+    padding: 2px 12px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .doc-title-area h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 6px;
+  }
+  .doc-title-area .underline {
+    width: 100px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+  }
+
+  /* ── Opening text ── */
+  .opening-text {
+    font-size: 10.5pt;
+    line-height: 1.8;
+    margin: 20px 0 24px;
+    text-indent: 1em;
+    color: #374151;
+  }
+
+  /* ── Commitment Items ── */
+  .commitment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+  }
+  .commitment-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e8e5de;
+    border-left: 3px solid var(--gold);
+  }
+  .commitment-number {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(135deg, var(--gold), #c49b3d);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11pt;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .commitment-text {
+    flex: 1;
+    font-size: 10pt;
+    line-height: 1.75;
+    color: var(--text);
+    padding-top: 3px;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid #d5d0c8;
+    margin: 20px 0;
+  }
+
+  /* ── Bottom Section ── */
+  .bottom-section {
+    margin-top: 28px;
+  }
+  .date-line {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .date-line .blank {
+    display: inline-block;
+    width: 40px;
+    border-bottom: 1px solid var(--text-light);
+  }
+
+  /* ── Signature Table ── */
+  .sig-table {
+    width: 65%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 10.5pt;
+  }
+  .sig-table th {
+    background: var(--navy);
+    color: #fff;
+    padding: 8px 16px;
+    font-weight: 600;
+    border: 1px solid var(--navy);
+    text-align: center;
+    font-size: 9.5pt;
+    letter-spacing: 1px;
+  }
+  .sig-table td {
+    padding: 10px 16px;
+    border: 1px solid #d5d0c8;
+    text-align: center;
+    background: #fff;
+    font-size: 10.5pt;
+  }
+  .signature-cell {
+    color: #b0aaa0;
+    font-style: italic;
+    min-width: 120px;
+    border-bottom: 1.5px dotted var(--gold);
+  }
+
+  /* ── Footer ── */
+  .footer-target {
+    text-align: center;
+    margin-top: 32px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 2px;
+    padding-top: 14px;
+    border-top: 2px solid var(--navy);
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .footer-target::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 6px auto 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <div class="year-badge">2026</div>
+    <h1>전국 통합데이터 활용 공모전</h1>
+    <div class="gold-line"></div>
+  </div>
+
+  <div class="doc-title-area">
+    <div class="badge">붙임 2</div>
+    <h2>참 가 서 약 서</h2>
+    <div class="underline"></div>
+  </div>
+
+  <p class="opening-text">
+    본인(팀)은 「2026 전국 통합데이터 활용 공모전」에 참가함에 있어 아래 사항을 서약합니다.
+  </p>
+
+  <ul class="commitment-list">
+    <li class="commitment-item">
+      <div class="commitment-number">1</div>
+      <div class="commitment-text">제출한 결과물은 일체 반환하지 않으며, 이에 동의합니다.</div>
+    </li>
+    <li class="commitment-item">
+      <div class="commitment-number">2</div>
+      <div class="commitment-text">제출한 결과물에 대한 사용권은 제작자와 주최·주관기관(행정안전부, 한국지역정보개발원)에 귀속됩니다.</div>
+    </li>
+    <li class="commitment-item">
+      <div class="commitment-number">3</div>
+      <div class="commitment-text">이미 채택된 제안과 동일한 것, 표절 및 복제 등의 지식재산권 침해 작품, 타 공모전 입상작품 등은 심사에서 제외되며, 이에 따른 모든 법적 책임은 참가자 본인에게 있음을 확인합니다.</div>
+    </li>
+    <li class="commitment-item">
+      <div class="commitment-number">4</div>
+      <div class="commitment-text">제출한 작품 및 작품에 사용된 모든 자료(이미지, 배경, 인물, 폰트 등)가 제3자의 권리(소유권, 저작권, 이용권 등)를 침해하지 않았음을 확인하며, 관련 분쟁 발생 시 모든 법적 책임은 참가자 본인에게 있습니다.</div>
+    </li>
+    <li class="commitment-item">
+      <div class="commitment-number">5</div>
+      <div class="commitment-text">수상 이후 위 사항에 대한 위반 사실이 밝혀질 경우, 수상 취소 및 상금 환수(자진반납)에 이의를 제기하지 않겠습니다.</div>
+    </li>
+  </ul>
+
+  <hr class="divider">
+
+  <div class="bottom-section">
+    <p class="date-line">2026년 &nbsp;4월 &nbsp;<span class="blank"></span>&nbsp;일</p>
+
+    <table class="sig-table">
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>성명</th>
+          <th>서명(인)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>서약자</td>
+          <td>박용환</td>
+          <td class="signature-cell">(서명)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="footer-target">「2026 전국 통합데이터 활용 공모전」</p>
+  </div>
+
+</body>
+</html>

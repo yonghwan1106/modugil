@@ -31,6 +31,7 @@ export default function Home() {
       get_library_seats: 'library',
       get_civil_office_wait: 'civil',
       get_locker_availability: 'locker',
+      get_bicycle_availability: 'bicycle',
     };
 
     results.forEach((result) => {
@@ -49,11 +50,11 @@ export default function Home() {
         if (lat == null || lng == null) return;
 
         const id = [
-          'centerId', 'crossroadId', 'libraryId', 'officeId', 'routeId', 'lockerId',
+          'centerId', 'crossroadId', 'libraryId', 'officeId', 'routeId', 'lockerId', 'stationId',
         ].reduce<string | undefined>((found, key) => found ?? (it[key] != null ? String(it[key]) : undefined), undefined) ?? String(index);
 
         const title = [
-          'centerName', 'crossroadName', 'libraryName', 'officeName', 'routeNo', 'lockerName',
+          'centerName', 'crossroadName', 'libraryName', 'officeName', 'routeNo', 'lockerName', 'stationName',
         ].reduce<string | undefined>((found, key) => found ?? (it[key] != null ? String(it[key]) : undefined), undefined) ?? '위치';
 
         newMarkers.push({

@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>붙임4. 서비스 개발 기획서 — 모두의 길</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 15mm 18mm; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+  }
+
+  :root {
+    --navy: #0f172a;
+    --navy-mid: #1e293b;
+    --navy-light: #334155;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --gold: #d4a853;
+    --gold-light: #f5e6c8;
+    --gold-dark: #b8922f;
+    --warm-white: #faf9f7;
+    --warm-gray: #f1efe9;
+    --text: #1a1a1a;
+    --text-light: #64748b;
+    --success: #059669;
+    --danger: #dc2626;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    background: var(--warm-white);
+    font-size: 10.5pt;
+    line-height: 1.75;
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--navy);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%231e293b' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+
+  .cover-inner {
+    text-align: center;
+    padding: 60px 40px;
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-competition {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10.5pt;
+    font-weight: 400;
+    color: #94a3b8;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .cover-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 52pt;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -2px;
+    line-height: 1.15;
+    margin-bottom: 8px;
+  }
+  .cover-title-underline {
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    margin: 16px auto 24px;
+    border-radius: 2px;
+  }
+
+  .cover-subtitle {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14pt;
+    font-weight: 300;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .cover-tagline {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-top: 8px;
+  }
+
+  .cover-data-section {
+    margin-top: 48px;
+  }
+  .cover-data-label {
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: #64748b;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .data-grid-bottom {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 75%;
+    margin: 0 auto;
+  }
+
+  .data-card {
+    border: 1px solid rgba(212, 168, 83, 0.3);
+    border-radius: 8px;
+    padding: 16px 12px;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+  }
+  .data-card .icon {
+    font-size: 22pt;
+    display: block;
+    margin-bottom: 6px;
+    filter: grayscale(0.1);
+  }
+  .data-card .label {
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: #e2e8f0;
+    letter-spacing: 0.5px;
+  }
+
+  .cover-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.4), transparent);
+    margin: 40px 0 28px;
+  }
+
+  .cover-footer {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 9pt;
+    color: #94a3b8;
+    font-weight: 300;
+  }
+  .cover-footer strong { color: #cbd5e1; font-weight: 500; }
+
+  /* ===== STAT CARDS ===== */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .stat-card {
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 24px 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--navy-light);
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+  }
+  .stat-number {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22pt;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 8.5pt;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header {
+    border-left: 4px solid var(--gold);
+    background: var(--warm-gray);
+    padding: 14px 24px;
+    margin: 36px 0 22px;
+    border-radius: 0 6px 6px 0;
+  }
+  .section-header h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .section-header h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0;
+  }
+
+  .subsection {
+    margin: 26px 0 12px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--navy-mid);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--gold-light);
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 22px;
+    font-size: 9.5pt;
+  }
+  table th {
+    background: var(--navy);
+    color: var(--gold);
+    font-weight: 600;
+    padding: 11px 14px;
+    text-align: left;
+    letter-spacing: 0.3px;
+    font-size: 9pt;
+  }
+  table th:first-child { border-radius: 6px 0 0 0; }
+  table th:last-child { border-radius: 0 6px 0 0; }
+  table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #e5e1d8;
+    vertical-align: top;
+    color: var(--text);
+  }
+  table tbody tr:nth-child(even) { background: var(--warm-gray); }
+  table tbody tr:hover { background: var(--gold-light); }
+
+  /* gold highlight column for comparison */
+  .highlight-col { background: rgba(245, 230, 200, 0.5) !important; }
+  .highlight-col-header { background: var(--gold-dark) !important; color: #fff !important; }
+
+  /* ===== CALLOUT BOXES ===== */
+  .callout {
+    border-left: 4px solid var(--gold);
+    background: var(--gold-light);
+    padding: 14px 22px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 10pt;
+    color: var(--text);
+  }
+  .callout.info {
+    border-left-color: var(--navy);
+    background: #e8eaef;
+  }
+  .callout.success {
+    border-left-color: var(--success);
+    background: #ecfdf5;
+  }
+  .callout.danger {
+    border-left-color: var(--danger);
+    background: #fef2f2;
+  }
+
+  .callout blockquote, blockquote {
+    margin: 0;
+    font-family: 'Noto Serif KR', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  /* ===== CODE / TERMINAL ===== */
+  .code-block {
+    background: var(--navy);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 9pt;
+    line-height: 1.65;
+    overflow-x: auto;
+    margin: 14px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border: 1px solid var(--navy-light);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .code-block .comment { color: #64748b; font-style: italic; }
+  .code-block .keyword { color: var(--gold); }
+  .code-block .string { color: #86efac; }
+  .code-block .func { color: #93c5fd; }
+  .code-block .type { color: var(--gold-light); }
+
+  /* ===== ARCHITECTURE DIAGRAM ===== */
+  .arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .arch-layer {
+    width: 100%;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+  }
+  .arch-layer.frontend {
+    background: var(--warm-gray);
+    border: 2px solid #d4cfc3;
+  }
+  .arch-layer.backend {
+    background: var(--navy);
+    border: 2px solid var(--navy-light);
+  }
+  .arch-layer.external {
+    background: var(--navy-mid);
+    border: 2px solid var(--navy-light);
+  }
+  .arch-layer-title {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    padding: 3px 12px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .frontend .arch-layer-title { background: var(--gold); color: var(--navy); }
+  .backend .arch-layer-title { background: var(--gold-dark); color: #fff; }
+  .external .arch-layer-title { background: var(--navy-light); color: var(--gold-light); }
+
+  .arch-boxes {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .arch-box {
+    border-radius: 8px;
+    padding: 12px 18px;
+    text-align: center;
+    font-size: 9pt;
+    font-weight: 600;
+    min-width: 120px;
+  }
+  .frontend .arch-box {
+    background: #fff;
+    color: var(--navy);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e5e1d8;
+  }
+  .backend .arch-box {
+    background: var(--navy-mid);
+    color: #e2e8f0;
+    border: 1px solid var(--navy-light);
+  }
+  .external .arch-box {
+    background: var(--navy);
+    color: #e2e8f0;
+    border: 1px solid var(--navy-light);
+  }
+  .arch-box small {
+    display: block;
+    font-weight: 400;
+    color: var(--text-light);
+    font-size: 8pt;
+    margin-top: 2px;
+  }
+  .backend .arch-box small,
+  .external .arch-box small { color: #94a3b8; }
+
+  .arrow-down {
+    text-align: center;
+    color: var(--gold);
+    font-size: 20pt;
+    line-height: 1;
+    margin: -2px 0;
+    letter-spacing: -2px;
+  }
+
+  /* ===== PERSONA TIMELINE ===== */
+  .timeline {
+    position: relative;
+    padding-left: 44px;
+    margin: 16px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--gold), var(--gold-dark));
+    border-radius: 2px;
+  }
+  .timeline-step {
+    position: relative;
+    margin-bottom: 14px;
+    padding: 14px 18px;
+    background: var(--warm-gray);
+    border-radius: 8px;
+    border: 1px solid #e5e1d8;
+  }
+  .timeline-num {
+    position: absolute;
+    left: -44px;
+    top: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(212, 168, 83, 0.4);
+  }
+  .timeline-step .step-title {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 700;
+    font-size: 10pt;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .timeline-step .step-desc {
+    font-size: 9.5pt;
+    color: var(--text);
+  }
+  .timeline-step .step-data {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 8.5pt;
+    color: var(--gold-dark);
+    font-weight: 600;
+    background: var(--gold-light);
+    padding: 2px 10px;
+    border-radius: 4px;
+  }
+
+  /* ===== EVALUATION TABLE ===== */
+  .eval-bar-track {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--navy-mid);
+    overflow: hidden;
+  }
+  .eval-bar {
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+  }
+  .eval-bar.high { width: 90%; }
+  .eval-bar.mid { width: 70%; }
+  .eval-bar.low { width: 50%; }
+
+  /* ===== FLOW DIAGRAM ===== */
+  .flow-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+  .flow-box {
+    border: 2px solid var(--navy-light);
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 9.5pt;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    color: var(--navy);
+  }
+  .flow-box.stage1 {
+    border-color: var(--gold);
+    background: var(--gold-light);
+    color: var(--navy);
+  }
+  .flow-box.stage2 {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: #e2e8f0;
+  }
+  .flow-box.stage2 small { color: #94a3b8; }
+  .flow-box.output {
+    border-color: var(--gold-dark);
+    background: linear-gradient(135deg, var(--gold-light), #fff);
+    color: var(--navy);
+  }
+  .flow-box small { font-weight: 400; color: var(--text-light); font-size: 8.5pt; }
+
+  /* ===== COMPARISON CHECK/X ===== */
+  .check { color: var(--gold-dark); font-weight: bold; }
+  .cross { color: var(--danger); font-weight: bold; }
+
+  /* ===== MISC ===== */
+  .content { padding: 10px 36px 30px; }
+  p { margin: 8px 0; }
+  strong { color: var(--navy); }
+  .text-main { color: var(--blue); }
+  .text-accent { color: var(--success); }
+  .text-highlight { color: var(--gold-dark); }
+  .text-small { font-size: 9pt; color: var(--text-light); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 8.5pt;
+    font-weight: 600;
+  }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+  .badge-green { background: #ecfdf5; color: var(--success); }
+  .badge-amber { background: var(--gold-light); color: var(--gold-dark); }
+
+  .ol-list { padding-left: 24px; margin: 8px 0; }
+  .ol-list li { margin-bottom: 6px; }
+
+  .project-tree {
+    background: var(--navy);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 8.5pt;
+    line-height: 1.6;
+    margin: 14px 0;
+    white-space: pre;
+    overflow-x: auto;
+    border: 1px solid var(--navy-light);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .project-tree .dir { color: var(--gold); font-weight: 600; }
+  .project-tree .file { color: #e2e8f0; }
+  .project-tree .comment { color: #64748b; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .mini-card {
+    border: 1px solid #e5e1d8;
+    border-radius: 8px;
+    padding: 18px;
+    background: var(--warm-gray);
+  }
+  .mini-card h4 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .mini-card p {
+    font-size: 9pt;
+    color: var(--text);
+  }
+
+  /* Wireframe boxes */
+  .wireframe-box {
+    border: 2px solid var(--navy);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 16px 0;
+    background: #fff;
+  }
+  .wireframe-header {
+    background: var(--navy);
+    color: var(--gold);
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 9.5pt;
+  }
+  .wireframe-content {
+    padding: 16px;
+  }
+
+  /* Footer */
+  .doc-footer {
+    text-align: center;
+    margin-top: 48px;
+    padding: 24px 20px;
+    border-top: 2px solid var(--gold-light);
+    color: var(--text-light);
+    font-size: 9pt;
+  }
+  .doc-footer strong {
+    font-family: 'Noto Serif KR', serif;
+    color: var(--navy);
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- COVER PAGE -->
+<!-- ============================================================ -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-competition">2026 전국 통합데이터 활용 공모전</div>
+
+    <div class="cover-title">모두의 길</div>
+    <div class="cover-title-underline"></div>
+
+    <div class="cover-subtitle">AI 기반 교통약자 통합 이동지원 서비스</div>
+    <div class="cover-tagline">하나의 질문, 모든 이동 정보</div>
+
+    <div class="cover-data-section">
+      <div class="cover-data-label">7종 전국 통합데이터 활용</div>
+      <div class="data-grid">
+        <div class="data-card">
+          <span class="icon">&#x1F6B2;</span>
+          <span class="label">공영자전거</span>
+        </div>
+        <div class="data-card">
+          <span class="icon">&#x1F68C;</span>
+          <span class="label">버스</span>
+        </div>
+        <div class="data-card">
+          <span class="icon">&#x1F6A6;</span>
+          <span class="label">교통신호</span>
+        </div>
+        <div class="data-card">
+          <span class="icon">&#x267F;</span>
+          <span class="label">교통약자 이동지원</span>
+        </div>
+      </div>
+      <div class="data-grid-bottom">
+        <div class="data-card">
+          <span class="icon">&#x1F4DA;</span>
+          <span class="label">도서관</span>
+        </div>
+        <div class="data-card">
+          <span class="icon">&#x1F3E2;</span>
+          <span class="label">민원실</span>
+        </div>
+        <div class="data-card">
+          <span class="icon">&#x1F512;</span>
+          <span class="label">물품보관함</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-divider"></div>
+
+    <div class="cover-footer">
+      <div><strong>제안자</strong> 박용환</div>
+      <div><strong>GitHub</strong> github.com/yonghwan1106/modugil</div>
+      <div><strong>2026. 04</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- KEY STATS -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-number">1,500만명</div>
+      <div class="stat-label">교통약자 인구 (전체 29%)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">7종</div>
+      <div class="stat-label">통합데이터 분류</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">20개</div>
+      <div class="stat-label">API 엔드포인트</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">AI 가산 10점</div>
+      <div class="stat-label">Claude Haiku 4.5</div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 1. 서비스 개요 및 기획 의도 -->
+  <!-- ============================================================ -->
+  <div class="section-header"><h2>1. 서비스 개요 및 기획 의도</h2></div>
+
+  <div class="subsection">1-1. 기획 배경</div>
+  <p>우리나라 교통약자(장애인, 고령자, 임산부 등)는 <strong>약 1,500만 명으로 전체 인구의 29%</strong>에 해당합니다. 「교통약자의 이동편의 증진법」 제3조는 교통약자가 안전하고 편리하게 이동할 수 있도록 교통수단, 여객시설 및 도로에 이동편의시설을 확충하도록 규정하고 있으나, 현실에서는 이동에 필요한 정보가 7개 이상의 서로 다른 시스템에 분산되어 통합 확인이 어려운 상황입니다.</p>
+
+  <div class="callout info"><strong>현황 통계</strong></div>
+  <table class="no-break">
+    <thead><tr><th>지표</th><th>수치</th><th>출처</th></tr></thead>
+    <tbody>
+      <tr><td>교통약자 인구</td><td><strong>약 1,500만 명 (전체 인구 29%)</strong></td><td>국토교통부, 2025</td></tr>
+      <tr><td>저상버스 도입률</td><td>전국 42.3%</td><td>국토교통부 교통약자 이동편의 실태조사</td></tr>
+      <tr><td>교통약자 이동지원 이용 대기시간</td><td>평균 30분 이상</td><td>한국장애인개발원</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger"><strong>핵심 문제</strong></div>
+  <table class="no-break">
+    <thead><tr><th>문제</th><th>현황</th><th>영향</th></tr></thead>
+    <tbody>
+      <tr><td><strong>횡단보도 신호 정보 부재</strong></td><td>잔여시간 실시간 확인 불가</td><td>보행 안전 위협, 특히 고령자/지체장애인</td></tr>
+      <tr><td><strong>교통수단 분산</strong></td><td>저상버스/이동지원 차량 위치 파악 불가</td><td>불필요한 대기, 외출 포기</td></tr>
+      <tr><td><strong>목적지 혼잡도 미확인</strong></td><td>도서관 좌석, 민원실 대기시간 사전 확인 불가</td><td>장시간 대기로 체력 소진</td></tr>
+      <tr><td><strong>정보 접근성 장벽</strong></td><td>7개 이상 앱/사이트 번갈아 확인</td><td>디지털 취약 계층 정보 소외</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">1-2. 서비스 개요</div>
+  <p><strong>"모두의 길"</strong>은 전국 7종 통합데이터(20개 API 엔드포인트)를 AI 대화형 인터페이스로 통합하여, 교통약자가 <strong>한 번의 질문</strong>으로 필요한 모든 이동 정보를 받아볼 수 있는 웹 서비스입니다.</p>
+
+  <table class="no-break">
+    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td><strong>서비스명</strong></td><td>모두의 길 (modugil)</td></tr>
+      <tr><td><strong>서비스 유형</strong></td><td>반응형 웹 애플리케이션 (모바일/데스크톱)</td></tr>
+      <tr><td><strong>대상 사용자</strong></td><td>교통약자 (장애인, 고령자, 임산부) 및 보호자</td></tr>
+      <tr><td><strong>핵심 가치</strong></td><td>"하나의 질문, 모든 이동 정보"</td></tr>
+      <tr><td><strong>활용 데이터</strong></td><td>전국 통합데이터 7종 20개 API 엔드포인트 연동, 이 중 14개를 AI 채팅 도구에서 실시간 활용, 나머지 6개는 데이터 프록시 API(<code>/api/data</code>)를 통해 대시보드 및 확장 기능에서 활용</td></tr>
+      <tr><td><strong>GitHub</strong></td><td>https://github.com/yonghwan1106/modugil</td></tr>
+      <tr><td><strong>배포</strong></td><td>Vercel <em>(배포 후 기입)</em></td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">1-3. 기획 의도</div>
+  <div class="callout success">
+    <blockquote>교통약자에게 <strong>"대화 한 마디로 안전한 길을 찾아주는 AI 동반자"</strong>를 제공합니다.</blockquote>
+  </div>
+  <p>기존의 정보 조회 방식(검색 &rarr; 필터 &rarr; 결과 확인)을 <strong>자연어 대화</strong> 방식으로 전환하여, 디지털 기기에 익숙하지 않은 고령자도 쉽게 사용할 수 있도록 설계했습니다. 추천 질문 버튼 5개를 제공하여 첫 사용자도 별도 학습 없이 즉시 서비스를 경험할 수 있습니다.</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. 기대효과, 독창성, 차별성 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>2. 기대효과, 독창성, 차별성</h2></div>
+
+  <div class="subsection">2-1. 기대효과</div>
+  <table class="no-break">
+    <thead><tr><th>구분</th><th>기대효과</th><th>근거</th></tr></thead>
+    <tbody>
+      <tr><td><strong>안전</strong></td><td>횡단보도 신호 잔여시간 실시간 확인, 8방향 십자형 UI + 안전 판단 메시지로 보행 사고 예방</td><td>신호등 API 실시간 연동</td></tr>
+      <tr><td><strong>편의</strong></td><td>7종 데이터를 한 번의 질문으로 통합 조회, 정보 접근 시간 90% 단축</td><td>서버 병렬 API 호출</td></tr>
+      <tr><td><strong>접근성</strong></td><td>자연어 대화 + 추천 질문 버튼으로 디지털 취약 계층도 쉽게 이용</td><td>UX 설계</td></tr>
+      <tr><td><strong>효율</strong></td><td>민원실 대기시간/도서관 좌석 사전 확인으로 불필요한 이동 감소</td><td>실시간 대기현황 API</td></tr>
+      <tr><td><strong>사회적 가치</strong></td><td>교통약자의 독립적 이동권 보장, 사회 참여 확대</td><td>「교통약자 이동편의 증진법」 연계</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">2-2. 경쟁 서비스 비교</div>
+  <table class="no-break">
+    <thead>
+      <tr>
+        <th>비교 항목</th>
+        <th>카카오맵/네이버지도</th>
+        <th>토도웍스(TODOWOX)</th>
+        <th class="highlight-col-header">모두의 길</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>대상 사용자</strong></td>
+        <td>일반인</td>
+        <td>시각장애인 특화</td>
+        <td class="highlight-col"><strong>전 유형 교통약자</strong> (장애인/고령자/임산부)</td>
+      </tr>
+      <tr>
+        <td><strong>데이터 범위</strong></td>
+        <td>교통 (버스/지하철)</td>
+        <td>보행 경로</td>
+        <td class="highlight-col"><strong>7종 20개 API 통합</strong> (교통+시설+생활)</td>
+      </tr>
+      <tr>
+        <td><strong>인터페이스</strong></td>
+        <td>검색/필터 기반</td>
+        <td>음성 안내</td>
+        <td class="highlight-col"><strong>AI 자연어 대화</strong></td>
+      </tr>
+      <tr>
+        <td><strong>복합 질의</strong></td>
+        <td><span class="cross">&#x2717;</span> 불가</td>
+        <td><span class="cross">&#x2717;</span> 불가</td>
+        <td class="highlight-col"><span class="check">&#x2713;</span> <strong>"신호등과 저상버스 함께 알려줘"</strong> 가능</td>
+      </tr>
+      <tr>
+        <td><strong>교통약자 차량</strong></td>
+        <td><span class="cross">&#x2717;</span> 미지원</td>
+        <td><span class="cross">&#x2717;</span> 미지원</td>
+        <td class="highlight-col"><span class="check">&#x2713;</span> 이동지원센터 가용 차량 실시간 조회</td>
+      </tr>
+      <tr>
+        <td><strong>시설 혼잡도</strong></td>
+        <td><span class="cross">&#x2717;</span> 미지원</td>
+        <td><span class="cross">&#x2717;</span> 미지원</td>
+        <td class="highlight-col"><span class="check">&#x2713;</span> 도서관 좌석/민원실 대기 실시간 안내</td>
+      </tr>
+      <tr>
+        <td><strong>AI 활용</strong></td>
+        <td><span class="cross">&#x2717;</span> 미적용</td>
+        <td><span class="cross">&#x2717;</span> 미적용</td>
+        <td class="highlight-col"><span class="check">&#x2713;</span> Claude AI 기반 맞춤형 응답 생성</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">2-3. 수익 모델 (향후 확장)</div>
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>1. 공공기관 납품</h4>
+      <p>지자체/복지관에 커스터마이즈 버전 제공</p>
+    </div>
+    <div class="mini-card">
+      <h4>2. API 서비스</h4>
+      <p>통합 데이터 API를 타 서비스에 제공</p>
+    </div>
+  </div>
+  <div class="mini-card" style="margin-top:-4px;">
+    <h4>3. 교통약자 친화 시설 연계</h4>
+    <p>무장애 식당, 편의시설 정보 제공</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3. 기술 구현 상세 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>3. 기술 구현 상세</h2></div>
+
+  <div class="subsection">3-1. 시스템 아키텍처</div>
+
+  <div class="arch-diagram">
+    <!-- Frontend Layer -->
+    <div class="arch-layer frontend">
+      <div class="arch-layer-title">Frontend &mdash; 사용자 (브라우저)</div>
+      <div class="arch-boxes">
+        <div class="arch-box">&#x1F5FA; 네이버 지도<small>마커 / 팝업</small></div>
+        <div class="arch-box">&#x1F4AC; 채팅 패널<small>대화 / 카드</small></div>
+        <div class="arch-box">&#x1F4CA; 대시보드<small>차트 / 통계</small></div>
+      </div>
+    </div>
+
+    <div class="arrow-down">&#x25BC;</div>
+
+    <!-- Backend Layer -->
+    <div class="arch-layer backend">
+      <div class="arch-layer-title">Backend &mdash; Next.js 16 서버 (Vercel)</div>
+      <div style="margin-bottom:10px;">
+        <div class="arch-boxes">
+          <div class="arch-box" style="min-width:320px; border-left: 3px solid var(--gold);">
+            <strong>POST /api/chat</strong><br>
+            <small>Stage 1: 키워드 regex 라우팅 (TOOL_ROUTING 배열)</small><br>
+            <small>지역명 추출 (districtMap) &rarr; 도구 병렬 실행 (Promise.all)</small><br>
+            <small style="border-top:1px dashed #475569; display:block; padding-top:4px; margin-top:4px;">Stage 2: Claude AI &mdash; 도구 결과 주입 &rarr; 맞춤형 자연어 응답 생성</small>
+          </div>
+        </div>
+      </div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--gold-light);">Anthropic SDK<small>Claude Haiku 4.5</small></div>
+        <div class="arch-box" style="border-left:3px solid var(--gold-dark);">공공데이터 API 클라이언트<small>5분 캐시, Mock 폴백</small></div>
+      </div>
+    </div>
+
+    <div class="arrow-down">&#x25BC;</div>
+
+    <!-- External Layer -->
+    <div class="arch-layer external">
+      <div class="arch-layer-title">External &mdash; 외부 서비스</div>
+      <div class="arch-boxes">
+        <div class="arch-box">Anthropic API<small>Claude Haiku 4.5</small></div>
+        <div class="arch-box">apis.data.go.kr (B551982)<small>7종 20개 API 엔드포인트<br>행정안전부 / KLID</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">3-2. 기술 스택</div>
+  <table class="no-break">
+    <thead><tr><th>계층</th><th>기술</th><th>버전</th><th>용도</th></tr></thead>
+    <tbody>
+      <tr><td><strong>프론트엔드</strong></td><td>React</td><td>19.2</td><td>UI 컴포넌트, 상태 관리</td></tr>
+      <tr><td><strong>프레임워크</strong></td><td>Next.js</td><td>16.2</td><td>SSR, API 라우팅, 배포 최적화</td></tr>
+      <tr><td><strong>스타일링</strong></td><td>Tailwind CSS</td><td>4.x</td><td>반응형 UI 디자인</td></tr>
+      <tr><td><strong>지도</strong></td><td>Naver Maps API</td><td>-</td><td>위치 시각화, 마커/인포윈도우, 자동 범위 조정(fitBounds)</td></tr>
+      <tr><td><strong>AI</strong></td><td>Claude Haiku 4.5</td><td>@anthropic-ai/sdk 0.80</td><td>자연어 이해 및 응답 생성</td></tr>
+      <tr><td><strong>차트</strong></td><td>Recharts</td><td>3.8</td><td>대시보드 데이터 시각화</td></tr>
+      <tr><td><strong>언어</strong></td><td>TypeScript</td><td>5.x</td><td>타입 안전성, 코드 품질</td></tr>
+      <tr><td><strong>배포</strong></td><td>Vercel</td><td>-</td><td>자동 배포, 엣지 네트워크</td></tr>
+      <tr><td><strong>데이터</strong></td><td>전국 통합데이터 API</td><td>20개 엔드포인트</td><td>실시간 공공데이터 조회</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3-3. 핵심 기술 구현 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h3>3-3. 핵심 기술 구현</h3></div>
+
+  <div class="subsection">(A) 하이브리드 AI 아키텍처 &mdash; 서버 키워드 라우팅 + Claude NLG</div>
+  <p>본 서비스는 <strong>Claude의 tool_use(Function Calling)를 사용하지 않습니다.</strong> 대신, 속도와 AI 품질을 모두 확보하기 위해 2단계 하이브리드 아키텍처를 설계했습니다.</p>
+
+  <table class="no-break">
+    <thead><tr><th>단계</th><th>처리 주체</th><th>동작</th><th>장점</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Stage 1</strong></td><td>서버 키워드 regex 라우팅</td><td>사용자 질문에서 키워드 매칭 &rarr; 해당 도구를 <code>Promise.all</code>로 <strong>병렬 실행</strong></td><td>빠른 응답 (단일 Claude API 호출), 예측 가능한 도구 선택</td></tr>
+      <tr><td><strong>Stage 2</strong></td><td>Claude Haiku 4.5</td><td>도구 실행 결과를 user 메시지에 텍스트로 주입 &rarr; Claude가 <strong>맞춤형 자연어 응답</strong> 생성</td><td>AI의 NLG 능력 활용, 교통약자 유형별 안내</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>이 설계의 핵심 이점:</strong>
+    <ul style="margin:6px 0 0 18px;">
+      <li>Claude tool_use의 다중 턴 왕복(multi-turn round-trip)을 제거하여 <strong>응답 지연 최소화</strong></li>
+      <li>서버에서 도구를 직접 실행하므로 <strong>API 키가 클라이언트에 노출되지 않음</strong></li>
+      <li><code>tools.ts</code>에 7개 도구의 Claude Tool Use 스키마를 유지하여, 향후 자율적 도구 선택(autonomous tool selection)으로의 <strong>확장 경로 확보</strong></li>
+    </ul>
+  </div>
+
+  <p><strong>처리 흐름 예시:</strong></p>
+  <div class="flow-diagram">
+    <div class="flow-box">&#x1F464; 사용자: "강남역 근처 신호등이랑 저상버스 알려줘"</div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box stage1">
+      <strong>Stage 1: 서버 키워드 라우팅</strong><br>
+      <small>키워드 분석: "신호등" &rarr; <code>get_traffic_light_status</code></small><br>
+      <small>"저상버스" &rarr; <code>get_bus_realtime_location</code></small><br>
+      <small>"강남역" &rarr; region: "서울 강남구"</small><br>
+      <small>병렬 실행: 2개 API 동시 호출 (<code>Promise.all</code>)</small>
+    </div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box stage2">
+      <strong>Stage 2: Claude NLG</strong><br>
+      <small>도구 결과를 user 메시지에 주입 &rarr; Claude가 교통약자 맞춤 자연어 응답 생성</small>
+    </div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box output">
+      <strong>&#x1F5FA; 지도 시각화</strong><br>
+      <small>신호등(노랑 마커) + 버스(초록 마커) 동시 표시</small>
+    </div>
+  </div>
+
+  <p><strong>선언적 라우팅 설정 (route.ts):</strong></p>
+  <div class="code-block"><span class="keyword">const</span> <span class="type">TOOL_ROUTING</span> = [
+  { <span class="string">keywords</span>: <span class="func">/도서관|빈자리|열람실|좌석/</span>, tool: <span class="string">'get_library_seats'</span>,
+    alsoInclude: [<span class="string">'get_accessible_transport'</span>] },  <span class="comment">// 자동 연계: 도서관 &rarr; 교통약자 차량</span>
+  { <span class="string">keywords</span>: <span class="func">/민원실|민원|대기 현황/</span>, tool: <span class="string">'get_civil_office_wait'</span>,
+    alsoInclude: [<span class="string">'get_accessible_transport'</span>] },   <span class="comment">// 자동 연계: 민원실 &rarr; 교통약자 차량</span>
+  { <span class="string">keywords</span>: <span class="func">/신호등|횡단보도/</span>, tool: <span class="string">'get_traffic_light_status'</span> },
+  { <span class="string">keywords</span>: <span class="func">/버스|저상버스/</span>, tool: <span class="string">'get_bus_realtime_location'</span> },
+  { <span class="string">keywords</span>: <span class="func">/자전거|따릉이|대여소/</span>, tool: <span class="string">'get_bicycle_availability'</span> },
+  { <span class="string">keywords</span>: <span class="func">/보관함|물품보관|짐 보관|락커/</span>, tool: <span class="string">'get_locker_availability'</span> },
+  { <span class="string">keywords</span>: <span class="func">/교통약자 차량|이동지원|특별교통/</span>, tool: <span class="string">'get_accessible_transport'</span> },
+];</div>
+
+  <div class="subsection">(B) 교통약자 유형별 맞춤 응답</div>
+  <p>Claude AI의 시스템 프롬프트에 교통약자 유형별 안내 지침을 설정하여, 동일한 데이터도 사용자 상황에 맞게 다르게 안내합니다.</p>
+
+  <table class="no-break">
+    <thead><tr><th>사용자 유형</th><th>맞춤 안내 내용</th></tr></thead>
+    <tbody>
+      <tr><td><strong>휠체어 사용자</strong></td><td>저상버스 위치, 경사로/엘리베이터 유무, 이동지원 차량 대기시간 우선 안내</td></tr>
+      <tr><td><strong>시각장애인</strong></td><td>음향신호기 위치, 잔여시간 음성안내 여부, 점자블록 경로 안내</td></tr>
+      <tr><td><strong>고령자</strong></td><td>충분한 신호 잔여시간, 가까운 시설, 대기 없는 서비스 우선 안내</td></tr>
+      <tr><td><strong>임산부</strong></td><td>교통약자 전용 차량, 좌석 여유 있는 도서관/민원실 안내</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">(C) 데이터 자동 연계 (alsoInclude)</div>
+  <p>사용자가 단일 주제를 질문하더라도, 교통약자에게 필요한 관련 데이터를 <strong>자동으로 함께 조회</strong>합니다.</p>
+  <table class="no-break">
+    <thead><tr><th>사용자 질문</th><th>직접 호출 도구</th><th>자동 연계 도구</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr><td>"종로구 도서관 빈자리"</td><td>get_library_seats</td><td>get_accessible_transport</td><td>도서관까지 이동수단 안내</td></tr>
+      <tr><td>"민원실 대기 현황"</td><td>get_civil_office_wait</td><td>get_accessible_transport</td><td>민원실까지 이동수단 안내</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3-4. 안정성 및 성능 설계 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h3>3-4. 안정성 및 성능 설계</h3></div>
+  <table class="no-break">
+    <thead><tr><th>설계 항목</th><th>구현 방식</th><th>효과</th></tr></thead>
+    <tbody>
+      <tr><td><strong>인메모리 캐시</strong></td><td>5분 TTL 캐시 (client.ts)</td><td>동일 요청 반복 시 API 호출 절감</td></tr>
+      <tr><td><strong>Mock 데이터 폴백</strong></td><td>API 장애 시 자동 전환 (fetchWithFallback)</td><td>서비스 중단 없이 시연 가능</td></tr>
+      <tr><td><strong>타임아웃 + 재시도</strong></td><td>30초 타임아웃, 자동 1회 재시도 (chatWithRetry)</td><td>네트워크 불안정 대응</td></tr>
+      <tr><td><strong>병렬 실행</strong></td><td>Promise.all로 복수 API 동시 호출</td><td>응답 속도 최적화 (직렬 대비 2~3배)</td></tr>
+      <tr><td><strong>에러 UX</strong></td><td>에러 메시지 + "다시 시도" 버튼 (handleRetry)</td><td>마지막 질문 자동 재전송으로 사용자 편의</td></tr>
+      <tr><td><strong>API 키 서버사이드 관리</strong></td><td>환경변수로 서버에서만 사용</td><td>클라이언트 노출 방지, 보안 확보</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <!-- 4. 서비스 화면 설계 및 기능 흐름 -->
+  <!-- ============================================================ -->
+  <div class="section-header"><h2>4. 서비스 화면 설계 및 기능 흐름</h2></div>
+
+  <div class="subsection">4-1. 화면 구성 &mdash; 메인 페이지 (<code>/</code>)</div>
+
+  <div class="wireframe-box">
+    <div class="wireframe-header">
+      [Header] 모두의 길&emsp;|&emsp;지도&emsp;|&emsp;대시보드
+    </div>
+    <div style="display:grid; grid-template-columns:70% 30%; min-height:200px;">
+      <div style="padding:20px; background:var(--warm-gray); border-right:1px solid #e5e1d8;">
+        <div style="text-align:center; color:var(--navy); font-weight:600;">
+          &#x1F5FA; 네이버 지도 (70% 너비)<br>
+          <small style="font-weight:400; color:var(--text-light);">마커 (7종 색상별) + 인포윈도우 + fitBounds</small>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap; justify-content:center;">
+          <span class="badge" style="background:#fef2f2; color:#dc2626; font-size:7.5pt;">&#x1F534; 교통약자</span>
+          <span class="badge badge-green" style="font-size:7.5pt;">&#x1F7E2; 버스</span>
+          <span class="badge badge-amber" style="font-size:7.5pt;">&#x1F7E1; 신호등</span>
+          <span class="badge badge-blue" style="font-size:7.5pt;">&#x1F535; 도서관</span>
+          <span class="badge" style="background:#f3e8ff; color:#7c3aed; font-size:7.5pt;">&#x1F7E3; 민원실</span>
+          <span class="badge" style="background:#e0f2fe; color:#0284c7; font-size:7.5pt;">&#x1F7E2; 자전거</span>
+          <span class="badge" style="background:#fce7f3; color:#be185d; font-size:7.5pt;">&#x1F7E4; 보관함</span>
+        </div>
+      </div>
+      <div style="padding:16px; background:#fff;">
+        <div style="font-weight:600; color:var(--navy); font-size:9pt; margin-bottom:8px;">&#x1F4AC; 채팅 패널</div>
+        <div style="font-size:8pt; color:var(--text-light);">추천 질문 버튼 5개</div>
+        <div style="margin-top:6px; font-size:7.5pt;">
+          <div style="background:var(--warm-gray); border:1px solid #e5e1d8; border-radius:6px; padding:4px 8px; margin:3px 0;">"강남역 신호등..."</div>
+          <div style="background:var(--warm-gray); border:1px solid #e5e1d8; border-radius:6px; padding:4px 8px; margin:3px 0;">"종로구 차량..."</div>
+          <div style="background:var(--warm-gray); border:1px solid #e5e1d8; border-radius:6px; padding:4px 8px; margin:3px 0;">"도서관 빈자리..."</div>
+        </div>
+        <div style="margin-top:auto; padding-top:12px;">
+          <div style="background:var(--warm-gray); border:1px solid #d4cfc3; border-radius:6px; padding:6px 8px; font-size:7.5pt; color:var(--text-light);">메시지 입력...</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--warm-gray); padding:6px 16px; font-size:8pt; color:var(--text-light); text-align:center; border-top:1px solid #e5e1d8;">
+      모바일: 지도 상단 50vh / 채팅 하단 50vh
+    </div>
+  </div>
+
+  <div class="subsection">4-1. 화면 구성 &mdash; 대시보드 페이지 (<code>/dashboard</code>)</div>
+  <div class="callout info">
+    현재 대시보드는 Mock 데이터를 기반으로 시각화 데모를 제공합니다. 향후 실시간 API 연동으로 확장 예정입니다.
+  </div>
+
+  <div class="wireframe-box" style="border-color: var(--gold-dark);">
+    <div class="wireframe-header" style="background:var(--gold-dark); color:#fff;">
+      [Header] 모두의 길&emsp;|&emsp;지도&emsp;|&emsp;대시보드
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:#e5e1d8;">
+      <div style="background:var(--gold-light); padding:14px; text-align:center;">
+        <div style="font-weight:700; font-size:9pt; color:var(--gold-dark);">교통약자 이동지원 센터</div>
+        <div style="font-size:7.5pt; color:var(--text-light);">N개소</div>
+      </div>
+      <div style="background:#fff; padding:14px; text-align:center;">
+        <div style="font-weight:700; font-size:9pt;">공공도서관</div>
+        <div style="font-size:7.5pt; color:var(--text-light);">N개소 / 좌석사용률</div>
+      </div>
+      <div style="background:#fff; padding:14px; text-align:center;">
+        <div style="font-weight:700; font-size:9pt;">민원실</div>
+        <div style="font-size:7.5pt; color:var(--text-light);">N개소 / 평균대기</div>
+      </div>
+      <div style="background:#fff; padding:14px; text-align:center;">
+        <div style="font-weight:700; font-size:9pt;">실시간 신호등</div>
+        <div style="font-size:7.5pt; color:var(--text-light);">N개 교차로</div>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#e5e1d8;">
+      <div style="background:#fff; padding:14px; text-align:center; font-size:8.5pt;">
+        <strong>교통약자 차량 가용 현황</strong> (Bar Chart)
+      </div>
+      <div style="background:#fff; padding:14px; text-align:center; font-size:8.5pt;">
+        <strong>도서관 열람실 좌석 사용률</strong> (Pie Chart)
+      </div>
+    </div>
+    <div style="background:#fff; padding:14px; text-align:center; font-size:8.5pt; border-top:1px solid #e5e1d8;">
+      <strong>공영자전거 대여소별 현황</strong> (Bar Chart)
+    </div>
+    <div style="background:#fff; padding:14px; font-size:8.5pt; border-top:1px solid #e5e1d8;">
+      <strong>민원실 대기 현황 테이블</strong> &mdash; 민원실명 | 업무 | 대기인원 (색상 배지)
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4-2. 주요 기능 흐름 + 4-3, 4-4 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h3>4-2. 주요 기능 흐름</h3></div>
+
+  <div class="flow-diagram">
+    <div class="flow-box">&#x1F464; 사용자 질문 입력 또는 추천 질문 버튼 클릭</div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box stage1">
+      <strong>Stage 1: 서버 키워드 라우팅</strong><br>
+      <small>키워드 분석 (도서관? 신호등? 버스? 자전거? ...)</small><br>
+      <small>지역 추출: "강남역" &rarr; "서울 강남구"</small><br>
+      <small>API 병렬 호출: Promise.all (tool-executor)</small>
+    </div>
+    <div class="arrow-down" style="display:flex; justify-content:center; gap:80px;">
+      <span>&#x25BC;</span><span>&#x25BC;</span>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:100%; max-width:500px;">
+      <div class="flow-box output" style="max-width:none;">
+        <strong>&#x1F5FA; 지도 마커 업데이트</strong><br>
+        <small>7종 색상별 마커 + 인포윈도우 + fitBounds</small>
+      </div>
+      <div class="flow-box stage2" style="max-width:none;">
+        <strong>Stage 2: Claude AI</strong><br>
+        <small>도구 결과 주입 &rarr; 맞춤형 자연어 답변</small>
+      </div>
+    </div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box">&#x1F4AC; 채팅 패널 출력 &mdash; 텍스트 + 데이터 카드</div>
+    <div class="arrow-down">&#x25BC;</div>
+    <div class="flow-box" style="border-style:dashed;">&#x1F501; 사용자 후속 질문 &mdash; "근처 저상버스도 알려줘" &rarr; 반복</div>
+  </div>
+
+  <div class="subsection">4-3. 데이터 카드 UI 컴포넌트</div>
+  <p>각 도구 결과는 전용 카드 컴포넌트로 시각화됩니다:</p>
+  <table class="no-break">
+    <thead><tr><th>카드 유형</th><th>표시 정보</th><th>시각 요소</th></tr></thead>
+    <tbody>
+      <tr><td><strong>TransportCard</strong></td><td>센터명, 가용 차량, 대기 건수</td><td>프로그레스 바</td></tr>
+      <tr><td><strong>TrafficLightCard</strong></td><td>교차로명, 8방향 신호, 잔여초</td><td>신호등 불빛 UI</td></tr>
+      <tr><td><strong>TrafficLightDetail</strong></td><td>십자형 8방향 레이아웃, 잔여시간</td><td>교통약자 안전 판단 메시지 (안전/서둘러/삼가)</td></tr>
+      <tr><td><strong>BusCard</strong></td><td>노선번호, 차량위치, 속도</td><td>위치 배지</td></tr>
+      <tr><td><strong>LibraryCard</strong></td><td>도서관명, 총/사용/잔여 좌석</td><td>프로그레스 바</td></tr>
+      <tr><td><strong>CivilOfficeCard</strong></td><td>민원실명, 업무별 대기인원</td><td>상태 배지</td></tr>
+      <tr><td><strong>LockerCard</strong></td><td>보관함명, 대/중/소 가용 수</td><td>크기별 수량</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">4-4. 지도 시각화 상세</div>
+  <table class="no-break">
+    <thead><tr><th>기능</th><th>구현</th><th>설명</th></tr></thead>
+    <tbody>
+      <tr><td><strong>7종 색상별 마커</strong></td><td>MARKER_COLORS (NaverMap.tsx)</td><td>교통약자(빨강), 버스(초록), 신호등(노랑), 도서관(파랑), 민원실(보라), 자전거(청록), 보관함(분홍)</td></tr>
+      <tr><td><strong>상시 범례</strong></td><td>지도 하단 고정 표시</td><td>마커 색상-데이터 유형 매핑 한눈에 확인</td></tr>
+      <tr><td><strong>자동 범위 조정</strong></td><td><code>map.fitBounds(bounds)</code></td><td>마커 전체가 화면에 보이도록 자동 줌 조정</td></tr>
+      <tr><td><strong>인포윈도우</strong></td><td>마커 클릭 시 상세 정보 표시</td><td>신호등은 TrafficLightDetail 팝업 연동</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. 데이터 통합 활용 시나리오 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>5. 데이터 통합 활용 시나리오</h2></div>
+
+  <div class="subsection">5-1. 크로스 데이터 통합 활용</div>
+  <p>"모두의 길"의 핵심 가치는 <strong>7종 데이터의 교차 활용</strong>입니다. 단일 데이터 조회를 넘어, 교통약자의 실제 외출 시나리오에 맞춰 복수 데이터를 자동으로 통합 제공합니다.</p>
+
+  <table class="no-break">
+    <thead><tr><th>활용 시나리오</th><th>통합 데이터</th><th>자동 연계 (alsoInclude)</th><th>사용자 가치</th></tr></thead>
+    <tbody>
+      <tr><td><strong>도서관 방문</strong></td><td>도서관 좌석 + 교통약자 차량 + 신호등</td><td>도서관 질문 시 교통약자 차량 자동 포함</td><td>좌석 확인 + 이동수단 + 안전 횡단 정보를 한 번에</td></tr>
+      <tr><td><strong>민원실 방문</strong></td><td>민원실 대기시간 + 교통약자 차량 + 물품보관함</td><td>민원실 질문 시 교통약자 차량 자동 포함</td><td>대기시간 확인 + 이동수단 + 짐 보관 정보를 한 번에</td></tr>
+      <tr><td><strong>외출 종합</strong></td><td>버스 + 자전거 + 신호등</td><td>복합 키워드 동시 매칭</td><td>대중교통 + 자전거 + 보행 안전을 한 번에</td></tr>
+      <tr><td><strong>이동수단 비교</strong></td><td>교통약자 차량 + 버스 + 자전거</td><td>복합 키워드 동시 매칭</td><td>상황에 맞는 최적 이동수단 선택</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">5-2. 사용자 페르소나 시나리오</div>
+
+  <!-- Persona 1 -->
+  <div class="callout info" style="margin-top:20px;">
+    <strong>시나리오 1:</strong> <span style="font-family:'Noto Serif KR',serif; font-weight:700;">휠체어 사용자 김철수(45세)</span> &mdash; 마포구 도서관 방문
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-step">
+      <div class="timeline-num">1</div>
+      <div class="step-title">사용자: "마포구 도서관 빈자리 알려줘"</div>
+      <div class="step-desc">마포구립 서강도서관 잔여 좌석 32석, 마포중앙도서관 잔여 15석 등 안내 + 지도 마커</div>
+      <div class="step-data">도서관 좌석 API</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">2</div>
+      <div class="step-title">(자동 연계) 교통약자 이동지원</div>
+      <div class="step-desc">"교통약자 이동지원 차량도 함께 조회했습니다. 마포구 이동지원센터 가용 차량 3대, 대기 2건"</div>
+      <div class="step-data">교통약자 차량 API (alsoInclude)</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">3</div>
+      <div class="step-title">사용자: "근처 신호등 잔여시간도 알려줘"</div>
+      <div class="step-desc">서강대입구 교차로: 북방향 녹색 28초 (안전하게 횡단하세요) + 지도 마커</div>
+      <div class="step-data">신호등 API</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">4</div>
+      <div class="step-title">지도에서 마커 확인</div>
+      <div class="step-desc">도서관(파랑) + 교통약자 센터(빨강) + 신호등(노랑) 마커 동시 표시, fitBounds 자동 조정</div>
+      <div class="step-data">지도 시각화</div>
+    </div>
+  </div>
+
+  <!-- Persona 2 -->
+  <div class="callout info" style="margin-top:24px;">
+    <strong>시나리오 2:</strong> <span style="font-family:'Noto Serif KR',serif; font-weight:700;">고령자 박영희(72세)</span> &mdash; 종로구청 민원실 방문
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-step">
+      <div class="timeline-num">1</div>
+      <div class="step-title">추천 질문 버튼 클릭: "서울역 근처 민원실 대기시간이 짧은 곳은?"</div>
+      <div class="step-desc">종로구청 민원실: 주민등록 대기 2명(약 10분), 여권 대기 5명(약 25분) 등</div>
+      <div class="step-data">민원실 대기 API</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">2</div>
+      <div class="step-title">(자동 연계) 교통약자 이동지원</div>
+      <div class="step-desc">"교통약자 이동지원 차량도 조회했습니다. 종로구 센터 가용 차량 2대. 고령자분은 이동지원센터(02-XXX-XXXX)에 전화 예약하시면 편리합니다."</div>
+      <div class="step-data">교통약자 차량 API (alsoInclude)</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">3</div>
+      <div class="step-title">사용자: "근처 짐 보관할 곳 있어?"</div>
+      <div class="step-desc">종로구 물품보관함: 대형 2개, 중형 5개, 소형 8개 사용 가능</div>
+      <div class="step-data">물품보관함 API</div>
+    </div>
+    <div class="timeline-step">
+      <div class="timeline-num">4</div>
+      <div class="step-title">오류 발생 시</div>
+      <div class="step-desc">에러 메시지 표시 + "다시 시도" 버튼 &mdash; handleRetry 자동 재전송</div>
+      <div class="step-data">에러 UX</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. 서비스 접속 경로 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>6. 서비스 접속 경로</h2></div>
+  <table class="no-break">
+    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td><strong>서비스 URL</strong></td><td><em>(배포 후 기입)</em> &mdash; Vercel에 배포</td></tr>
+      <tr><td><strong>GitHub 저장소</strong></td><td>https://github.com/yonghwan1106/modugil</td></tr>
+      <tr><td><strong>접속 방법</strong></td><td>웹 브라우저 (Chrome, Safari, Edge 등)</td></tr>
+      <tr><td><strong>모바일 접속</strong></td><td>반응형 웹 &mdash; 별도 앱 설치 불필요</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============================================================ -->
+  <!-- 7. AI 활용 상세 -->
+  <!-- ============================================================ -->
+  <div class="section-header"><h2>7. AI 활용 상세 (가산점 10점)</h2></div>
+
+  <div class="subsection">7-1. AI 모델 정보</div>
+  <table class="no-break">
+    <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr><td><strong>모델</strong></td><td>Claude Haiku 4.5 (Anthropic)</td></tr>
+      <tr><td><strong>SDK</strong></td><td>@anthropic-ai/sdk v0.80</td></tr>
+      <tr><td><strong>활용 방식</strong></td><td>서버사이드 API 호출 (Next.js API Route)</td></tr>
+      <tr><td><strong>호출 구조</strong></td><td>하이브리드 &mdash; 서버 키워드 라우팅(Stage 1) + Claude NLG(Stage 2)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">7-2. AI 활용 범위</div>
+
+  <div class="two-col">
+    <div class="mini-card">
+      <h4>(1) 자연어 이해 (NLU) &mdash; 서버 키워드 라우팅</h4>
+      <ul style="font-size:9pt; padding-left:16px; color:var(--text);">
+        <li>한국어 자연어 질문에서 <strong>regex 기반 키워드 매칭</strong>으로 필요한 도구 선택</li>
+        <li>복합 질의 처리 ("신호등<strong>과</strong> 저상버스" &rarr; 2개 도구 동시 호출)</li>
+        <li>지역명 문맥 이해 ("강남역 근처" &rarr; 서울 강남구, districtMap 매핑)</li>
+      </ul>
+    </div>
+    <div class="mini-card">
+      <h4>(2) 지능형 응답 생성 (NLG) &mdash; Claude AI</h4>
+      <ul style="font-size:9pt; padding-left:16px; color:var(--text);">
+        <li>7종 API의 원시 JSON 데이터를 <strong>맞춤형 자연어</strong>로 변환</li>
+        <li>교통약자 유형별 맞춤 안내 (휠체어/시각장애/고령자/임산부)</li>
+        <li>안전 주의사항 자동 강조 (잔여시간 부족 경고 등)</li>
+        <li>추가 도움말 자동 제안 ("근처 저상버스 노선도 확인해볼까요?")</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mini-card" style="margin-top:12px;">
+    <h4>(3) 시스템 프롬프트 설계</h4>
+    <ul style="font-size:9pt; padding-left:16px; color:var(--text);">
+      <li>5가지 핵심 원칙 기반 행동 규칙 정의</li>
+      <li>키워드 &rarr; 도구 매핑 규칙 명시</li>
+      <li>교통약자 유형별 맞춤 안내 지침 내장</li>
+      <li>응답 포맷 가이드라인 (표, 굵은 숫자, 경고 이모지)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 7-2 continued, 7-3, 7-4 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h3>7-2. (4) 하이브리드 아키텍처 설계 근거</h3></div>
+
+  <table class="no-break">
+    <thead><tr><th>방식</th><th>장점</th><th>단점</th><th>채택 여부</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Claude tool_use (Function Calling)</strong></td>
+        <td>Claude가 자율적으로 도구 선택</td>
+        <td>다중 턴 왕복으로 응답 지연 (2~3초 추가)</td>
+        <td><span class="badge badge-amber">향후 확장용으로 스키마만 유지 (tools.ts)</span></td>
+      </tr>
+      <tr>
+        <td><strong>서버 키워드 라우팅 + Claude NLG</strong></td>
+        <td>단일 Claude 호출, 빠른 응답, 예측 가능</td>
+        <td>키워드 매칭 한계</td>
+        <td><span class="badge badge-green">현재 채택</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout success">
+    현재 <code>tools.ts</code>에 7개 도구의 Claude Tool Use 스키마를 정의해 두어, 향후 사용자 질문이 복잡해지면 자율적 도구 선택으로 전환할 수 있는 <strong>확장 경로를 확보</strong>했습니다.
+  </div>
+
+  <div class="subsection">7-3. AI가 서비스에 기여하는 핵심 가치</div>
+
+  <table class="no-break">
+    <thead>
+      <tr><th>기존 방식 (AI 미적용)</th><th class="highlight-col-header">모두의 길 (AI 적용)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>7개 앱/사이트 각각 방문</td><td class="highlight-col"><strong>한 번의 대화</strong>로 통합 조회</td></tr>
+      <tr><td>원시 JSON 데이터 직접 해석</td><td class="highlight-col">AI가 <strong>맞춤형 자연어</strong>로 안내</td></tr>
+      <tr><td>일반적인 정보 제공</td><td class="highlight-col"><strong>교통약자 유형별</strong> 맞춤 안전 안내</td></tr>
+      <tr><td>단일 데이터 조회</td><td class="highlight-col"><strong>복합 질의</strong> 지원 + 자동 연계(alsoInclude)</td></tr>
+      <tr><td>수동 위험 판단</td><td class="highlight-col">AI가 <strong>위험 상황 자동 경고</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="subsection">7-4. 시스템 프롬프트 발췌 (system-prompt.ts)</div>
+  <p>아래는 실제 코드에서 사용 중인 시스템 프롬프트의 핵심 부분입니다.</p>
+
+  <p><strong>핵심 원칙 5가지:</strong></p>
+  <div class="code-block"><span class="comment">// 시스템 프롬프트 핵심 원칙</span>
+1. 항상 도구를 사용하여 실시간 데이터를 조회한 후 답변합니다. 도구 없이 절대 답변하지 않습니다.
+2. 아래 라우팅 표에 따라 첫 번째 응답에서 해당하는 모든 도구를 한 번에 동시 호출합니다.
+3. 데이터는 표/목록 형태로 보기 좋게 정리합니다.
+4. 위치 데이터(위도/경도)가 포함된 결과는 반드시 "지도에 위치를 표시했습니다"라고 안내합니다.
+5. 데이터가 없는 경우 솔직히 안내하고 대안을 제시합니다.</div>
+
+  <p><strong>교통약자 유형별 맞춤 안내 지침:</strong></p>
+  <div class="code-block"><span class="comment">// 교통약자 유형별 맞춤 안내</span>
+- <span class="type">휠체어 사용자</span>: 저상버스 위치, 경사로/엘리베이터 유무, 교통약자 차량 대기시간 우선 안내
+- <span class="type">시각장애인</span>: 음향신호기 위치, 잔여시간 음성 안내 여부, 점자블록 경로 안내
+- <span class="type">고령자</span>: 신호 잔여시간이 충분한 횡단보도, 가까운 시설, 대기 없는 서비스 우선 안내
+- <span class="type">임산부</span>: 교통약자 전용 차량, 좌석 여유 있는 도서관/민원실 안내</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 8. 활용 데이터 상세 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>8. 활용 데이터 상세</h2></div>
+
+  <div class="subsection">7종 전국 통합데이터 &mdash; 20개 API 엔드포인트</div>
+
+  <table class="no-break">
+    <thead><tr><th>#</th><th>데이터 분류</th><th>API 명</th><th>API 수</th><th>AI 채팅 활용</th><th>주요 활용</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>공영자전거</strong></td><td>대여소 목록 / 실시간 대여현황 / 이용이력</td><td>3</td><td>2개 (대여소+현황)</td><td>가까운 대여소, 잔여 자전거 수 안내</td></tr>
+      <tr><td>2</td><td><strong>교통약자 이동지원</strong></td><td>센터 목록 / 차량현황 / 운행현황 / 가용현황</td><td>4</td><td>2개 (센터+가용)</td><td>가용 차량, 대기 건수, 예약 안내</td></tr>
+      <tr><td>3</td><td><strong>공공도서관</strong></td><td>도서관 정보 / 열람실 현황 / 좌석 현황</td><td>3</td><td>2개 (정보+좌석)</td><td>열람실별 잔여 좌석 실시간 안내</td></tr>
+      <tr><td>4</td><td><strong>물품보관함</strong></td><td>보관함 정보 / 상세 / 실시간 현황</td><td>3</td><td>2개 (정보+실시간)</td><td>대/중/소 보관함 가용 수량</td></tr>
+      <tr><td>5</td><td><strong>교통신호</strong></td><td>교차로 목록 / 신호 상태</td><td>2</td><td>2개 (전량)</td><td>방향별 잔여시간, 신호 색상</td></tr>
+      <tr><td>6</td><td><strong>민원실</strong></td><td>민원실 정보 / 실시간 대기현황</td><td>2</td><td>2개 (전량)</td><td>업무별 대기인원, 예상 대기시간</td></tr>
+      <tr><td>7</td><td><strong>버스</strong></td><td>노선 목록 / 정류장 / 실시간 위치</td><td>3</td><td>2개 (노선+위치)</td><td>노선별 차량 위치, 속도, 방향</td></tr>
+      <tr style="background:var(--gold-light) !important; font-weight:700;"><td></td><td>합계</td><td></td><td><strong>20</strong></td><td><strong>14</strong></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>AI 채팅 미사용 6개 API의 활용:</strong>
+  </div>
+  <table class="no-break">
+    <thead><tr><th>API</th><th>미사용 사유</th><th>활용 경로</th></tr></thead>
+    <tbody>
+      <tr><td>bicycle.history (이용이력)</td><td>이력 데이터는 실시간 조회보다 통계 분석에 적합</td><td><code>/api/data/bicycle</code> 프록시 &rarr; 대시보드 확장</td></tr>
+      <tr><td>transport.vehicles (차량현황)</td><td>센터+가용 API로 핵심 정보 충분</td><td><code>/api/data/transport</code> 프록시</td></tr>
+      <tr><td>transport.operations (운행현황)</td><td>센터+가용 API로 핵심 정보 충분</td><td><code>/api/data/transport</code> 프록시</td></tr>
+      <tr><td>library.status (열람실 현황)</td><td>정보+좌석 API로 핵심 정보 충분</td><td><code>/api/data/library</code> 프록시</td></tr>
+      <tr><td>locker.detail (보관함 상세)</td><td>정보+실시간 API로 핵심 정보 충분</td><td><code>/api/data/locker</code> 프록시</td></tr>
+      <tr><td>bus.stops (정류장)</td><td>노선+위치 API로 핵심 정보 충분</td><td><code>/api/data/bus</code> 프록시 &rarr; 향후 정류장 안내 확장</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 부록: 프로젝트 구조 -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<div class="content">
+  <div class="section-header"><h2>부록: 프로젝트 구조</h2></div>
+
+  <div class="project-tree"><span class="dir">modugil/</span>
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">app/</span>                         <span class="comment"># Next.js 16 App Router</span>
+│   │   ├── <span class="dir">api/chat/</span>
+│   │   │   ├── <span class="file">route.ts</span>             <span class="comment"># 키워드 라우팅 + Claude NLG 호출</span>
+│   │   │   └── <span class="file">tool-executor.ts</span>     <span class="comment"># 7종 14개 API 도구 실행 로직</span>
+│   │   ├── <span class="dir">api/data/[category]/</span>
+│   │   │   └── <span class="file">route.ts</span>             <span class="comment"># 동적 데이터 프록시 (20개 전체 접근)</span>
+│   │   ├── <span class="dir">dashboard/</span><span class="file">page.tsx</span>       <span class="comment"># 대시보드 (Mock 데이터 기반 시각화)</span>
+│   │   └── <span class="file">page.tsx</span>                 <span class="comment"># 메인 (지도 + 채팅)</span>
+│   ├── <span class="dir">components/</span>
+│   │   ├── <span class="dir">chat/</span>
+│   │   │   ├── <span class="file">ChatPanel.tsx</span>        <span class="comment"># 채팅 패널 (추천 질문, handleRetry)</span>
+│   │   │   └── <span class="file">MessageBubble.tsx</span>    <span class="comment"># 메시지 버블 + 데이터 카드</span>
+│   │   ├── <span class="dir">map/</span>
+│   │   │   ├── <span class="file">NaverMap.tsx</span>         <span class="comment"># 네이버 지도 (7종 마커, 범례, fitBounds)</span>
+│   │   │   └── <span class="file">TrafficLightDetail.tsx</span> <span class="comment"># 8방향 십자형 신호등 + 안전 메시지</span>
+│   │   └── <span class="dir">ui/</span>                      <span class="comment"># 공통 UI 컴포넌트</span>
+│   └── <span class="dir">lib/</span>
+│       ├── <span class="dir">ai/</span>
+│       │   ├── <span class="file">claude.ts</span>            <span class="comment"># Anthropic SDK 클라이언트</span>
+│       │   ├── <span class="file">system-prompt.ts</span>     <span class="comment"># 시스템 프롬프트 (5원칙 + 유형별 안내)</span>
+│       │   └── <span class="file">tools.ts</span>             <span class="comment"># Claude Tool Use 스키마 7개 (확장용)</span>
+│       └── <span class="dir">api/</span>
+│           ├── <span class="file">client.ts</span>            <span class="comment"># API 클라이언트 (5분 캐시, 타임아웃)</span>
+│           ├── <span class="file">endpoints.ts</span>         <span class="comment"># 20개 API 엔드포인트 상수</span>
+│           ├── <span class="file">mock-data.ts</span>         <span class="comment"># Mock 데이터 (폴백/시연용)</span>
+│           └── <span class="file">types.ts</span>             <span class="comment"># TypeScript 타입 정의</span>
+├── <span class="dir">public/</span>                          <span class="comment"># 정적 파일</span>
+└── <span class="file">package.json</span>                     <span class="comment"># 의존성 관리</span></div>
+
+  <!-- ============================================================ -->
+  <!-- 평가항목 대응표 -->
+  <!-- ============================================================ -->
+  <div class="section-header" style="margin-top:40px;"><h2>평가항목 대응표</h2></div>
+
+  <table class="no-break">
+    <thead>
+      <tr>
+        <th>평가항목</th>
+        <th style="width:60px; text-align:center;">배점</th>
+        <th>대응 섹션</th>
+        <th>핵심 강점</th>
+        <th style="width:140px;">강점 수준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>기획 의도</strong></td>
+        <td style="text-align:center;">15</td>
+        <td>1장. 서비스 개요 및 기획 의도</td>
+        <td>1,500만 교통약자 대상 실질적 문제 해결, 법적 근거</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>기대효과, 독창성, 차별성</strong></td>
+        <td style="text-align:center;">20</td>
+        <td>2장. 기대효과, 독창성, 차별성</td>
+        <td>7종 데이터 통합 + AI 대화형 &mdash; 국내 유일, 경쟁사 전항목 우위</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>기술 구현</strong></td>
+        <td style="text-align:center;">25</td>
+        <td>3장. 기술 구현 상세</td>
+        <td>하이브리드 AI 아키텍처, 병렬 실행, Mock 폴백, 5분 캐시</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>서비스 화면 설계</strong></td>
+        <td style="text-align:center;">15</td>
+        <td>4장. 서비스 화면 설계 및 기능 흐름</td>
+        <td>7종 데이터 카드 UI, 지도 시각화, 반응형 레이아웃</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>데이터 통합 활용</strong></td>
+        <td style="text-align:center;">15</td>
+        <td>5장. 데이터 통합 활용 시나리오</td>
+        <td>크로스 데이터 자동 연계(alsoInclude), 페르소나별 실사용 시나리오</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+      <tr>
+        <td><strong>AI 활용 (가산점)</strong></td>
+        <td style="text-align:center;">10</td>
+        <td>7장. AI 활용 상세</td>
+        <td>Claude Haiku 4.5, 하이브리드 NLU+NLG, 유형별 맞춤 안내, 확장 경로</td>
+        <td><div class="eval-bar-track"><div class="eval-bar high"></div></div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="doc-footer">
+    &mdash; 끝 &mdash;<br>
+    <strong>모두의 길</strong> &mdash; AI 기반 교통약자 통합 이동지원 서비스<br>
+    제안자: 박용환 | GitHub: github.com/yonghwan1106/modugil | 2026. 04
+  </div>
+</div>
+
+</body>
+</html>

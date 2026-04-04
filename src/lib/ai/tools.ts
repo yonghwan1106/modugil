@@ -113,4 +113,21 @@ export const AI_TOOLS: Anthropic.Messages.Tool[] = [
       required: ['region'],
     },
   },
+  {
+    name: 'get_locker_availability',
+    description:
+      '특정 지역의 공영 물품보관함(락커) 위치와 실시간 사용 가능 현황(대형·중형·소형)을 조회합니다. ' +
+      '교통약자가 짐을 보관하고 가볍게 이동할 수 있도록 사용됩니다. ' +
+      '보관함명, 위치(위도·경도), 도로명 주소, 대형/중형/소형 보관함 사용 가능 수를 반환합니다.',
+    input_schema: {
+      type: 'object' as const,
+      properties: {
+        region: {
+          type: 'string',
+          description: '지자체코드(숫자) 또는 지역명 (예: "서울 종로구", "서울 강남구")',
+        },
+      },
+      required: ['region'],
+    },
+  },
 ];

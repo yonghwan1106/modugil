@@ -7,30 +7,30 @@ import type { ToolResult } from '@/lib/ai/claude';
 const TIMEOUT_MS = 30_000;
 
 // =============================================
-// 키워드 기반 도구 라우터
+// 키워드 기반 도구 라우터 (선언적 설정)
 // =============================================
 
+const TOOL_ROUTING: { keywords: RegExp; tool: string; alsoInclude?: string[] }[] = [
+  { keywords: /도서관|빈자리|열람실|좌석/, tool: 'get_library_seats', alsoInclude: ['get_accessible_transport'] },
+  { keywords: /민원실|민원|대기 현황|대기시간|대기 시간/, tool: 'get_civil_office_wait', alsoInclude: ['get_accessible_transport'] },
+  { keywords: /교통약자 차량|이동지원|특별교통/, tool: 'get_accessible_transport' },
+  { keywords: /신호등|횡단보도/, tool: 'get_traffic_light_status' },
+  { keywords: /버스|저상버스/, tool: 'get_bus_realtime_location' },
+  { keywords: /자전거|따릉이|대여소/, tool: 'get_bicycle_availability' },
+  { keywords: /보관함|물품보관|짐 보관|짐보관|락커/, tool: 'get_locker_availability' },
+];
+
+const DEFAULT_TOOLS = ['get_accessible_transport', 'get_traffic_light_status'];
+
 function getRequiredTools(text: string): string[] {
-  const tools: string[] = [];
-  if (/도서관|빈자리|열람실|좌석/.test(text)) tools.push('get_library_seats');
-  if (/민원실|민원|대기 현황|대기시간|대기 시간/.test(text)) tools.push('get_civil_office_wait');
-  if (/교통약자 차량|이동지원|특별교통/.test(text)) tools.push('get_accessible_transport');
-  if (/신호등|횡단보도/.test(text)) tools.push('get_traffic_light_status');
-  if (/버스|저상버스/.test(text)) tools.push('get_bus_realtime_location');
-  if (/자전거|따릉이|대여소/.test(text)) tools.push('get_bicycle_availability');
-  if (/보관함|물품보관|짐 보관|짐보관|락커/.test(text)) tools.push('get_locker_availability');
-  // 도서관/민원실은 교통약자 차량도 함께
-  if (tools.includes('get_library_seats') && !tools.includes('get_accessible_transport')) {
-    tools.push('get_accessible_transport');
+  const tools = new Set<string>();
+  for (const route of TOOL_ROUTING) {
+    if (route.keywords.test(text)) {
+      tools.add(route.tool);
+      route.alsoInclude?.forEach((t) => tools.add(t));
+    }
   }
-  if (tools.includes('get_civil_office_wait') && !tools.includes('get_accessible_transport')) {
-    tools.push('get_accessible_transport');
-  }
-  // 아무것도 매칭 안 되면 기본 세트
-  if (tools.length === 0) {
-    tools.push('get_accessible_transport', 'get_traffic_light_status');
-  }
-  return tools;
+  return tools.size > 0 ? [...tools] : DEFAULT_TOOLS;
 }
 
 // 텍스트에서 지역명 추출 (단순 패턴 매칭)

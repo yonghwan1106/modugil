@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[붙임5] 공모전 설문조사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 20mm;
+  }
+
+  :root {
+    --navy: #0f172a;
+    --navy-light: #1e293b;
+    --gold: #d4a853;
+    --gold-light: #e8c97a;
+    --gold-muted: rgba(212, 168, 83, 0.15);
+    --warm-white: #faf9f7;
+    --warm-gray: #f3f1ed;
+    --warm-gray-dark: #e8e4dd;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #8a8a8a;
+    --border-light: #e5e2dc;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Noto Sans KR", sans-serif;
+    color: var(--text-primary);
+    background: #ffffff;
+    line-height: 1.75;
+    font-size: 10.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 0 6mm;
+  }
+
+  /* ── Header Banner ── */
+  .header-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, #162035 40%, var(--navy-light) 70%, var(--navy) 100%);
+    color: #ffffff;
+    text-align: center;
+    padding: 30px 28px 26px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header-banner svg.geo-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.06;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: "Noto Serif KR", serif;
+    font-weight: 700;
+    font-size: 9pt;
+    padding: 3px 14px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-banner h1 {
+    font-family: "Noto Serif KR", serif;
+    font-size: 18pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 4px;
+  }
+
+  .header-subtitle {
+    font-family: "Noto Serif KR", serif;
+    font-size: 11.5pt;
+    font-weight: 400;
+    color: var(--gold-light);
+    letter-spacing: 1.5px;
+    position: relative;
+    z-index: 1;
+    margin-top: 2px;
+  }
+
+  .header-divider {
+    width: 48px;
+    height: 2px;
+    background: var(--gold);
+    margin: 10px auto 6px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Respondent Info Card ── */
+  .info-card {
+    background: var(--warm-gray);
+    border: 1px solid var(--warm-gray-dark);
+    border-left: 4px solid var(--gold);
+    border-radius: 3px;
+    padding: 14px 22px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 36px;
+    align-items: baseline;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .info-label {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 600;
+    font-size: 9pt;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    padding: 1px 8px;
+  }
+
+  .info-value {
+    font-family: "Noto Serif KR", serif;
+    font-weight: 600;
+    font-size: 10.5pt;
+    color: var(--navy);
+  }
+
+  /* ── Question Card ── */
+  .q-card {
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+
+  .q-number {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--gold), #c49a42);
+    color: var(--navy);
+    font-family: "Noto Serif KR", serif;
+    font-weight: 900;
+    font-size: 16pt;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(212, 168, 83, 0.3);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .q-title {
+    font-family: "Noto Serif KR", serif;
+    font-weight: 600;
+    font-size: 11pt;
+    color: var(--navy);
+    line-height: 1.6;
+    padding-top: 6px;
+  }
+
+  .q-body {
+    background: var(--warm-white);
+    border-left: 3px solid var(--warm-gray-dark);
+    border-radius: 0 3px 3px 0;
+    padding: 14px 20px 14px 22px;
+    margin-left: 18px;
+  }
+
+  .q-body ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .q-body ul li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 6px;
+    font-size: 10pt;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .q-body ul li:last-child {
+    margin-bottom: 0;
+  }
+
+  .q-body ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .q-body ul li strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .q-body ul li code {
+    font-size: 9pt;
+    background: var(--warm-gray);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--navy);
+  }
+
+  /* ── Table in Q3 ── */
+  .q-body .answer-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .q-body .answer-table th {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 9px 12px;
+    text-align: center;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 600;
+    font-size: 9pt;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  .q-body .answer-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--border-light);
+    vertical-align: top;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .q-body .answer-table tbody tr:nth-child(odd) td {
+    background: #ffffff;
+  }
+
+  .q-body .answer-table tbody tr:nth-child(even) td {
+    background: var(--warm-gray);
+  }
+
+  .q-body .answer-table td:first-child {
+    font-family: "Noto Serif KR", serif;
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 9.5pt;
+  }
+
+  /* ── Footer ── */
+  .footer-note {
+    text-align: center;
+    font-family: "Noto Serif KR", serif;
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    padding-top: 14px;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    position: relative;
+  }
+
+  .footer-note::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 0 auto 12px;
+  }
+
+  @media print {
+    body { background: #ffffff; }
+    .page { padding: 0; max-width: 100%; }
+    .q-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header Banner -->
+  <div class="header-banner">
+    <svg class="geo-pattern" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <defs>
+        <pattern id="geo" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" width="60" height="60" fill="none" stroke="#ffffff" stroke-width="0.5"/>
+          <line x1="0" y1="0" x2="60" y2="60" stroke="#ffffff" stroke-width="0.3"/>
+          <line x1="60" y1="0" x2="0" y2="60" stroke="#ffffff" stroke-width="0.3"/>
+          <circle cx="30" cy="30" r="8" fill="none" stroke="#ffffff" stroke-width="0.3"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#geo)"/>
+    </svg>
+    <div class="header-badge">붙임5</div>
+    <h1>2026 전국 통합데이터 활용 공모전</h1>
+    <div class="header-divider"></div>
+    <div class="header-subtitle">공모전 설문조사</div>
+  </div>
+
+  <!-- Respondent Info -->
+  <div class="info-card">
+    <div class="info-item">
+      <span class="info-label">성명</span>
+      <span class="info-value">박용환</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">서비스명</span>
+      <span class="info-value">모두의 길 &mdash; AI 기반 교통약자 통합 이동지원 서비스</span>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-number">1</div>
+      <div class="q-title">전국 통합데이터 7종을 활용하는 과정에서 어려웠던 점은 무엇입니까?</div>
+    </div>
+    <div class="q-body">
+      <ul>
+        <li>API 응답 구조가 7종 데이터마다 상이하여 공통 파싱 로직 설계에 상당한 시간이 소요되었습니다. 특히 응답 필드명과 데이터 타입의 일관성이 부족하여 각 데이터 유형별로 개별 매핑 로직을 구현해야 했습니다.</li>
+        <li>일부 API의 지자체코드(stdgCd) 체계가 데이터 분류별로 다르게 적용되어, 동일 지역 데이터를 통합 조회할 때 코드 변환 작업이 추가로 필요했습니다.</li>
+        <li>자전거 API(B551982)는 다른 6종과 베이스 URL 및 인증 방식이 달라 별도의 API 클라이언트를 구현해야 했으며, 이로 인해 통합 데이터 레이어 설계가 복잡해졌습니다.</li>
+        <li>실시간 데이터의 갱신 주기가 API 문서에 명확히 기재되지 않아, 캐시 TTL 설정 시 시행착오를 겪었습니다. 불필요한 API 호출을 줄이면서도 데이터 신선도를 유지하는 최적값을 찾는 데 어려움이 있었습니다.</li>
+        <li>API 인증키(serviceKey) 발급 후 실제 활성화까지 수 시간의 대기시간이 발생하여, 개발 초기에는 Mock 데이터로 우회하여 작업해야 했습니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-number">2</div>
+      <div class="q-title">활용하신 데이터에 추가로 필요한 정보가 있었습니까?</div>
+    </div>
+    <div class="q-body">
+      <ul>
+        <li>교차로 신호등 데이터에 <strong>음향신호기 유무</strong> 정보가 포함되면, 시각장애인을 위한 보행 안내 기능에 직접 활용할 수 있습니다.</li>
+        <li>버스 노선 데이터에 <strong>저상버스 여부(lowFloor)</strong> 필드가 추가되면, 휠체어 이용자 등 교통약자 맞춤 대중교통 안내를 강화할 수 있습니다.</li>
+        <li>도서관 좌석 데이터에 <strong>장애인 전용석/우선석 정보</strong>가 포함되면, 교통약자의 공공시설 이용 편의성을 높일 수 있습니다.</li>
+        <li>각 API 응답 필드에 대한 <strong>상세 데이터 사전</strong>(코드값 설명, 단위, 허용 범위 등)이 부족하여 필드 해석에 어려움이 있었습니다.</li>
+        <li>위도/경도 필드명이 <code>lat</code>/<code>lot</code>으로 되어있는데, <code>lot</code>이 longitude를 의미하는지 직관적이지 않아 <code>lng</code> 또는 <code>lon</code>으로의 변경을 권장합니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-number">3</div>
+      <div class="q-title">현재 개방된 데이터 외에 신규로 개방되기를 희망하는 공공데이터가 있습니까?</div>
+    </div>
+    <div class="q-body">
+      <table class="answer-table">
+        <thead>
+          <tr>
+            <th style="width:30%">희망 데이터명</th>
+            <th style="width:38%">필요 이유 / 활용 목적</th>
+            <th style="width:32%">기대 효과</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전국 엘리베이터 &middot; 경사로 위치 정보</td>
+            <td>교통약자의 건물 및 지하철역 내 수직 이동 경로를 안내하기 위해 엘리베이터, 경사로의 정확한 위치 데이터가 필요합니다.</td>
+            <td>휠체어 사용자의 이동 경로 최적화 및 접근 불가 구간 사전 안내 가능</td>
+          </tr>
+          <tr>
+            <td>장애인 화장실 위치 및 시설 정보</td>
+            <td>교통약자가 외출 시 주변 편의시설을 사전에 확인할 수 있도록 장애인 화장실의 위치, 설비 정보가 필요합니다.</td>
+            <td>교통약자의 외출 불안감 해소 및 이동 반경 확대에 기여</td>
+          </tr>
+          <tr>
+            <td>전국 무장애 관광지 정보</td>
+            <td>교통약자의 여행 및 관광 안내 서비스로 확장하기 위해 배리어프리 관광지 데이터가 필요합니다.</td>
+            <td>교통약자의 사회 참여 및 여가 활동 지원, 관광 접근성 향상</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card">
+    <div class="q-header">
+      <div class="q-number">4</div>
+      <div class="q-title">공모전 참가 및 데이터 활용에 대한 기타 의견</div>
+    </div>
+    <div class="q-body">
+      <ul>
+        <li>7종 데이터를 하나의 통합 포털에서 테스트할 수 있는 <strong>Sandbox 환경</strong>이 제공된다면, API 연동 검증 및 개발 효율성이 크게 향상될 것으로 기대합니다.</li>
+        <li>API 활용 가이드에 <strong>실제 요청/응답 예시</strong>(JSON 샘플)를 포함하면, 초기 개발 진입장벽이 상당히 낮아질 것입니다.</li>
+        <li>본 공모전이 교통약자 등 사회적 약자를 위한 데이터 활용에 초점을 맞추고 있어, 공공데이터의 사회적 가치를 실현하는 매우 의미 있는 기회라고 생각합니다.</li>
+        <li>향후 데이터 품질 개선(결측값 감소, 갱신 주기 단축, 필드 표준화)이 이루어지면, 더욱 실용적이고 안정적인 서비스 개발이 가능할 것으로 판단됩니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-note">
+    2026 전국 통합데이터 활용 공모전 &mdash; 설문조사
+  </div>
+
+</div>
+</body>
+</html>

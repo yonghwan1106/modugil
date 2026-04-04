@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[붙임1] 참가신청서 — 2026 전국 통합데이터 활용 공모전</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 20mm;
+  }
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 0;
+      width: auto;
+      min-height: auto;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  }
+
+  :root {
+    --navy: #0f172a;
+    --navy-light: #1e293b;
+    --blue: #2563eb;
+    --gold: #d4a853;
+    --gold-light: #f5e6c8;
+    --warm-white: #faf9f7;
+    --warm-gray: #f1efe9;
+    --text: #1a1a1a;
+    --text-light: #64748b;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--warm-white);
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 18mm 20mm;
+  }
+
+  /* ── Header Banner ── */
+  .header-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #2d3a4f 100%);
+    color: #fff;
+    text-align: center;
+    padding: 16px 24px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37 15L30 30L23 15Z' fill='none' stroke='rgba(212,168,83,0.08)' stroke-width='0.5'/%3E%3Cpath d='M0 30L7 45L0 60L-7 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cpath d='M60 30L67 45L60 60L53 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cline x1='0' y1='30' x2='60' y2='30' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3Cline x1='30' y1='0' x2='30' y2='60' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+    opacity: 1;
+  }
+  .header-banner .year-badge {
+    display: inline-block;
+    background: rgba(212,168,83,0.2);
+    border: 1px solid rgba(212,168,83,0.4);
+    color: var(--gold);
+    padding: 1px 16px;
+    font-size: 9.5pt;
+    font-weight: 500;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .header-banner h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-banner .gold-line {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Document Title ── */
+  .doc-title {
+    text-align: center;
+    margin: 14px 0 14px;
+    padding-bottom: 8px;
+  }
+  .doc-title .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), #c49b3d);
+    color: var(--navy);
+    font-size: 8.5pt;
+    font-weight: 700;
+    padding: 2px 12px;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .doc-title h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 2px;
+  }
+  .doc-title .underline {
+    width: 80px;
+    height: 2px;
+    background: var(--gold);
+    margin: 6px auto 0;
+  }
+
+  /* ── Section ── */
+  .section {
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0 3px 10px;
+    border-left: 3px solid var(--gold);
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .section-title .icon {
+    font-size: 11pt;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .section-title .sub-note {
+    font-weight: 400;
+    font-size: 8.5pt;
+    color: var(--text-light);
+    margin-left: 4px;
+  }
+
+  /* ── Participation Type ── */
+  .participation-type {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 7px 16px;
+    background: var(--warm-gray);
+    border: 1px solid #e0ddd5;
+    margin-bottom: 12px;
+  }
+  .participation-type label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10pt;
+    font-weight: 500;
+  }
+  .check-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #b0aaa0;
+    font-size: 11px;
+    color: #fff;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .check-box.checked {
+    background: var(--navy);
+    border-color: var(--navy);
+  }
+  .part-label {
+    font-weight: 700;
+    color: var(--navy);
+    margin-right: 12px;
+    font-size: 10pt;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+  }
+  table th, table td {
+    border: 1px solid #d5d0c8;
+    padding: 5px 10px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  table th {
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    font-size: 9pt;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  /* Key-value table */
+  .kv-table th {
+    width: 100px;
+    text-align: center;
+    background: var(--navy-light);
+    font-size: 9pt;
+  }
+  .kv-table tbody tr:nth-child(even) td {
+    background: var(--warm-gray);
+  }
+  .kv-table tbody tr:nth-child(odd) td {
+    background: #fff;
+  }
+
+  /* Alternating rows for data tables */
+  table tbody tr:nth-child(even) td {
+    background: var(--warm-white);
+  }
+  table tbody tr:nth-child(odd) td {
+    background: #fff;
+  }
+
+  /* ── Result Box ── */
+  .result-box {
+    background: linear-gradient(135deg, var(--warm-gray) 0%, var(--warm-white) 100%);
+    border-left: 4px solid var(--gold);
+    padding: 10px 18px;
+    margin: 3px 0 0;
+  }
+  .result-box .service-name {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 13pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.5px;
+  }
+  .result-box .service-name em {
+    font-style: normal;
+    color: var(--gold);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 1px;
+  }
+  .result-box .subtitle {
+    font-size: 8.5pt;
+    color: var(--text-light);
+    margin-top: 2px;
+    font-weight: 300;
+  }
+
+  .overview-box {
+    background: #fff;
+    border: 1.5px solid var(--gold);
+    padding: 8px 16px;
+    margin-top: 3px;
+    position: relative;
+  }
+  .overview-box .text {
+    font-size: 10pt;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .overview-box .char-count {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8pt;
+    color: var(--gold);
+    font-weight: 700;
+    background: var(--gold-light);
+    padding: 1px 8px;
+    border: 1px solid var(--gold);
+  }
+
+  /* ── Data highlight badge ── */
+  .data-highlight {
+    margin-top: 6px;
+    padding: 5px 14px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: #fff;
+    font-size: 9pt;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .data-highlight .num {
+    font-size: 12pt;
+    font-weight: 800;
+    color: var(--gold);
+  }
+  .data-highlight .sep {
+    opacity: 0.3;
+    margin: 0 2px;
+  }
+
+  /* ── No-record row ── */
+  .no-record td {
+    text-align: center;
+    color: #b0aaa0;
+    font-style: italic;
+  }
+
+  /* ── Pledge ── */
+  .pledge {
+    background: var(--warm-gray);
+    border: 1px solid #d5d0c8;
+    border-left: 3px solid var(--gold);
+    padding: 10px 16px;
+    margin-top: 4px;
+    font-size: 9.5pt;
+    line-height: 1.8;
+    color: #334155;
+  }
+  .pledge p {
+    text-indent: 1em;
+  }
+
+  /* ── Signature ── */
+  .signature-area {
+    text-align: right;
+    margin-top: 18px;
+    font-size: 10.5pt;
+    padding: 14px 20px;
+    border: 1px solid #d5d0c8;
+    background: #fff;
+    position: relative;
+  }
+  .signature-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-top: 3px solid var(--gold);
+    border-right: 3px solid var(--gold);
+  }
+  .signature-area .date {
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .signature-area .name {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .signature-area .sig-line {
+    display: inline-block;
+    width: 80px;
+    border-bottom: 1.5px dotted var(--gold);
+    margin-left: 10px;
+    vertical-align: baseline;
+  }
+  .signature-area .sig-mark {
+    display: inline-block;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    line-height: 28px;
+    text-align: center;
+    font-size: 8.5pt;
+    color: var(--gold);
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── Number column ── */
+  .num-col {
+    width: 28px;
+    text-align: center;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  /* ── Data table adjustments ── */
+  .data-table td:nth-child(1) { width: 28px; text-align: center; font-weight: 700; color: var(--gold); }
+  .data-table td:nth-child(2) { width: 85px; text-align: center; font-size: 8.5pt; }
+  .data-table td:nth-child(3) { width: 155px; font-size: 8.5pt; }
+  .data-table td:nth-child(4) { font-size: 8.5pt; }
+
+  /* ── Check table ── */
+  .check-table td:nth-child(1) { width: 28px; text-align: center; font-weight: 700; color: var(--gold); }
+  .check-table td:nth-child(4) { text-align: center; }
+  .check-table td:nth-child(3) { text-align: center; }
+  .check-ok { color: var(--gold); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header-banner">
+  <div class="year-badge">2026</div>
+  <h1>전국 통합데이터 활용 공모전</h1>
+  <div class="gold-line"></div>
+</div>
+
+<div class="doc-title">
+  <div class="badge">[붙임1]</div>
+  <h2>참가신청서</h2>
+  <div class="underline"></div>
+</div>
+
+<!-- ═══════════ 참가 구분 ═══════════ -->
+<div class="participation-type">
+  <span class="part-label">참가 구분</span>
+  <label><span class="check-box checked">&#10003;</span> 개인</label>
+  <label><span class="check-box"></span> 팀(기업)</label>
+</div>
+
+<!-- ═══════════ 1. 제안자 인적사항 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128100;</span> 1. 제안자 인적사항</div>
+  <table class="kv-table">
+    <tbody>
+      <tr><th>성명</th><td>박용환</td></tr>
+      <tr><th>생년월일</th><td>1970. 11. 06.</td></tr>
+      <tr><th>연락처</th><td>010-7939-3123</td></tr>
+      <tr><th>e-mail</th><td>heisenbug0306@gmail.com</td></tr>
+      <tr><th>도로명주소</th><td>경기도 용인시 수지구 성복2로 126, 303-801</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ 2. 결과물 명 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128204;</span> 2. 결과물 명</div>
+  <div class="result-box">
+    <div class="service-name"><em>모두의 길</em> &mdash; AI 기반 교통약자 통합 이동지원 서비스</div>
+    <div class="subtitle">ModuGil: AI-powered Integrated Mobility Support for Transportation Vulnerable</div>
+  </div>
+</div>
+
+<!-- ═══════════ 3. 기획 개요 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128221;</span> 3. 기획 개요 <span class="sub-note">(50자 이내)</span></div>
+  <div class="overview-box">
+    <span class="text">전국 통합데이터 7종과 AI를 결합한 교통약자 맞춤형 실시간 이동정보 웹서비스</span>
+    <span class="char-count">41자</span>
+  </div>
+</div>
+
+<!-- ═══════════ 4. 활용 데이터 정보 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128202;</span> 4. 활용 데이터 정보</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:28px;text-align:center;">#</th>
+        <th style="width:85px;text-align:center;">출처</th>
+        <th style="width:155px;">제공기관명</th>
+        <th>데이터명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_공영자전거(따릉이 등) 실시간 정보</td></tr>
+      <tr><td>2</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_교통약자 이동지원 실시간 정보</td></tr>
+      <tr><td>3</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_공공도서관 열람실 실시간 정보</td></tr>
+      <tr><td>4</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_물품보관함(락커) 실시간 정보</td></tr>
+      <tr><td>5</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_교통신호 신호등 실시간 정보</td></tr>
+      <tr><td>6</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_민원실 이용현황 실시간 정보</td></tr>
+      <tr><td>7</td><td>공공데이터포털</td><td>행정안전부 한국지역정보개발원</td><td>전국 통합데이터_버스 실시간 정보</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:6px;">
+    <span class="data-highlight">
+      <span class="num">7종</span> 전체 활용
+      <span class="sep">|</span>
+      <span class="num">20</span>개 API 엔드포인트 연동
+      <span class="sep">|</span>
+      <span class="num">14</span>개 실시간 활용
+    </span>
+  </div>
+</div>
+
+<!-- ═══════════ PAGE BREAK ═══════════ -->
+<div class="page-break"></div>
+
+<!-- ═══════════ 5. 활용 데이터 체크 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#9989;</span> 5. 활용 데이터 체크 <span class="sub-note">(붙임4 참조)</span></div>
+  <table class="check-table">
+    <thead>
+      <tr>
+        <th style="width:28px;text-align:center;">#</th>
+        <th>데이터 분류</th>
+        <th style="width:70px;text-align:center;">API 수</th>
+        <th style="width:60px;text-align:center;">활용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>공영자전거 실시간 정보</td><td>3</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>2</td><td>교통약자 이동지원 실시간 정보</td><td>4</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>3</td><td>공공도서관 열람실 실시간 정보</td><td>3</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>4</td><td>물품보관함(락커) 실시간 정보</td><td>3</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>5</td><td>교통신호 신호등 실시간 정보</td><td>2</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>6</td><td>민원실 이용현황 실시간 정보</td><td>2</td><td><span class="check-ok">&#9679; O</span></td></tr>
+      <tr><td>7</td><td>버스 실시간 정보</td><td>3</td><td><span class="check-ok">&#9679; O</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ 6. 팀원 구성 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128101;</span> 6. 팀원 구성</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28px;text-align:center;">#</th>
+        <th style="width:120px;">성명</th>
+        <th>역할</th>
+        <th style="width:60px;text-align:center;">소속</th>
+        <th style="width:120px;text-align:center;">연락처</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center;font-weight:700;color:var(--gold);">1</td>
+        <td><strong>박용환</strong> (대표)</td>
+        <td>기획 / 풀스택 개발</td>
+        <td style="text-align:center;">개인</td>
+        <td style="text-align:center;">010-7939-3123</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ 7. 이전 수혜 이력 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128200;</span> 7. 이전 수혜 이력 및 입상 실적</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:80px;text-align:center;">연도</th>
+        <th>공모전/사업명</th>
+        <th style="width:80px;text-align:center;">결과</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="no-record">
+        <td>-</td>
+        <td>해당 없음</td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════ 서약문 ═══════════ -->
+<div class="section">
+  <div class="section-title"><span class="icon">&#128220;</span> 서약</div>
+  <div class="pledge">
+    <p>본인은 「2026 전국 통합데이터 활용 공모전」에 참가를 신청하며, 위에 제출한 사항에 허위가 없으며, 유의사항을 숙지하고 진행에 필요한 사항에 성실히 응할 것을 동의합니다.</p>
+  </div>
+</div>
+
+<!-- ═══════════ 서명 ═══════════ -->
+<div class="signature-area">
+  <div class="date">2026년 4월 &nbsp;&nbsp;&nbsp;&nbsp;일</div>
+  <div class="name">
+    신청자: 박용환
+    <span class="sig-line"></span>
+    <span class="sig-mark">(인)</span>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>붙임3. 개인정보 수집·이용 동의서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 20mm;
+  }
+  @media print {
+    body {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 0;
+      width: auto;
+      min-height: auto;
+    }
+  }
+
+  :root {
+    --navy: #0f172a;
+    --navy-light: #1e293b;
+    --blue: #2563eb;
+    --gold: #d4a853;
+    --gold-light: #f5e6c8;
+    --warm-white: #faf9f7;
+    --warm-gray: #f1efe9;
+    --text: #1a1a1a;
+    --text-light: #64748b;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    font-size: 10.5pt;
+    line-height: 1.7;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 20mm;
+    background: var(--warm-white);
+  }
+
+  /* ── Header Banner ── */
+  .header-banner {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #2d3a4f 100%);
+    color: #fff;
+    text-align: center;
+    padding: 16px 24px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L37 15L30 30L23 15Z' fill='none' stroke='rgba(212,168,83,0.08)' stroke-width='0.5'/%3E%3Cpath d='M0 30L7 45L0 60L-7 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cpath d='M60 30L67 45L60 60L53 45Z' fill='none' stroke='rgba(212,168,83,0.06)' stroke-width='0.5'/%3E%3Cline x1='0' y1='30' x2='60' y2='30' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3Cline x1='30' y1='0' x2='30' y2='60' stroke='rgba(212,168,83,0.04)' stroke-width='0.3'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+  .header-banner .year-badge {
+    display: inline-block;
+    background: rgba(212,168,83,0.2);
+    border: 1px solid rgba(212,168,83,0.4);
+    color: var(--gold);
+    padding: 1px 16px;
+    font-size: 9.5pt;
+    font-weight: 500;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
+  }
+  .header-banner h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-banner .gold-line {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Document Title ── */
+  .doc-title-area {
+    text-align: center;
+    margin: 16px 0 10px;
+  }
+  .doc-title-area .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold), #c49b3d);
+    color: var(--navy);
+    font-size: 8.5pt;
+    font-weight: 700;
+    padding: 2px 12px;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .doc-title-area h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18pt;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 4px;
+  }
+  .doc-title-area .underline {
+    width: 100px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px auto 0;
+  }
+
+  /* ── Opening text ── */
+  .opening-text {
+    font-size: 10.5pt;
+    line-height: 1.8;
+    margin: 18px 0 20px;
+    text-indent: 1em;
+    color: #374151;
+  }
+
+  /* ── Section Title ── */
+  .section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+    padding: 3px 0 3px 10px;
+    border-left: 3px solid var(--gold);
+  }
+
+  /* ── Info Table ── */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 10pt;
+  }
+  .info-table th {
+    background: var(--navy);
+    color: #fff;
+    padding: 9px 14px;
+    font-weight: 600;
+    border: 1px solid var(--navy);
+    text-align: center;
+    width: 26%;
+    font-size: 9.5pt;
+    letter-spacing: 0.5px;
+  }
+  .info-table td {
+    padding: 9px 14px;
+    border: 1px solid #d5d0c8;
+    line-height: 1.7;
+  }
+  .info-table tr:nth-child(even) td {
+    background: var(--warm-gray);
+  }
+  .info-table tr:nth-child(odd) td {
+    background: #fff;
+  }
+
+  .circle-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    font-size: 9pt;
+    font-weight: 700;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  /* ── Note Box ── */
+  .note-box {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-left: 4px solid var(--gold);
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 10pt;
+    line-height: 1.75;
+    color: #6b4e1a;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid #d5d0c8;
+    margin: 18px 0;
+  }
+
+  /* ── Consent Section ── */
+  .consent-section {
+    margin: 20px 0 10px 0;
+    text-align: center;
+  }
+  .consent-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .consent-options {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 11pt;
+  }
+  .consent-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d5d0c8;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: #fff;
+  }
+  .checkbox.checked {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+
+  /* ── Bottom Section ── */
+  .bottom-section {
+    margin-top: 18px;
+  }
+  .date-line {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 22px;
+    letter-spacing: 1px;
+  }
+  .date-line .blank {
+    display: inline-block;
+    width: 40px;
+    border-bottom: 1px solid var(--text-light);
+  }
+
+  /* ── Signature Table ── */
+  .sig-table {
+    width: 65%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 10.5pt;
+  }
+  .sig-table th {
+    background: var(--navy);
+    color: #fff;
+    padding: 8px 16px;
+    font-weight: 600;
+    border: 1px solid var(--navy);
+    text-align: center;
+    font-size: 9.5pt;
+    letter-spacing: 1px;
+  }
+  .sig-table td {
+    padding: 10px 16px;
+    border: 1px solid #d5d0c8;
+    text-align: center;
+    background: #fff;
+    font-size: 10.5pt;
+  }
+  .signature-cell {
+    color: #b0aaa0;
+    font-style: italic;
+    min-width: 120px;
+    border-bottom: 1.5px dotted var(--gold);
+  }
+
+  /* ── Footer ── */
+  .footer-target {
+    text-align: center;
+    margin-top: 28px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12pt;
+    font-weight: 600;
+    color: var(--navy);
+    letter-spacing: 2px;
+    padding-top: 12px;
+    border-top: 2px solid var(--navy);
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .footer-target::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 6px auto 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <div class="year-badge">2026</div>
+    <h1>전국 통합데이터 활용 공모전</h1>
+    <div class="gold-line"></div>
+  </div>
+
+  <div class="doc-title-area">
+    <div class="badge">붙임 3</div>
+    <h2>개인정보 수집 · 이용 동의서</h2>
+    <div class="underline"></div>
+  </div>
+
+  <p class="opening-text">
+    「2026 전국 통합데이터 활용 공모전」 참가와 관련하여 아래와 같이 개인정보를 수집·이용하고자 합니다. 내용을 읽으신 후 동의 여부를 결정하여 주십시오.
+  </p>
+
+  <h3 class="section-title">개인정보 수집·이용 내역</h3>
+
+  <table class="info-table">
+    <tbody>
+      <tr>
+        <th>수집 항목</th>
+        <td>성명, 휴대전화번호, 이메일, 소속, 주민등록번호(수상자에 한함)</td>
+      </tr>
+      <tr>
+        <th>이용 목적</th>
+        <td>
+          <span class="circle-num">1</span> 참가자 정보 확인 및 접수 &nbsp;&nbsp;
+          <span class="circle-num">2</span> 수상작 선정 및 시상 등 경진대회 운영 &nbsp;&nbsp;
+          <span class="circle-num">3</span> 사후관리
+        </td>
+      </tr>
+      <tr>
+        <th>보유 및 이용기간</th>
+        <td>개인정보 수집 및 이용 목적이 달성된 경우 해당 정보를 지체 없이 파기</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note-box">
+    ※ 귀하는 위 개인정보 제공에 대한 동의를 거부할 권리가 있습니다. 다만, 동의를 거부하시는 경우 공모전 심사대상에서 제외될 수 있습니다.
+  </div>
+
+  <hr class="divider">
+
+  <div class="consent-section">
+    <p class="consent-text">위 개인정보 수집·이용에 동의합니다.</p>
+    <div class="consent-options">
+      <label class="consent-option">
+        <span class="checkbox checked">&#10003;</span>
+        <span>동의함</span>
+      </label>
+      <label class="consent-option">
+        <span class="checkbox"></span>
+        <span>동의하지 않음</span>
+      </label>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="bottom-section">
+    <p class="date-line">2026년 &nbsp;4월 &nbsp;<span class="blank"></span>&nbsp;일</p>
+
+    <table class="sig-table">
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>성명</th>
+          <th>서명(인)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>동의자</td>
+          <td>박용환</td>
+          <td class="signature-cell">(서명)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="footer-target">「2026 전국 통합데이터 활용 공모전」</p>
+  </div>
+
+</body>
+</html>

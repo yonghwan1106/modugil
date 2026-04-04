@@ -145,19 +145,50 @@ function BusCard({ item }: { item: Record<string, unknown> }) {
   );
 }
 
+function BicycleCard({ item }: { item: Record<string, unknown> }) {
+  const available = Number(item.availableBikes ?? item.available ?? 0);
+  const total = Number(item.totalSlots ?? item.totalDocks ?? 0);
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
+      <div className="font-semibold text-gray-800 flex items-center gap-1">
+        <span>🚲</span>
+        <span>{String(item.stationName ?? item.name ?? '대여소')}</span>
+      </div>
+      {item.address && (
+        <div className="text-gray-500 text-[10px]">{String(item.address)}</div>
+      )}
+      <div className="text-gray-600">
+        대여 가능: <span className="font-medium text-green-700">{available}대</span>
+        {' · '}
+        전체 거치대: <span className="font-medium text-gray-800">{total}대</span>
+      </div>
+      {total > 0 && <ProgressBar value={available} max={total} />}
+    </div>
+  );
+}
+
 function LockerCard({ item }: { item: Record<string, unknown> }) {
-  const available = Number(item.availableLockers ?? 0);
-  const total = Number(item.totalLockers ?? 0);
+  const avail = item.available && typeof item.available === 'object'
+    ? (item.available as Record<string, unknown>)
+    : {};
+  const large = Number(avail.large ?? 0);
+  const medium = Number(avail.medium ?? 0);
+  const small = Number(avail.small ?? 0);
+  const total = large + medium + small;
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
       <div className="font-semibold text-gray-800 flex items-center gap-1">
         <span>🔒</span>
         <span>{String(item.lockerName ?? '물품보관함')}</span>
       </div>
-      <div className="text-gray-600">
-        사용 가능: <span className="font-medium text-green-700">{available}개</span> / 전체 {total}개
+      <div className="text-gray-600 space-y-0.5">
+        <div>대형: <span className="font-medium text-gray-800">{large}개</span></div>
+        <div>중형: <span className="font-medium text-gray-800">{medium}개</span></div>
+        <div>소형: <span className="font-medium text-gray-800">{small}개</span></div>
       </div>
-      {total > 0 && <ProgressBar value={available} max={total} />}
+      <div className="text-gray-500">
+        전체 사용 가능: <span className="font-medium text-green-700">{total}개</span>
+      </div>
     </div>
   );
 }
@@ -172,6 +203,7 @@ function ToolResultCard({ result }: { result: ToolResult }) {
     get_library_seats: '📚 도서관 좌석 현황',
     get_civil_office_wait: '🏢 민원실 대기 현황',
     get_locker_availability: '🔒 물품보관함 현황',
+    get_bicycle_availability: '🚲 공영자전거 대여 현황',
   };
 
   const label = labelMap[result.toolName] ?? `📊 ${result.toolName}`;
@@ -184,6 +216,7 @@ function ToolResultCard({ result }: { result: ToolResult }) {
       case 'get_civil_office_wait': return <CivilOfficeCard key={idx} item={item} />;
       case 'get_bus_realtime_location': return <BusCard key={idx} item={item} />;
       case 'get_locker_availability': return <LockerCard key={idx} item={item} />;
+      case 'get_bicycle_availability': return <BicycleCard key={idx} item={item} />;
       default:
         return (
           <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700">

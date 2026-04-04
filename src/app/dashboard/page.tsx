@@ -21,7 +21,6 @@ import {
   MOCK_LIBRARY_SEATS,
   MOCK_CIVIL_OFFICES,
   MOCK_CIVIL_WAIT,
-  MOCK_TRAFFIC_LIGHTS,
   MOCK_BIKE_STATIONS,
   MOCK_BIKE_AVAILABILITY,
 } from '@/lib/api/mock-data';
@@ -45,7 +44,9 @@ export default function DashboardPage() {
     return Math.round(total / MOCK_CIVIL_OFFICES.length);
   }, []);
 
-  const totalTrafficLights = MOCK_TRAFFIC_LIGHTS.length;
+  const totalAvailableBikes = useMemo(() => {
+    return MOCK_BIKE_AVAILABILITY.reduce((sum, a) => sum + a.rntNocs, 0);
+  }, []);
 
   // --- 자전거 대여소 현황 차트 데이터 ---
   const bikeChartData = useMemo(() => {
@@ -117,11 +118,11 @@ export default function DashboardPage() {
             icon="🏢"
           />
           <SummaryCard
-            title="실시간 신호등"
-            value={`${totalTrafficLights}개`}
-            sub="교차로 모니터링"
+            title="공영자전거"
+            value={`${totalAvailableBikes}대`}
+            sub="대여 가능"
             color="purple"
-            icon="🚦"
+            icon="🚲"
           />
         </div>
 
