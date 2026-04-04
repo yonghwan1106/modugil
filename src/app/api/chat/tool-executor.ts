@@ -191,11 +191,18 @@ function filterByProximity<T extends Record<string, any>>(
     .map((item) => {
       const lat = Number(item.lat ?? item.mapCtptIntLat ?? 0);
       const lng = Number(item.lng ?? item.lot ?? item.mapCtptIntLot ?? 0);
-      const dist = (lat && lng) ? distanceKm(center.lat, center.lng, lat, lng) : 9999;
-      return { item, dist };
+      // 좌표가 없거나 불완전하면 거리 0으로 처리 (필터링에서 제외하지 않음)
+      const hasCoords = lat > 1 && lng > 1;
+      const dist = hasCoords ? distanceKm(center.lat, center.lng, lat, lng) : 0;
+      return { item, dist, hasCoords };
     })
-    .filter(({ dist }) => dist <= maxKm)
-    .sort((a, b) => a.dist - b.dist);
+    .filter(({ dist, hasCoords }) => !hasCoords || dist <= maxKm)
+    .sort((a, b) => {
+      // 좌표 있는 항목을 먼저, 없는 항목은 뒤로
+      if (a.hasCoords && !b.hasCoords) return -1;
+      if (!a.hasCoords && b.hasCoords) return 1;
+      return a.dist - b.dist;
+    });
 
   return withDist.slice(0, maxItems).map(({ item }) => item);
 }
