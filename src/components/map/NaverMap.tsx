@@ -143,12 +143,21 @@ export default function NaverMap({ markers, onMarkerClick }: NaverMapProps) {
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainerRef} className="w-full h-full" />
-      <div className="absolute bottom-4 left-4 bg-white rounded-xl shadow-md p-3 text-xs space-y-1.5 border border-gray-100">
-        <p className="font-semibold text-gray-700 mb-1">마커 범례</p>
+      <div
+        className="absolute bottom-4 left-4 rounded-xl p-3 text-xs space-y-1.5"
+        style={{
+          background: 'rgba(15,23,42,0.85)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(212,168,83,0.3)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+        }}
+      >
+        <p className="font-semibold mb-1" style={{ color: '#d4a853' }}>마커 범례</p>
         {(Object.entries(MARKER_COLORS) as [MapMarker['type'], string][]).map(([type, color]) => (
           <div key={type} className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-            <span className="text-gray-600">{MARKER_LABELS[type]}</span>
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color, boxShadow: `0 0 4px ${color}` }} />
+            <span style={{ color: '#faf9f7' }}>{MARKER_LABELS[type]}</span>
           </div>
         ))}
       </div>

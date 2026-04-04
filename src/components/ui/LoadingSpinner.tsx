@@ -12,7 +12,8 @@ const sizeMap = {
 export default function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
   return (
     <div
-      className={`${sizeMap[size]} rounded-full border-blue-200 border-t-blue-600 animate-spin ${className}`}
+      className={`${sizeMap[size]} rounded-full animate-spin ${className}`}
+      style={{ borderColor: '#0f172a', borderTopColor: '#d4a853' }}
       role="status"
       aria-label="로딩 중"
     />

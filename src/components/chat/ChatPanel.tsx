@@ -148,31 +148,77 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
   const showRetry = lastMessage?.isError && !isLoading;
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div className="flex flex-col h-full" style={{ backgroundColor: '#ffffff', borderTop: '3px solid #f1efe9' }}>
       {/* 패널 헤더 */}
-      <div className="px-4 py-3 bg-white border-b border-gray-200 shrink-0">
+      <div className="px-4 py-3 shrink-0" style={{ backgroundColor: '#0f172a' }}>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full" />
-          <h2 className="text-sm font-semibold text-gray-800">AI 이동 상담</h2>
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#d4a853' }} />
+          <h2 className="text-sm font-semibold" style={{ color: '#d4a853' }}>AI 이동 어시스턴트</h2>
         </div>
-        <p className="text-xs text-gray-500 mt-0.5">교통약자 맞춤 이동 정보를 알려드립니다</p>
+        <p className="font-serif mt-0.5" style={{ color: '#faf9f7', fontSize: '11px', letterSpacing: '0.02em' }}>모두의 길</p>
       </div>
 
       {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ backgroundColor: '#faf9f7' }}>
         {messages.length === 0 ? (
           <div className="flex flex-col gap-3">
             <div className="text-center py-6">
-              <div className="text-4xl mb-2">🗺️</div>
-              <p className="text-sm font-medium text-gray-700">무엇을 도와드릴까요?</p>
-              <p className="text-xs text-gray-500 mt-1">아래 질문을 눌러 시작하세요</p>
+              {/* CSS-styled compass icon instead of emoji */}
+              <div
+                className="mx-auto mb-3 flex items-center justify-center"
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                  boxShadow: '0 2px 8px rgba(15,23,42,0.18)',
+                }}
+              >
+                <div
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    border: '2px solid #d4a853',
+                    position: 'relative',
+                  }}
+                >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      width: '2px',
+                      height: '10px',
+                      backgroundColor: '#d4a853',
+                      transform: 'translate(-50%, -70%) rotate(25deg)',
+                      borderRadius: '1px',
+                    }}
+                  />
+                </div>
+              </div>
+              <p className="font-serif font-medium" style={{ color: '#0f172a', fontSize: '15px' }}>무엇을 도와드릴까요?</p>
+              <p className="mt-1" style={{ color: '#6b7280', fontSize: '12px' }}>아래 질문을 눌러 시작하세요</p>
             </div>
             <div className="space-y-2">
               {SUGGESTED_QUESTIONS.map((q) => (
                 <button
                   key={q}
                   onClick={() => void sendMessage(q)}
-                  className="w-full text-left text-sm bg-white border border-blue-100 text-blue-700 rounded-xl px-4 py-3 hover:bg-blue-50 hover:border-blue-300 transition-colors font-medium shadow-sm"
+                  className="w-full text-left text-sm rounded-xl px-4 py-3 font-medium transition-all duration-200"
+                  style={{
+                    backgroundColor: '#faf9f7',
+                    border: '1px solid #1e293b',
+                    color: '#0f172a',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#d4a853';
+                    e.currentTarget.style.color = '#d4a853';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#1e293b';
+                    e.currentTarget.style.color = '#0f172a';
+                  }}
                 >
                   {q}
                 </button>
@@ -194,7 +240,22 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
           <div className="flex justify-center">
             <button
               onClick={handleRetry}
-              className="text-sm text-blue-600 border border-blue-300 rounded-xl px-4 py-2 hover:bg-blue-50 transition-colors"
+              className="text-sm rounded-xl px-4 py-2 transition-all duration-200"
+              style={{
+                color: '#0f172a',
+                border: '1px solid #0f172a',
+                backgroundColor: 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#d4a853';
+                e.currentTarget.style.color = '#d4a853';
+                e.currentTarget.style.backgroundColor = 'rgba(212,168,83,0.06)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#0f172a';
+                e.currentTarget.style.color = '#0f172a';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
               다시 시도
             </button>
@@ -204,7 +265,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
       </div>
 
       {/* 입력창 */}
-      <div className="shrink-0 bg-white border-t border-gray-200 p-3">
+      <div className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -213,14 +274,51 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
             onKeyDown={handleKeyDown}
             placeholder="이동 관련 질문을 입력하세요..."
             disabled={isLoading}
-            className="flex-1 text-sm rounded-xl border border-gray-200 px-4 py-2.5 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:opacity-50 disabled:bg-gray-50"
+            className="flex-1 text-sm rounded-xl px-4 py-2.5 outline-none transition-all duration-200 disabled:opacity-50"
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e4e0',
+              color: '#0f172a',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#0f172a';
+              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(15,23,42,0.12)';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = '#e5e4e0';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+            style={{
+              backgroundColor: '#d4a853',
+              color: '#0f172a',
+            }}
+            onMouseEnter={(e) => {
+              if (!e.currentTarget.disabled) {
+                e.currentTarget.style.backgroundColor = '#b8922f';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#d4a853';
+            }}
           >
-            {isLoading ? <LoadingSpinner size="sm" className="border-white border-t-blue-200" /> : '전송'}
+            {isLoading ? (
+              <LoadingSpinner size="sm" className="border-[#0f172a] border-t-[#d4a853]" />
+            ) : (
+              <>
+                {/* CSS arrow icon instead of text */}
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ display: 'block' }}>
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                전송
+              </>
+            )}
           </button>
         </form>
       </div>

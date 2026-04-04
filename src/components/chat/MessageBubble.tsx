@@ -20,11 +20,46 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div className="flex items-center gap-2 mt-1">
-      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#d4a853' }} />
       </div>
-      <span className="text-gray-500 text-[10px] w-8 text-right">{pct}%</span>
+      <span className="text-[10px] w-8 text-right" style={{ color: '#6b7280' }}>{pct}%</span>
     </div>
+  );
+}
+
+/* Shared card wrapper with gold top accent */
+function CardShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="rounded-xl p-3 text-xs space-y-1.5"
+      style={{
+        backgroundColor: '#ffffff',
+        border: '1px solid #f1efe9',
+        borderTop: '3px solid #d4a853',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* Small gold circle behind emoji icon */
+function CardIcon({ emoji }: { emoji: string }) {
+  return (
+    <span
+      className="inline-flex items-center justify-center"
+      style={{
+        width: '22px',
+        height: '22px',
+        borderRadius: '50%',
+        backgroundColor: 'rgba(212,168,83,0.15)',
+        fontSize: '12px',
+        lineHeight: 1,
+      }}
+    >
+      {emoji}
+    </span>
   );
 }
 
@@ -32,55 +67,70 @@ function TransportCard({ item }: { item: Record<string, unknown> }) {
   const available = Number(item.availableVehicles ?? 0);
   const total = Number(item.totalVehicles ?? 0);
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🚐</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🚐" />
         <span>{String(item.centerName ?? '이동지원센터')}</span>
       </div>
-      <div className="text-gray-600">
-        운영 차량: <span className="font-medium text-gray-800">{total}대</span>
+      <div style={{ color: '#4b5563' }}>
+        운영 차량: <span className="font-medium" style={{ color: '#0f172a' }}>{total}대</span>
         {' · '}
-        사용 가능: <span className="font-medium text-green-700">{available}대</span>
+        사용 가능: <span className="font-medium" style={{ color: '#0f172a' }}>{available}대</span>
       </div>
       {total > 0 && <ProgressBar value={available} max={total} />}
-      <div className="text-gray-500">
+      <div style={{ color: '#6b7280' }}>
         예약 {String(item.reservations ?? 0)}건 · 대기 {String(item.waiting ?? 0)}명
       </div>
-    </div>
+    </CardShell>
   );
 }
 
 function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
   const phases = Array.isArray(item.phases) ? (item.phases as Record<string, unknown>[]) : [];
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🚦</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🚦" />
         <span>{String(item.crossroadName ?? '신호등')}</span>
       </div>
       {phases.length > 0 ? (
         phases.map((phase, i) => {
           const color = String(phase.color ?? '').toLowerCase();
-          const dot = color === 'green' || color === '녹색' ? '🟢' : color === 'yellow' || color === '황색' ? '🟡' : '🔴';
+          /* CSS dots instead of emoji traffic lights */
+          const dotColor = color === 'green' || color === '녹색'
+            ? '#22c55e'
+            : color === 'yellow' || color === '황색'
+              ? '#eab308'
+              : '#ef4444';
           return (
-            <div key={i} className="text-gray-600">
-              {i + 1}방향: {dot} {String(phase.colorKo ?? phase.color ?? '')} {String(phase.duration ?? '')}초
+            <div key={i} className="flex items-center gap-1.5" style={{ color: '#4b5563' }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: dotColor,
+                  boxShadow: `0 0 4px ${dotColor}`,
+                }}
+              />
+              {i + 1}방향: {String(phase.colorKo ?? phase.color ?? '')} {String(phase.duration ?? '')}초
             </div>
           );
         })
       ) : (
-        <div className="text-gray-500">신호 정보 없음</div>
+        <div style={{ color: '#6b7280' }}>신호 정보 없음</div>
       )}
-    </div>
+    </CardShell>
   );
 }
 
 function LibraryCard({ item }: { item: Record<string, unknown> }) {
   const rooms = Array.isArray(item.rooms) ? (item.rooms as Record<string, unknown>[]) : [];
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>📚</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="📚" />
         <span>{String(item.libraryName ?? '도서관')}</span>
       </div>
       {rooms.length > 0 ? (
@@ -89,8 +139,8 @@ function LibraryCard({ item }: { item: Record<string, unknown> }) {
           const total = Number(room.totalSeats ?? 0);
           return (
             <div key={i} className="space-y-0.5">
-              <div className="text-gray-700 font-medium">{String(room.roomName ?? `열람실 ${i + 1}`)}</div>
-              <div className="text-gray-600">
+              <div className="font-medium" style={{ color: '#0f172a' }}>{String(room.roomName ?? `열람실 ${i + 1}`)}</div>
+              <div style={{ color: '#4b5563' }}>
                 사용: <span className="font-medium">{occupied}/{total}석</span>
               </div>
               {total > 0 && <ProgressBar value={occupied} max={total} />}
@@ -98,50 +148,55 @@ function LibraryCard({ item }: { item: Record<string, unknown> }) {
           );
         })
       ) : (
-        <div className="text-gray-500">좌석 정보 없음</div>
+        <div style={{ color: '#6b7280' }}>좌석 정보 없음</div>
       )}
-    </div>
+    </CardShell>
   );
 }
 
 function CivilOfficeCard({ item }: { item: Record<string, unknown> }) {
   const services = Array.isArray(item.services) ? (item.services as Record<string, unknown>[]) : [];
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🏢</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🏢" />
         <span>{String(item.officeName ?? '민원실')}</span>
       </div>
       {services.length > 0 ? (
         services.map((svc, i) => (
-          <div key={i} className="text-gray-600">
-            {String(svc.serviceName ?? `서비스 ${i + 1}`)}: <span className="font-medium text-gray-800">{String(svc.waitingCount ?? 0)}명 대기</span>
+          <div key={i} style={{ color: '#4b5563' }}>
+            {String(svc.serviceName ?? `서비스 ${i + 1}`)}: <span className="font-medium" style={{ color: '#0f172a' }}>{String(svc.waitingCount ?? 0)}명 대기</span>
           </div>
         ))
       ) : (
-        <div className="text-gray-500">대기 정보 없음</div>
+        <div style={{ color: '#6b7280' }}>대기 정보 없음</div>
       )}
-    </div>
+    </CardShell>
   );
 }
 
 function BusCard({ item }: { item: Record<string, unknown> }) {
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🚌</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🚌" />
         <span>{String(item.routeNo ?? item.routeName ?? '버스')}</span>
         {item.routeType != null && (
-          <span className="ml-1 text-[10px] bg-blue-100 text-blue-700 rounded px-1">{String(item.routeType)}</span>
+          <span
+            className="ml-1 text-[10px] rounded px-1"
+            style={{ backgroundColor: 'rgba(212,168,83,0.15)', color: '#0f172a' }}
+          >
+            {String(item.routeType)}
+          </span>
         )}
       </div>
-      <div className="text-gray-600">
+      <div style={{ color: '#4b5563' }}>
         {String(item.plateNo ?? item.vehicleNo ?? '')}
         {item.speed != null && (
           <span> · 속도 {String(item.speed)}km/h</span>
         )}
       </div>
-    </div>
+    </CardShell>
   );
 }
 
@@ -149,21 +204,21 @@ function BicycleCard({ item }: { item: Record<string, unknown> }) {
   const available = Number(item.availableBikes ?? item.available ?? 0);
   const total = Number(item.totalSlots ?? item.totalDocks ?? 0);
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🚲</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🚲" />
         <span>{String(item.stationName ?? item.name ?? '대여소')}</span>
       </div>
-      {item.address && (
-        <div className="text-gray-500 text-[10px]">{String(item.address)}</div>
-      )}
-      <div className="text-gray-600">
-        대여 가능: <span className="font-medium text-green-700">{available}대</span>
+      {item.address ? (
+        <div className="text-[10px]" style={{ color: '#6b7280' }}>{String(item.address)}</div>
+      ) : null}
+      <div style={{ color: '#4b5563' }}>
+        대여 가능: <span className="font-medium" style={{ color: '#0f172a' }}>{available}대</span>
         {' · '}
-        전체 거치대: <span className="font-medium text-gray-800">{total}대</span>
+        전체 거치대: <span className="font-medium" style={{ color: '#0f172a' }}>{total}대</span>
       </div>
       {total > 0 && <ProgressBar value={available} max={total} />}
-    </div>
+    </CardShell>
   );
 }
 
@@ -176,20 +231,20 @@ function LockerCard({ item }: { item: Record<string, unknown> }) {
   const small = Number(avail.small ?? 0);
   const total = large + medium + small;
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1.5">
-      <div className="font-semibold text-gray-800 flex items-center gap-1">
-        <span>🔒</span>
+    <CardShell>
+      <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
+        <CardIcon emoji="🔒" />
         <span>{String(item.lockerName ?? '물품보관함')}</span>
       </div>
-      <div className="text-gray-600 space-y-0.5">
-        <div>대형: <span className="font-medium text-gray-800">{large}개</span></div>
-        <div>중형: <span className="font-medium text-gray-800">{medium}개</span></div>
-        <div>소형: <span className="font-medium text-gray-800">{small}개</span></div>
+      <div className="space-y-0.5" style={{ color: '#4b5563' }}>
+        <div>대형: <span className="font-medium" style={{ color: '#0f172a' }}>{large}개</span></div>
+        <div>중형: <span className="font-medium" style={{ color: '#0f172a' }}>{medium}개</span></div>
+        <div>소형: <span className="font-medium" style={{ color: '#0f172a' }}>{small}개</span></div>
       </div>
-      <div className="text-gray-500">
-        전체 사용 가능: <span className="font-medium text-green-700">{total}개</span>
+      <div style={{ color: '#6b7280' }}>
+        전체 사용 가능: <span className="font-medium" style={{ color: '#0f172a' }}>{total}개</span>
       </div>
-    </div>
+    </CardShell>
   );
 }
 
@@ -197,16 +252,16 @@ function ToolResultCard({ result }: { result: ToolResult }) {
   const items = result.output?.items ?? [];
 
   const labelMap: Record<string, string> = {
-    get_accessible_transport: '🚐 교통약자 이동지원 현황',
-    get_traffic_light_status: '🚦 신호등 현황',
-    get_bus_realtime_location: '🚌 버스 실시간 위치',
-    get_library_seats: '📚 도서관 좌석 현황',
-    get_civil_office_wait: '🏢 민원실 대기 현황',
-    get_locker_availability: '🔒 물품보관함 현황',
-    get_bicycle_availability: '🚲 공영자전거 대여 현황',
+    get_accessible_transport: '교통약자 이동지원 현황',
+    get_traffic_light_status: '신호등 현황',
+    get_bus_realtime_location: '버스 실시간 위치',
+    get_library_seats: '도서관 좌석 현황',
+    get_civil_office_wait: '민원실 대기 현황',
+    get_locker_availability: '물품보관함 현황',
+    get_bicycle_availability: '공영자전거 대여 현황',
   };
 
-  const label = labelMap[result.toolName] ?? `📊 ${result.toolName}`;
+  const label = labelMap[result.toolName] ?? result.toolName;
 
   const renderItem = (item: Record<string, unknown>, idx: number) => {
     switch (result.toolName) {
@@ -219,24 +274,33 @@ function ToolResultCard({ result }: { result: ToolResult }) {
       case 'get_bicycle_availability': return <BicycleCard key={idx} item={item} />;
       default:
         return (
-          <div key={idx} className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-700">
-            <pre className="overflow-x-auto whitespace-pre-wrap break-all">
+          <CardShell key={idx}>
+            <pre className="overflow-x-auto whitespace-pre-wrap break-all" style={{ color: '#4b5563' }}>
               {JSON.stringify(item, null, 2)}
             </pre>
-          </div>
+          </CardShell>
         );
     }
   };
 
   return (
     <div className="space-y-1.5">
-      <div className="text-[11px] font-semibold text-gray-500 px-0.5">{label}</div>
+      {/* Section header: serif font, navy text, gold left accent */}
+      <div
+        className="font-serif font-semibold text-[11px] px-2 py-0.5"
+        style={{
+          color: '#0f172a',
+          borderLeft: '3px solid #d4a853',
+        }}
+      >
+        {label}
+      </div>
       {items.length > 0 ? (
         items.map((item, idx) => renderItem(item, idx))
       ) : (
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-500">
-          조회된 항목이 없습니다.
-        </div>
+        <CardShell>
+          <div style={{ color: '#6b7280' }}>조회된 항목이 없습니다.</div>
+        </CardShell>
       )}
     </div>
   );
@@ -253,17 +317,37 @@ export default function MessageBubble({ role, content, toolResults, isLoading }:
   return (
     <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-1`}>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+        className="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed"
+        style={
           isUser
-            ? 'bg-blue-600 text-white rounded-br-sm'
-            : 'bg-white text-gray-900 rounded-bl-sm border border-gray-100 shadow-sm'
-        }`}
+            ? {
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                color: '#ffffff',
+                borderBottomRightRadius: '4px',
+              }
+            : {
+                backgroundColor: '#faf9f7',
+                color: '#0f172a',
+                borderBottomLeftRadius: '4px',
+                borderLeft: '3px solid #0f172a',
+                boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
+              }
+        }
       >
         {isLoading ? (
           <div className="flex items-center gap-1.5 py-0.5">
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
+            <span
+              className="w-2 h-2 rounded-full animate-bounce [animation-delay:0ms]"
+              style={{ backgroundColor: '#0f172a' }}
+            />
+            <span
+              className="w-2 h-2 rounded-full animate-bounce [animation-delay:150ms]"
+              style={{ backgroundColor: '#0f172a' }}
+            />
+            <span
+              className="w-2 h-2 rounded-full animate-bounce [animation-delay:300ms]"
+              style={{ backgroundColor: '#0f172a' }}
+            />
           </div>
         ) : (
           <p className="whitespace-pre-wrap">{content}</p>

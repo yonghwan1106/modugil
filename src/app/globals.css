@@ -1,28 +1,234 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════
+   MODUGIL Design System — "Korean Civic Warmth"
+   Deep navy base, gold accents, warm whites
+   Typography: Noto Serif KR (headings) + Noto Sans KR (body)
+   ═══════════════════════════════════════════════════════ */
+
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --danger: #dc2626;
-  --bg: #f8fafc;
+  /* ── Navy Scale ── */
+  --navy-900: #0f172a;
+  --navy-800: #1e293b;
+  --navy-700: #334155;
+  --navy-600: #475569;
+  --navy-500: #64748b;
+
+  /* ── Gold Scale ── */
+  --gold-600: #b8922f;
+  --gold-500: #d4a853;
+  --gold-400: #e2c07a;
+  --gold-300: #f0d9a0;
+  --gold-200: #f5e6c8;
+  --gold-100: #faf0dc;
+
+  /* ── Warm Neutrals ── */
+  --warm-white: #faf9f7;
+  --warm-gray: #f1efe9;
+  --warm-gray-200: #e4e1d9;
+  --warm-gray-300: #c9c5bb;
+  --warm-gray-400: #a6a099;
+  --warm-gray-500: #7a756d;
+
+  /* ── Semantic Colors ── */
+  --success: #2d8a56;
+  --success-light: #e8f5ee;
+  --warning: #c48a1a;
+  --warning-light: #fdf3e0;
+  --danger: #c53030;
+  --danger-light: #fde8e8;
+
+  /* ── Backgrounds ── */
+  --bg: var(--warm-white);
+  --bg-muted: var(--warm-gray);
   --surface: #ffffff;
-  --text: #0f172a;
-  --text-secondary: #64748b;
-  --border: #e2e8f0;
+  --surface-elevated: #ffffff;
+  --text: var(--navy-900);
+  --text-secondary: var(--navy-500);
+  --border: var(--warm-gray-200);
+
+  /* ── Shadow Scale ── */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.08), 0 4px 6px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px rgba(15, 23, 42, 0.10), 0 8px 10px rgba(15, 23, 42, 0.06);
+  --shadow-gold: 0 4px 14px rgba(212, 168, 83, 0.25);
+
+  /* ── Radius Scale ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
 }
 
+/* ── Tailwind Theme Mapping ── */
 @theme inline {
-  --color-primary: var(--primary);
-  --color-primary-dark: var(--primary-dark);
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-navy-700: var(--navy-700);
+  --color-navy-600: var(--navy-600);
+  --color-navy-500: var(--navy-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-500: var(--gold-500);
+  --color-gold-400: var(--gold-400);
+  --color-gold-300: var(--gold-300);
+  --color-gold-200: var(--gold-200);
+  --color-gold-100: var(--gold-100);
+  --color-warm-white: var(--warm-white);
+  --color-warm-gray: var(--warm-gray);
+  --color-warm-gray-200: var(--warm-gray-200);
+  --color-warm-gray-300: var(--warm-gray-300);
+  --color-warm-gray-400: var(--warm-gray-400);
+  --color-warm-gray-500: var(--warm-gray-500);
   --color-success: var(--success);
+  --color-success-light: var(--success-light);
   --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
   --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
 }
 
+/* ── Base Styles ── */
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Keyframe Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-12px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes shimmerGold {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Utility Classes ── */
+.font-serif {
+  font-family: 'Noto Serif KR', serif;
+}
+
+.font-body {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.text-gold {
+  color: var(--gold-500);
+}
+
+.text-gold-dark {
+  color: var(--gold-600);
+}
+
+.bg-navy {
+  background-color: var(--navy-900);
+}
+
+.bg-navy-800 {
+  background-color: var(--navy-800);
+}
+
+.bg-navy-700 {
+  background-color: var(--navy-700);
+}
+
+.bg-gold {
+  background-color: var(--gold-500);
+}
+
+.bg-warm-white {
+  background-color: var(--warm-white);
+}
+
+.bg-warm-gray {
+  background-color: var(--warm-gray);
+}
+
+.border-gold {
+  border-color: var(--gold-500);
+}
+
+.shadow-gold {
+  box-shadow: var(--shadow-gold);
+}
+
+/* ── Subtle Noise Texture Background ── */
+.bg-noise {
+  position: relative;
+}
+
+.bg-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ── Animation Utilities ── */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out both;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+/* ── Gold Shimmer Text ── */
+.text-gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--gold-600) 0%,
+    var(--gold-400) 40%,
+    var(--gold-200) 50%,
+    var(--gold-400) 60%,
+    var(--gold-600) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerGold 4s linear infinite;
+}
+
+/* ── Scrollbar Styling (navy/gold) ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--warm-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy-600);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--navy-500);
 }
