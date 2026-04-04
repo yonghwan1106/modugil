@@ -178,10 +178,14 @@ export async function executeToolCall(
 ): Promise<unknown> {
   const regionInput = (input.region as string) ?? '';
   const stdgCd = REGION_CODES[regionInput] ?? regionInput;
-  const apiParams: Record<string, string> = stdgCd ? { stdgCd } : {};
-  // 도서관/민원실 API는 구(區) 단위 코드만 지원 — 시 단위(00000000으로 끝남)일 때 stdgCd 생략
-  const isCityLevel = stdgCd.endsWith('00000000');
-  const districtOnlyParams: Record<string, string> = isCityLevel ? {} : apiParams;
+  // 시/도 단위 코드 추출 (구 단위 → 시 단위 폴백: 1168000000 → 1100000000)
+  const cityLevelCd = stdgCd ? stdgCd.slice(0, 2) + '00000000' : '';
+  // 교통약자/신호등/보관함: 시 단위에서만 데이터 제공
+  const cityParams: Record<string, string> = cityLevelCd ? { stdgCd: cityLevelCd } : {};
+  // 도서관: 구 단위 시도 → 실패 시 stdgCd 없이 재시도
+  const districtParams: Record<string, string> = stdgCd ? { stdgCd } : {};
+  // 민원실/버스: stdgCd를 보내면 NODATA → stdgCd 없이 호출
+  const noRegionParams: Record<string, string> = {};
 
   switch (toolName) {
     case 'get_bicycle_availability': {
@@ -233,12 +237,12 @@ export async function executeToolCall(
       const [crossroadsResult, statusesResult] = await Promise.all([
         fetchWithFallback<TrafficLightCrossroad>(
           ENDPOINTS.trafficLight.crossroads,
-          apiParams,
+          cityParams,
           mockData.MOCK_TRAFFIC_LIGHTS,
         ),
         fetchWithFallback<TrafficLightStatus>(
           ENDPOINTS.trafficLight.status,
-          apiParams,
+          cityParams,
           mockData.MOCK_TRAFFIC_LIGHT_STATUS,
         ),
       ]);
@@ -305,12 +309,12 @@ export async function executeToolCall(
       const [centersResult, availResult] = await Promise.all([
         fetchWithFallback<TransportCenter>(
           ENDPOINTS.transport.centers,
-          apiParams,
+          cityParams,
           mockData.MOCK_TRANSPORT_CENTERS,
         ),
         fetchWithFallback<TransportVehicleUse>(
           ENDPOINTS.transport.availability,
-          apiParams,
+          cityParams,
           mockData.MOCK_TRANSPORT_AVAILABILITY,
         ),
       ]);
@@ -350,7 +354,7 @@ export async function executeToolCall(
 
       const routesResult = await fetchWithFallback<BusRoute>(
         ENDPOINTS.bus.routes,
-        apiParams,
+        noRegionParams,
         mockData.MOCK_BUS_ROUTES,
       );
 
@@ -360,7 +364,7 @@ export async function executeToolCall(
 
       const locationsResult = await fetchWithFallback<BusLocation>(
         ENDPOINTS.bus.locations,
-        apiParams,
+        noRegionParams,
         mockData.MOCK_BUS_LOCATIONS,
       );
 
@@ -400,12 +404,12 @@ export async function executeToolCall(
       const [librariesResult, seatsResult] = await Promise.all([
         fetchWithFallback<Library>(
           ENDPOINTS.library.info,
-          districtOnlyParams,
+          districtParams,
           mockData.MOCK_LIBRARIES,
         ),
         fetchWithFallback<LibrarySeat>(
           ENDPOINTS.library.seats,
-          districtOnlyParams,
+          districtParams,
           mockData.MOCK_LIBRARY_SEATS,
         ),
       ]);
@@ -459,12 +463,12 @@ export async function executeToolCall(
       const [officesResult, waitResult] = await Promise.all([
         fetchWithFallback<CivilOffice>(
           ENDPOINTS.civil.info,
-          districtOnlyParams,
+          noRegionParams,
           mockData.MOCK_CIVIL_OFFICES,
         ),
         fetchWithFallback<CivilOfficeWait>(
           ENDPOINTS.civil.realtime,
-          districtOnlyParams,
+          noRegionParams,
           mockData.MOCK_CIVIL_WAIT,
         ),
       ]);
@@ -511,12 +515,12 @@ export async function executeToolCall(
       const [lockersResult, realtimeResult] = await Promise.all([
         fetchWithFallback<Locker>(
           ENDPOINTS.locker.info,
-          apiParams,
+          cityParams,
           mockData.MOCK_LOCKERS,
         ),
         fetchWithFallback<LockerRealtime>(
           ENDPOINTS.locker.realtime,
-          apiParams,
+          cityParams,
           mockData.MOCK_LOCKER_REALTIME,
         ),
       ]);
