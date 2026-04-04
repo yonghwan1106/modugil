@@ -131,6 +131,76 @@ const REGION_CODES: Record<string, string> = {
 };
 
 // =============================================
+// 지역명 → 중심 좌표 매핑 (거리 기반 필터링용)
+// =============================================
+
+const REGION_CENTER: Record<string, { lat: number; lng: number }> = {
+  '서울': { lat: 37.5665, lng: 126.978 },
+  '서울 종로구': { lat: 37.5735, lng: 126.979 },
+  '서울 중구': { lat: 37.5641, lng: 126.997 },
+  '서울 용산구': { lat: 37.5326, lng: 126.99 },
+  '서울 성동구': { lat: 37.5634, lng: 127.037 },
+  '서울 광진구': { lat: 37.5388, lng: 127.082 },
+  '서울 동대문구': { lat: 37.5744, lng: 127.04 },
+  '서울 중랑구': { lat: 37.6066, lng: 127.093 },
+  '서울 성북구': { lat: 37.5894, lng: 127.017 },
+  '서울 강북구': { lat: 37.6398, lng: 127.011 },
+  '서울 도봉구': { lat: 37.6688, lng: 127.047 },
+  '서울 노원구': { lat: 37.6542, lng: 127.056 },
+  '서울 은평구': { lat: 37.6027, lng: 126.929 },
+  '서울 서대문구': { lat: 37.5791, lng: 126.937 },
+  '서울 마포구': { lat: 37.5664, lng: 126.901 },
+  '서울 양천구': { lat: 37.517, lng: 126.867 },
+  '서울 강서구': { lat: 37.5509, lng: 126.85 },
+  '서울 구로구': { lat: 37.4955, lng: 126.888 },
+  '서울 금천구': { lat: 37.4569, lng: 126.896 },
+  '서울 영등포구': { lat: 37.5264, lng: 126.896 },
+  '서울 동작구': { lat: 37.5124, lng: 126.939 },
+  '서울 관악구': { lat: 37.4784, lng: 126.952 },
+  '서울 서초구': { lat: 37.4837, lng: 127.033 },
+  '서울 강남구': { lat: 37.4979, lng: 127.028 },
+  '서울 송파구': { lat: 37.5146, lng: 127.106 },
+  '서울 강동구': { lat: 37.5301, lng: 127.124 },
+  '부산': { lat: 35.1796, lng: 129.0756 },
+  '대구': { lat: 35.8714, lng: 128.6014 },
+  '인천': { lat: 37.4563, lng: 126.7052 },
+  '울산': { lat: 35.5384, lng: 129.3114 },
+};
+
+/** 두 좌표 간 거리(km) — Haversine */
+function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** items를 요청 지역 중심 좌표 기준으로 가까운 순 정렬 + maxKm 이내 필터 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function filterByProximity<T extends Record<string, any>>(
+  items: T[],
+  regionInput: string,
+  maxKm: number = 15,
+  maxItems: number = 20,
+): T[] {
+  const center = REGION_CENTER[regionInput];
+  if (!center || items.length === 0) return items.slice(0, maxItems);
+
+  const withDist = items
+    .map((item) => {
+      const lat = Number(item.lat ?? item.mapCtptIntLat ?? 0);
+      const lng = Number(item.lng ?? item.lot ?? item.mapCtptIntLot ?? 0);
+      const dist = (lat && lng) ? distanceKm(center.lat, center.lng, lat, lng) : 9999;
+      return { item, dist };
+    })
+    .filter(({ dist }) => dist <= maxKm)
+    .sort((a, b) => a.dist - b.dist);
+
+  return withDist.slice(0, maxItems).map(({ item }) => item);
+}
+
+// =============================================
 // 실제 API + Mock fallback 헬퍼
 // =============================================
 
@@ -272,7 +342,8 @@ export async function executeToolCall(
         statusMap.set(s.crsrdId, list);
       }
 
-      const items = crossroads.slice(0, 20).map((c) => {
+      const nearbyCrossroads = filterByProximity(crossroads, regionInput, 10, 20);
+      const items = nearbyCrossroads.map((c) => {
         const dirStatuses = statusMap.get(c.crsrdId) ?? [];
         // 실제 API에서는 방향별 컬럼이 하나의 row에 다 들어있음
         const directions: { direction: string; remainSeconds: number; signal: string }[] = [];
@@ -450,7 +521,8 @@ export async function executeToolCall(
         seatsByLibrary.set(seat.pblibId, list);
       }
 
-      const items = filteredLibraries.map((lib) => {
+      const nearbyLibraries = filterByProximity(filteredLibraries, regionInput, 15, 20);
+      const items = nearbyLibraries.map((lib) => {
         const libSeats = seatsByLibrary.get(lib.pblibId) ?? [];
         const totalSeats = libSeats.reduce((sum, s) => sum + Number(s.tseatCnt), 0);
         const usedSeats = libSeats.reduce((sum, s) => sum + Number(s.useSeatCnt), 0);
@@ -507,7 +579,8 @@ export async function executeToolCall(
         waitByOffice.set(w.csoSn, list);
       }
 
-      const items = officesResult.items.map((office) => {
+      const nearbyOffices = filterByProximity(officesResult.items, regionInput, 15, 20);
+      const items = nearbyOffices.map((office) => {
         let tasks = waitByOffice.get(office.csoSn) ?? [];
         if (taskName) {
           tasks = tasks.filter((t) => t.taskNm.includes(taskName));
