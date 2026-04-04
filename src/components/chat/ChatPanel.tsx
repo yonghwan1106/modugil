@@ -138,7 +138,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading, messages, onToolResults]);
+  }, [isLoading, messages, onToolResults, userType]);
 
   const handleRetry = useCallback(() => {
     if (lastUserText) {

@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 모두의 길
 
-## Getting Started
+> AI 기반 교통약자 통합 이동지원 서비스
 
-First, run the development server:
+**2026년 전국 통합데이터 활용 공모전 출품작**
+
+교통약자(장애인, 고령자, 임산부)가 **한 번의 대화**로 필요한 모든 이동 정보를 받아볼 수 있는 웹 서비스입니다.
+
+**서비스 URL**: https://modugil.vercel.app/
+
+## 핵심 기능
+
+- **AI 대화형 조회** — 자연어 질문으로 7종 공공데이터 통합 검색
+- **네이버 지도 시각화** — 7종 컬러 마커 + 범례 + 자동 범위 조정
+- **교통약자 유형별 맞춤** — 휠체어/시각장애/고령자/임산부 4유형 추천 질문 및 응답
+- **신호등 실시간 잔여시간** — 방향별 신호 상태 + 교통약자 안전 판단 메시지
+- **실시간 현황 대시보드** — 교통약자 차량/도서관/민원실/자전거 통계 시각화
+
+## 활용 데이터
+
+행정안전부/한국지역정보개발원 전국 통합개방 데이터 **7종 20개 API**:
+
+| # | 데이터 | API 수 | AI 채팅 활용 |
+|---|--------|--------|-------------|
+| 1 | 전국 공영자전거 실시간 정보 | 3 | 2 |
+| 2 | 교통약자 이동지원 현황 실시간 정보 | 4 | 2 |
+| 3 | 공공도서관 열람실 현황 실시간 정보 | 3 | 2 |
+| 4 | 공영 물품보관함 현황 실시간 정보 | 3 | 2 |
+| 5 | 교통안전 실시간 신호등 정보 | 2 | 2 |
+| 6 | 민원실 이용 현황 실시간 정보 | 2 | 2 |
+| 7 | 전국 초정밀 버스 실시간 위치 정보 | 3 | 2 |
+| | **합계** | **20** | **14** |
+
+## 기술 스택
+
+| 계층 | 기술 |
+|------|------|
+| 프론트엔드 | React 19, Next.js 16 (App Router), Tailwind CSS 4 |
+| AI | Claude Haiku 4.5 (@anthropic-ai/sdk) |
+| 지도 | Naver Maps API v3 |
+| 차트 | Recharts 3 |
+| 배포 | Vercel |
+
+## 아키텍처
+
+서버 사이드 도구 선실행(pre-execution) 패턴:
+
+1. 사용자 질문 → 서버 키워드 라우팅으로 필요한 도구 결정
+2. 공공데이터 API 병렬 호출 (Promise.all)
+3. 조회 결과를 Claude에 텍스트로 전달 → 맞춤형 자연어 응답 생성
+4. 프론트에 응답 + toolResults 반환 → 지도 마커 + 카드 UI 렌더링
+
+## 실행 방법
 
 ```bash
+# 의존성 설치
+npm install
+
+# 환경변수 설정 (.env.example 참고)
+cp .env.example .env.local
+
+# 개발 서버
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+필수 환경변수: `ANTHROPIC_API_KEY`, `DATA_API_KEY`, `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 라이선스
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

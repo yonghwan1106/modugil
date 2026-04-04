@@ -193,6 +193,7 @@ function CivilOfficeCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function BusCard({ item }: { item: Record<string, unknown> }) {
+  const locations = Array.isArray(item.realtimeLocations) ? item.realtimeLocations : [];
   return (
     <CardShell>
       <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
@@ -207,11 +208,13 @@ function BusCard({ item }: { item: Record<string, unknown> }) {
           </span>
         )}
       </div>
+      {item.startStop != null && (
+        <div className="text-[10px]" style={{ color: '#6b7280' }}>
+          {String(item.startStop)} → {String(item.endStop ?? '')}
+        </div>
+      )}
       <div style={{ color: '#4b5563' }}>
-        {String(item.plateNo ?? item.vehicleNo ?? '')}
-        {item.speed != null && (
-          <span> · 속도 {String(item.speed)}km/h</span>
-        )}
+        운행 차량: <span className="font-medium" style={{ color: '#0f172a' }}>{locations.length}대</span>
       </div>
     </CardShell>
   );

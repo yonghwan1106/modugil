@@ -111,7 +111,7 @@ export default function NaverMap({ markers, onMarkerClick }: NaverMapProps) {
           <div style="padding:10px 14px;background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.15);min-width:160px;font-family:Pretendard,sans-serif;">
             <p style="font-size:13px;font-weight:600;color:#1e293b;margin:0 0 4px;">${marker.title}</p>
             <span style="display:inline-block;font-size:11px;color:white;background:${color};padding:2px 8px;border-radius:20px;">${MARKER_LABELS[marker.type]}</span>
-            ${marker.info ? `<p style="font-size:12px;color:#64748b;margin:6px 0 0;">${Object.entries(marker.info).map(([k, v]) => `${k}: ${v}`).join('<br/>')}</p>` : ''}
+            ${marker.info ? `<p style="font-size:12px;color:#64748b;margin:6px 0 0;">${Object.entries(marker.info).filter(([k]) => !['info','lat','lot','lng','type'].includes(k)).slice(0, 6).map(([k, v]) => `${k}: ${typeof v === 'object' && v !== null ? Object.entries(v as Record<string,unknown>).map(([k2,v2]) => `${k2}=${v2}`).join(', ') : v}`).join('<br/>')}</p>` : ''}
           </div>`;
 
         if (infoWindowRef.current) {
