@@ -93,22 +93,32 @@ function TransportCard({ item }: { item: Record<string, unknown> }) {
   );
 }
 
+function signalToKorean(signal: string): { label: string; color: string } {
+  const s = signal.toLowerCase();
+  if (s.includes('protected movement') || s.includes('green') || s.includes('녹') || s === 'g')
+    return { label: '녹색(진행)', color: '#22c55e' };
+  if (s.includes('yellow') || s.includes('caution') || s.includes('황') || s === 'y')
+    return { label: '황색(주의)', color: '#eab308' };
+  if (s.includes('stop and remain') || s.includes('red') || s.includes('적') || s === 'r')
+    return { label: '적색(정지)', color: '#ef4444' };
+  if (s.includes('stop then proceed'))
+    return { label: '적색(정지 후 진행)', color: '#ef4444' };
+  return { label: signal || '정보없음', color: '#94a3b8' };
+}
+
 function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
   const directions = Array.isArray(item.directions) ? (item.directions as Record<string, unknown>[]) : [];
+  // 보행자 신호만 우선 표시 (최대 8개)
+  const filtered = directions.filter((_, i) => i < 8);
   return (
     <CardShell>
       <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
         <CardIcon emoji="🚦" />
         <span>{String(item.crossroadName ?? '신호등')}</span>
       </div>
-      {directions.length > 0 ? (
-        directions.map((dir, i) => {
-          const signal = String(dir.signal ?? '').toLowerCase();
-          const dotColor = signal.includes('녹') || signal.includes('green') || signal === 'g'
-            ? '#22c55e'
-            : signal.includes('황') || signal.includes('yellow') || signal === 'y'
-              ? '#eab308'
-              : '#ef4444';
+      {filtered.length > 0 ? (
+        filtered.map((dir, i) => {
+          const { label, color: dotColor } = signalToKorean(String(dir.signal ?? ''));
           return (
             <div key={i} className="flex items-center gap-1.5" style={{ color: '#4b5563' }}>
               <span
@@ -121,7 +131,7 @@ function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
                   boxShadow: `0 0 4px ${dotColor}`,
                 }}
               />
-              {String(dir.direction ?? '')}: {String(dir.signal ?? '')} {String(dir.remainSeconds ?? '')}초
+              {String(dir.direction ?? '')}: {label} {String(dir.remainSeconds ?? '')}초
             </div>
           );
         })
@@ -256,7 +266,9 @@ function LockerCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function ToolResultCard({ result }: { result: ToolResult }) {
-  const items = result.output?.items ?? [];
+  const allItems = result.output?.items ?? [];
+  const items = allItems.slice(0, 5);
+  const hiddenCount = allItems.length - items.length;
 
   const labelMap: Record<string, string> = {
     get_accessible_transport: '교통약자 이동지원 현황',
@@ -303,7 +315,14 @@ function ToolResultCard({ result }: { result: ToolResult }) {
         {label}
       </div>
       {items.length > 0 ? (
-        items.map((item, idx) => renderItem(item, idx))
+        <>
+          {items.map((item, idx) => renderItem(item, idx))}
+          {hiddenCount > 0 && (
+            <div className="text-center text-[10px] py-1" style={{ color: '#94a3b8' }}>
+              외 {hiddenCount}건 (총 {allItems.length}건 조회)
+            </div>
+          )}
+        </>
       ) : (
         <CardShell>
           <div style={{ color: '#6b7280' }}>조회된 항목이 없습니다.</div>

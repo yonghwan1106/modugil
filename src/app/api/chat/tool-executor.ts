@@ -459,11 +459,13 @@ export async function executeToolCall(
         };
       });
 
-      const summary = source === 'mock'
-        ? `[Mock] ${regionInput || '서울'} 도서관 ${items.length}개 좌석 현황 조회`
-        : `${regionInput || '서울'} 도서관 ${items.length}개 실시간 좌석 조회 완료`;
+      const limitedItems = items.slice(0, 20);
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 도서관 ${limitedItems.length}개 좌석 현황 조회`
+        : `${regionInput || '서울'} 도서관 ${limitedItems.length}개 실시간 좌석 조회 완료 (총 ${items.length}개 중)`;
+
+      return { source, region: regionInput, count: limitedItems.length, summary, items: limitedItems };
     }
 
     case 'get_civil_office_wait': {
@@ -513,11 +515,13 @@ export async function executeToolCall(
         };
       });
 
-      const summary = source === 'mock'
-        ? `[Mock] ${regionInput || '서울'} 민원실 ${items.length}개 대기 현황 조회`
-        : `${regionInput || '서울'} 민원실 ${items.length}개 실시간 대기 조회 완료`;
+      const limitedCivilItems = items.slice(0, 20);
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      const summary = source === 'mock'
+        ? `[Mock] ${regionInput || '서울'} 민원실 ${limitedCivilItems.length}개 대기 현황 조회`
+        : `${regionInput || '서울'} 민원실 ${limitedCivilItems.length}개 실시간 대기 조회 완료 (총 ${items.length}개 중)`;
+
+      return { source, region: regionInput, count: limitedCivilItems.length, summary, items: limitedCivilItems };
     }
 
     case 'get_locker_availability': {

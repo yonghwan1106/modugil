@@ -98,14 +98,14 @@ export default function DashboardPage() {
             className="text-xl font-bold mb-1"
             style={{ fontFamily: "'Noto Serif KR', serif", color: '#0f172a' }}
           >
-            실시간 현황 대시보드
+            공공데이터 현황 대시보드
           </h2>
           <div
             className="mb-2"
             style={{ width: 48, height: 3, backgroundColor: '#d4a853', borderRadius: 2 }}
           />
           <p className="text-sm" style={{ color: '#94a3b8' }}>
-            서울시 공공서비스 실시간 현황을 한눈에 확인하세요
+            서울시 공공서비스 데이터 시각화 (샘플 데이터 기반)
           </p>
         </div>
 
@@ -252,7 +252,7 @@ export default function DashboardPage() {
               className="text-xs px-2 py-0.5 rounded-full font-medium"
               style={{ backgroundColor: '#059669', color: '#ffffff' }}
             >
-              실시간
+              샘플
             </span>
           </div>
           <ResponsiveContainer width="100%" height={240}>
@@ -287,7 +287,7 @@ export default function DashboardPage() {
               borderLeft: '4px solid #d4a853',
             }}
           >
-            민원실 실시간 대기 현황
+            민원실 대기 현황 (샘플)
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

@@ -36,11 +36,11 @@ function SignalBulb({ signal, remainSeconds, direction }: { signal: string; rema
   const sig = signal.toLowerCase();
 
   const bulbColor =
-    sig.includes('녹') || sig === 'g' || sig.includes('green')
+    sig.includes('녹') || sig === 'g' || sig.includes('green') || sig.includes('protected movement')
       ? '#22c55e'
-      : sig.includes('황') || sig === 'y' || sig.includes('yellow')
+      : sig.includes('황') || sig === 'y' || sig.includes('yellow') || sig.includes('caution')
         ? '#facc15'
-        : '#ef4444';
+        : '#ef4444'; // stop and remain, red 등
 
   const textColorClass = isWarning ? 'font-bold' : '';
   const textColor = isWarning ? '#ef4444' : '#0f172a';
