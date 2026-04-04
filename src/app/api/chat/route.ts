@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json() as { messages: Anthropic.Messages.MessageParam[] };
-    const { messages } = body;
+    const body = await request.json() as { messages: Anthropic.Messages.MessageParam[]; userType?: string };
+    const { messages, userType } = body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return Response.json(
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       ...messages.slice(0, -1),
       {
         role: 'user' as const,
-        content: `${userText}\n\n--- 실시간 데이터 조회 결과 ---\n${toolDataSummary}\n\n위 데이터를 바탕으로 질문에 답변해 주세요.`,
+        content: `${userText}\n\n--- 실시간 데이터 조회 결과 ---\n${toolDataSummary}\n\n위 데이터를 바탕으로 질문에 답변해 주세요.${userType ? `\n\n--- 사용자 유형: ${userType} ---\n이 사용자의 유형에 맞춰 답변해 주세요.` : ''}`,
       },
     ];
 

@@ -13,33 +13,53 @@ interface TrafficLightDetailProps {
 }
 
 const DIRECTION_LABELS: Record<string, { label: string; arrow: string }> = {
-  '1': { label: '북', arrow: '↑' },
-  '2': { label: '동', arrow: '→' },
-  '3': { label: '남', arrow: '↓' },
-  '4': { label: '서', arrow: '←' },
-  '5': { label: '북동', arrow: '↗' },
-  '6': { label: '남동', arrow: '↘' },
-  '7': { label: '남서', arrow: '↙' },
-  '8': { label: '북서', arrow: '↖' },
+  '북_보행자': { label: '북 보행', arrow: '↑' },
+  '북_차량': { label: '북 차량', arrow: '↑' },
+  '동_보행자': { label: '동 보행', arrow: '→' },
+  '동_차량': { label: '동 차량', arrow: '→' },
+  '남_보행자': { label: '남 보행', arrow: '↓' },
+  '남_차량': { label: '남 차량', arrow: '↓' },
+  '서_보행자': { label: '서 보행', arrow: '←' },
+  '서_차량': { label: '서 차량', arrow: '←' },
+  '북동_보행자': { label: '북동 보행', arrow: '↗' },
+  '북동_차량': { label: '북동 차량', arrow: '↗' },
+  '남동_보행자': { label: '남동 보행', arrow: '↘' },
+  '남동_차량': { label: '남동 차량', arrow: '↘' },
+  '남서_보행자': { label: '남서 보행', arrow: '↙' },
+  '남서_차량': { label: '남서 차량', arrow: '↙' },
+  '북서_보행자': { label: '북서 보행', arrow: '↖' },
+  '북서_차량': { label: '북서 차량', arrow: '↖' },
 };
 
-function SignalBulb({ signal, remainSeconds }: { signal: string; remainSeconds: number }) {
+function SignalBulb({ signal, remainSeconds, direction }: { signal: string; remainSeconds: number; direction?: string }) {
   const isWarning = remainSeconds <= 10;
+  const sig = signal.toLowerCase();
 
   const bulbColor =
-    signal === 'G'
+    sig.includes('녹') || sig === 'g' || sig.includes('green')
       ? '#22c55e'
-      : signal === 'Y'
+      : sig.includes('황') || sig === 'y' || sig.includes('yellow')
         ? '#facc15'
         : '#ef4444';
 
   const textColorClass = isWarning ? 'font-bold' : '';
   const textColor = isWarning ? '#ef4444' : '#0f172a';
 
+  const signalLabel = sig.includes('녹') || sig === 'g' || sig.includes('green')
+    ? '녹색'
+    : sig.includes('황') || sig === 'y' || sig.includes('yellow')
+      ? '황색'
+      : '적색';
+
+  const ariaLabel = direction
+    ? `${direction} ${signalLabel} 신호 ${remainSeconds}초 남음`
+    : `${signalLabel} 신호 ${remainSeconds}초 남음`;
+
   return (
     <div className="flex flex-col items-center gap-1">
       <div
         className="w-10 h-10 rounded-full"
+        aria-label={ariaLabel}
         style={{
           backgroundColor: bulbColor,
           boxShadow: `inset 0 2px 4px rgba(0,0,0,0.3), 0 0 8px ${bulbColor}80`,
@@ -55,7 +75,10 @@ function SignalBulb({ signal, remainSeconds }: { signal: string; remainSeconds: 
 
 function getSafetyMessage(directions: Direction[]): { text: string; colorClass: string } {
   // 녹색 신호가 있는 방향 중 최솟값을 기준으로 판단
-  const greenDirs = directions.filter((d) => d.signal === 'G');
+  const greenDirs = directions.filter((d) => {
+    const s = d.signal.toLowerCase();
+    return s.includes('녹') || s === 'g' || s.includes('green');
+  });
   if (greenDirs.length === 0) {
     return { text: '대기해 주세요', colorClass: 'text-red-600' };
   }
@@ -78,9 +101,9 @@ export default function TrafficLightDetail({
 
   const safety = getSafetyMessage(directions);
 
-  // 십자형 레이아웃: 북(1), 동(2), 남(3), 서(4). 나머지 방향은 별도 행에 표시.
-  const primaryDirs = ['1', '2', '3', '4'];
-  const secondaryDirs = ['5', '6', '7', '8'].filter((d) => byDirection[d]);
+  // 십자형 레이아웃: 보행자 신호 우선 표시. 나머지는 별도 행.
+  const primaryDirs = ['북_보행자', '동_보행자', '남_보행자', '서_보행자'];
+  const secondaryDirs = Object.keys(byDirection).filter((d) => !primaryDirs.includes(d));
 
   return (
     <div className="rounded-xl shadow-2xl w-72 text-sm overflow-hidden" style={{ background: '#ffffff', borderTop: '3px solid #d4a853' }}>
@@ -101,14 +124,15 @@ export default function TrafficLightDetail({
       <div className="px-4 py-4">
         {/* 북 */}
         <div className="flex justify-center mb-2">
-          {byDirection['1'] ? (
+          {byDirection['북_보행자'] ? (
             <div className="flex flex-col items-center">
               <span className="text-xs mb-1" style={{ color: '#0f172a' }}>
-                {DIRECTION_LABELS['1'].arrow} {DIRECTION_LABELS['1'].label}
+                {DIRECTION_LABELS['북_보행자'].arrow} {DIRECTION_LABELS['북_보행자'].label}
               </span>
               <SignalBulb
-                signal={byDirection['1'].signal}
-                remainSeconds={byDirection['1'].remainSeconds}
+                signal={byDirection['북_보행자'].signal}
+                remainSeconds={byDirection['북_보행자'].remainSeconds}
+                direction="북 보행"
               />
             </div>
           ) : (
@@ -120,14 +144,15 @@ export default function TrafficLightDetail({
         <div className="flex items-center justify-between mb-2">
           {/* 서(4) */}
           <div className="flex flex-col items-center">
-            {byDirection['4'] ? (
+            {byDirection['서_보행자'] ? (
               <>
                 <span className="text-xs mb-1" style={{ color: '#0f172a' }}>
-                  {DIRECTION_LABELS['4'].arrow} {DIRECTION_LABELS['4'].label}
+                  {DIRECTION_LABELS['서_보행자'].arrow} {DIRECTION_LABELS['서_보행자'].label}
                 </span>
                 <SignalBulb
-                  signal={byDirection['4'].signal}
-                  remainSeconds={byDirection['4'].remainSeconds}
+                  signal={byDirection['서_보행자'].signal}
+                  remainSeconds={byDirection['서_보행자'].remainSeconds}
+                  direction="서 보행"
                 />
               </>
             ) : (
@@ -142,14 +167,15 @@ export default function TrafficLightDetail({
 
           {/* 동(2) */}
           <div className="flex flex-col items-center">
-            {byDirection['2'] ? (
+            {byDirection['동_보행자'] ? (
               <>
                 <span className="text-xs mb-1" style={{ color: '#0f172a' }}>
-                  {DIRECTION_LABELS['2'].arrow} {DIRECTION_LABELS['2'].label}
+                  {DIRECTION_LABELS['동_보행자'].arrow} {DIRECTION_LABELS['동_보행자'].label}
                 </span>
                 <SignalBulb
-                  signal={byDirection['2'].signal}
-                  remainSeconds={byDirection['2'].remainSeconds}
+                  signal={byDirection['동_보행자'].signal}
+                  remainSeconds={byDirection['동_보행자'].remainSeconds}
+                  direction="동 보행"
                 />
               </>
             ) : (
@@ -160,14 +186,15 @@ export default function TrafficLightDetail({
 
         {/* 남(3) */}
         <div className="flex justify-center mt-2">
-          {byDirection['3'] ? (
+          {byDirection['남_보행자'] ? (
             <div className="flex flex-col items-center">
               <SignalBulb
-                signal={byDirection['3'].signal}
-                remainSeconds={byDirection['3'].remainSeconds}
+                signal={byDirection['남_보행자'].signal}
+                remainSeconds={byDirection['남_보행자'].remainSeconds}
+                direction="남 보행"
               />
               <span className="text-xs mt-1" style={{ color: '#0f172a' }}>
-                {DIRECTION_LABELS['3'].arrow} {DIRECTION_LABELS['3'].label}
+                {DIRECTION_LABELS['남_보행자'].arrow} {DIRECTION_LABELS['남_보행자'].label}
               </span>
             </div>
           ) : (
@@ -185,7 +212,7 @@ export default function TrafficLightDetail({
                   <span className="text-xs mb-1" style={{ color: '#0f172a' }}>
                     {DIRECTION_LABELS[dir]?.arrow} {DIRECTION_LABELS[dir]?.label}
                   </span>
-                  <SignalBulb signal={d.signal} remainSeconds={d.remainSeconds} />
+                  <SignalBulb signal={d.signal} remainSeconds={d.remainSeconds} direction={DIRECTION_LABELS[dir]?.label} />
                 </div>
               );
             })}

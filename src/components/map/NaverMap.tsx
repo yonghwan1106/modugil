@@ -142,7 +142,12 @@ export default function NaverMap({ markers, onMarkerClick }: NaverMapProps) {
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainerRef} className="w-full h-full" />
+      <div
+        ref={mapContainerRef}
+        className="w-full h-full"
+        role="application"
+        aria-label="교통약자 이동정보 지도"
+      />
       <div
         className="absolute bottom-4 left-4 rounded-xl p-3 text-xs space-y-1.5"
         style={{

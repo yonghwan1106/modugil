@@ -49,9 +49,10 @@ export default function Header() {
             AI 교통약자 이동 어시스턴트
           </span>
         </div>
-        <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1" aria-label="메인 내비게이션">
           <Link
             href="/"
+            aria-current={pathname === '/' ? 'page' : undefined}
             className={`px-3 py-1.5 text-sm font-medium transition-colors ${
               pathname === '/'
                 ? 'text-white border-b-2'
@@ -67,6 +68,7 @@ export default function Header() {
           </Link>
           <Link
             href="/dashboard"
+            aria-current={pathname === '/dashboard' ? 'page' : undefined}
             className={`px-3 py-1.5 text-sm font-medium transition-colors ${
               pathname === '/dashboard'
                 ? 'text-white border-b-2'

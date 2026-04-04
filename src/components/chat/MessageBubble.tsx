@@ -20,7 +20,14 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div className="flex items-center gap-2 mt-1">
-      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1e293b' }}>
+      <div
+        className="flex-1 h-1.5 rounded-full overflow-hidden"
+        style={{ backgroundColor: '#1e293b' }}
+        role="progressbar"
+        aria-valuenow={pct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: '#d4a853' }} />
       </div>
       <span className="text-[10px] w-8 text-right" style={{ color: '#6b7280' }}>{pct}%</span>
@@ -32,6 +39,7 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
 function CardShell({ children }: { children: React.ReactNode }) {
   return (
     <div
+      role="article"
       className="rounded-xl p-3 text-xs space-y-1.5"
       style={{
         backgroundColor: '#ffffff',
@@ -86,20 +94,19 @@ function TransportCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
-  const phases = Array.isArray(item.phases) ? (item.phases as Record<string, unknown>[]) : [];
+  const directions = Array.isArray(item.directions) ? (item.directions as Record<string, unknown>[]) : [];
   return (
     <CardShell>
       <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
         <CardIcon emoji="🚦" />
         <span>{String(item.crossroadName ?? '신호등')}</span>
       </div>
-      {phases.length > 0 ? (
-        phases.map((phase, i) => {
-          const color = String(phase.color ?? '').toLowerCase();
-          /* CSS dots instead of emoji traffic lights */
-          const dotColor = color === 'green' || color === '녹색'
+      {directions.length > 0 ? (
+        directions.map((dir, i) => {
+          const signal = String(dir.signal ?? '').toLowerCase();
+          const dotColor = signal.includes('녹') || signal.includes('green') || signal === 'g'
             ? '#22c55e'
-            : color === 'yellow' || color === '황색'
+            : signal.includes('황') || signal.includes('yellow') || signal === 'y'
               ? '#eab308'
               : '#ef4444';
           return (
@@ -114,7 +121,7 @@ function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
                   boxShadow: `0 0 4px ${dotColor}`,
                 }}
               />
-              {i + 1}방향: {String(phase.colorKo ?? phase.color ?? '')} {String(phase.duration ?? '')}초
+              {String(dir.direction ?? '')}: {String(dir.signal ?? '')} {String(dir.remainSeconds ?? '')}초
             </div>
           );
         })
@@ -126,7 +133,7 @@ function TrafficLightCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function LibraryCard({ item }: { item: Record<string, unknown> }) {
-  const rooms = Array.isArray(item.rooms) ? (item.rooms as Record<string, unknown>[]) : [];
+  const rooms = Array.isArray(item.readingRooms) ? (item.readingRooms as Record<string, unknown>[]) : [];
   return (
     <CardShell>
       <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
@@ -135,15 +142,15 @@ function LibraryCard({ item }: { item: Record<string, unknown> }) {
       </div>
       {rooms.length > 0 ? (
         rooms.map((room, i) => {
-          const occupied = Number(room.occupiedSeats ?? 0);
-          const total = Number(room.totalSeats ?? 0);
+          const used = Number(room.used ?? 0);
+          const total = Number(room.total ?? 0);
           return (
             <div key={i} className="space-y-0.5">
-              <div className="font-medium" style={{ color: '#0f172a' }}>{String(room.roomName ?? `열람실 ${i + 1}`)}</div>
+              <div className="font-medium" style={{ color: '#0f172a' }}>{String(room.name ?? `열람실 ${i + 1}`)}</div>
               <div style={{ color: '#4b5563' }}>
-                사용: <span className="font-medium">{occupied}/{total}석</span>
+                사용: <span className="font-medium">{used}/{total}석</span>
               </div>
-              {total > 0 && <ProgressBar value={occupied} max={total} />}
+              {total > 0 && <ProgressBar value={used} max={total} />}
             </div>
           );
         })
@@ -155,17 +162,17 @@ function LibraryCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function CivilOfficeCard({ item }: { item: Record<string, unknown> }) {
-  const services = Array.isArray(item.services) ? (item.services as Record<string, unknown>[]) : [];
+  const tasks = Array.isArray(item.tasks) ? (item.tasks as Record<string, unknown>[]) : [];
   return (
     <CardShell>
       <div className="font-semibold flex items-center gap-1.5" style={{ color: '#0f172a' }}>
         <CardIcon emoji="🏢" />
         <span>{String(item.officeName ?? '민원실')}</span>
       </div>
-      {services.length > 0 ? (
-        services.map((svc, i) => (
+      {tasks.length > 0 ? (
+        tasks.map((task, i) => (
           <div key={i} style={{ color: '#4b5563' }}>
-            {String(svc.serviceName ?? `서비스 ${i + 1}`)}: <span className="font-medium" style={{ color: '#0f172a' }}>{String(svc.waitingCount ?? 0)}명 대기</span>
+            {String(task.taskName ?? `업무 ${i + 1}`)}: <span className="font-medium" style={{ color: '#0f172a' }}>{String(task.waitingCount ?? 0)}명 대기</span>
           </div>
         ))
       ) : (

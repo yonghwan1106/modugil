@@ -232,3 +232,27 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--navy-500);
 }
+
+/* 접근성: 포커스 가시성 */
+*:focus-visible {
+  outline: 2px solid #d4a853;
+  outline-offset: 2px;
+}
+
+/* 접근성: 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  :root {
+    --navy-900: #000000;
+    --gold-500: #cc9900;
+    --warm-white: #ffffff;
+    --text: #000000;
+  }
+}
+
+/* 접근성: 모션 축소 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

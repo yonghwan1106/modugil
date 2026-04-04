@@ -23,3 +23,4 @@
 {"t":0,"agent":"aef6573","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":555110}
 {"t":0,"agent":"abf2356","agent_type":"architect","event":"agent_start","parent_mode":"none"}
 {"t":0,"agent":"abf2356","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":125995}
+{"t":0,"agent":"system","event":"skill_invoked","skill_name":"oh-my-claudecode:cancel"}

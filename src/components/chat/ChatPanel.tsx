@@ -15,9 +15,33 @@ interface Message {
 
 interface ChatPanelProps {
   onToolResults?: (results: unknown[]) => void;
+  userType?: string;
 }
 
-const SUGGESTED_QUESTIONS = [
+const SUGGESTED_QUESTIONS_BY_TYPE: Record<string, string[]> = {
+  '휠체어': [
+    '강남역 근처 저상버스와 교통약자 차량 현황',
+    '종로구 도서관 중 엘리베이터가 있는 곳은?',
+    '서울역 민원실 대기시간',
+  ],
+  '시각장애': [
+    '강남역 횡단보도 신호등 잔여시간',
+    '종로구 음향신호기 있는 교차로',
+    '서울역 근처 민원실 안내',
+  ],
+  '고령자': [
+    '종로구 도서관 빈자리',
+    '서울역 민원실 대기시간이 짧은 곳',
+    '강남역 신호등 잔여시간',
+  ],
+  '임산부': [
+    '종로구 교통약자 이동지원 차량',
+    '서울역 민원실 대기시간',
+    '마포구 도서관 좌석 현황',
+  ],
+};
+
+const DEFAULT_SUGGESTED_QUESTIONS = [
   '강남역 근처 신호등 잔여시간과 교통약자 차량 현황을 알려줘',
   '종로구 교통약자 이동지원 차량 현황 알려줘',
   '종로구 도서관 중 빈자리가 있는 곳은?',
@@ -25,7 +49,7 @@ const SUGGESTED_QUESTIONS = [
   '강남역 근처 저상버스 노선 알려줘',
 ];
 
-export default function ChatPanel({ onToolResults }: ChatPanelProps) {
+export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,13 +88,14 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
     setIsLoading(true);
 
     try {
-      const history = messages.map((m) => ({ role: m.role, content: m.content }));
-      history.push({ role: 'user', content: trimmed });
+      const allHistory = messages.map((m) => ({ role: m.role, content: m.content }));
+      allHistory.push({ role: 'user', content: trimmed });
+      const history = allHistory.slice(-10);
 
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ messages: history, userType }),
       });
 
       const data = await res.json() as { message?: string; content?: string; toolResults?: unknown[]; error?: boolean };
@@ -159,7 +184,13 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
       </div>
 
       {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" style={{ backgroundColor: '#faf9f7' }}>
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
+        style={{ backgroundColor: '#faf9f7' }}
+        role="log"
+        aria-label="대화 내역"
+        aria-live="polite"
+      >
         {messages.length === 0 ? (
           <div className="flex flex-col gap-3">
             <div className="text-center py-6">
@@ -201,10 +232,11 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
               <p className="mt-1" style={{ color: '#6b7280', fontSize: '12px' }}>아래 질문을 눌러 시작하세요</p>
             </div>
             <div className="space-y-2">
-              {SUGGESTED_QUESTIONS.map((q) => (
+              {(userType ? (SUGGESTED_QUESTIONS_BY_TYPE[userType] ?? DEFAULT_SUGGESTED_QUESTIONS) : DEFAULT_SUGGESTED_QUESTIONS).map((q) => (
                 <button
                   key={q}
                   onClick={() => void sendMessage(q)}
+                  aria-label={`추천 질문: ${q}`}
                   className="w-full text-left text-sm rounded-xl px-4 py-3 font-medium transition-all duration-200"
                   style={{
                     backgroundColor: '#faf9f7',
@@ -216,6 +248,14 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
                     e.currentTarget.style.color = '#d4a853';
                   }}
                   onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#1e293b';
+                    e.currentTarget.style.color = '#0f172a';
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = '#d4a853';
+                    e.currentTarget.style.color = '#d4a853';
+                  }}
+                  onBlur={(e) => {
                     e.currentTarget.style.borderColor = '#1e293b';
                     e.currentTarget.style.color = '#0f172a';
                   }}
@@ -240,6 +280,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
           <div className="flex justify-center">
             <button
               onClick={handleRetry}
+              aria-label="마지막 질문 다시 시도"
               className="text-sm rounded-xl px-4 py-2 transition-all duration-200"
               style={{
                 color: '#0f172a',
@@ -252,6 +293,16 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
                 e.currentTarget.style.backgroundColor = 'rgba(212,168,83,0.06)';
               }}
               onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#0f172a';
+                e.currentTarget.style.color = '#0f172a';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = '#d4a853';
+                e.currentTarget.style.color = '#d4a853';
+                e.currentTarget.style.backgroundColor = 'rgba(212,168,83,0.06)';
+              }}
+              onBlur={(e) => {
                 e.currentTarget.style.borderColor = '#0f172a';
                 e.currentTarget.style.color = '#0f172a';
                 e.currentTarget.style.backgroundColor = 'transparent';
@@ -272,6 +323,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label="이동 관련 질문 입력"
             placeholder="이동 관련 질문을 입력하세요..."
             disabled={isLoading}
             className="flex-1 text-sm rounded-xl px-4 py-2.5 outline-none transition-all duration-200 disabled:opacity-50"
@@ -291,6 +343,7 @@ export default function ChatPanel({ onToolResults }: ChatPanelProps) {
           />
           <button
             type="submit"
+            aria-label="메시지 전송"
             disabled={!input.trim() || isLoading}
             className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
             style={{
