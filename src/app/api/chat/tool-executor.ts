@@ -401,7 +401,8 @@ export async function executeToolCall(
     case 'get_library_seats': {
       const libraryName = input.libraryName as string | undefined;
 
-      const [librariesResult, seatsResult] = await Promise.all([
+      // 구 단위로 먼저 시도, 실패(NODATA) 시 stdgCd 없이 재시도
+      let [librariesResult, seatsResult] = await Promise.all([
         fetchWithFallback<Library>(
           ENDPOINTS.library.info,
           districtParams,
@@ -413,6 +414,14 @@ export async function executeToolCall(
           mockData.MOCK_LIBRARY_SEATS,
         ),
       ]);
+
+      // 구 단위에서 mock 폴백된 경우 stdgCd 없이 재시도
+      if (librariesResult.source === 'mock' && Object.keys(districtParams).length > 0) {
+        [librariesResult, seatsResult] = await Promise.all([
+          fetchWithFallback<Library>(ENDPOINTS.library.info, noRegionParams, mockData.MOCK_LIBRARIES),
+          fetchWithFallback<LibrarySeat>(ENDPOINTS.library.seats, noRegionParams, mockData.MOCK_LIBRARY_SEATS),
+        ]);
+      }
 
       const source = librariesResult.source === 'live' ? 'live' : 'mock';
 
