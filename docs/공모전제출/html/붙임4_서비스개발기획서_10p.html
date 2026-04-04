@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>붙임4. 서비스 개발 기획서 — 모두의 길</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:12mm 15mm}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.page-break{page-break-before:always}.no-break{page-break-inside:avoid}}
+:root{--navy:#0f172a;--navy-mid:#1e293b;--navy-light:#334155;--gold:#d4a853;--gold-light:#f5e6c8;--gold-dark:#b8922f;--warm-white:#faf9f7;--warm-gray:#f1efe9;--text:#1a1a1a;--text-light:#64748b;--success:#059669;--danger:#dc2626}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;color:var(--text);background:var(--warm-white);font-size:9.5pt;line-height:1.65}
+.cover{height:267mm;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden;background-color:var(--navy);background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%231e293b' stroke-width='.5'/%3E%3C/svg%3E")}
+.cover-inner{text-align:center;padding:40px;max-width:560px;z-index:1}
+.cover h1{font-family:'Noto Serif KR',serif;font-size:48pt;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1.15}
+.cover-bar{width:100px;height:3px;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-dark));margin:14px auto 20px;border-radius:2px}
+.cover-sub{font-size:13pt;font-weight:300;color:#cbd5e1;letter-spacing:1px}
+.cover-url{margin-top:24px}
+.cover-url a{color:var(--gold);font-size:14pt;font-weight:600;text-decoration:none;border:1px solid rgba(212,168,83,.4);padding:8px 24px;border-radius:30px}
+.data-icons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:32px auto 0;max-width:480px}
+.data-icon{background:rgba(255,255,255,.06);border:1px solid rgba(212,168,83,.2);border-radius:8px;padding:10px 6px;text-align:center}
+.data-icon .emoji{font-size:20pt}.data-icon .label{font-size:8pt;color:#94a3b8;margin-top:4px}
+.cover-footer{margin-top:30px;font-size:8.5pt;color:#64748b}
+.cover-footer strong{color:#94a3b8}
+.content{padding:8px 20px 20px}
+.sh{font-family:'Noto Serif KR',serif;font-size:14pt;font-weight:700;color:var(--navy);border-left:4px solid var(--gold);padding:4px 0 4px 12px;margin:20px 0 10px;background:linear-gradient(90deg,var(--warm-gray),transparent)}
+.sh3{font-family:'Noto Serif KR',serif;font-size:11pt;font-weight:600;color:var(--navy);margin:14px 0 6px}
+.sh4{font-weight:600;color:var(--navy-light);margin:10px 0 4px;font-size:10pt}
+table{width:100%;border-collapse:collapse;font-size:9pt;margin:6px 0 10px}
+th{background:var(--navy);color:var(--gold);font-weight:600;text-align:left;padding:5px 8px;font-size:8.5pt}
+td{padding:4px 8px;border-bottom:1px solid #e2e0dc}
+tr:nth-child(even) td{background:var(--warm-gray)}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
+.stat-card{background:var(--navy);border-radius:10px;padding:12px;text-align:center}
+.stat-num{font-family:'Noto Serif KR',serif;font-size:22pt;font-weight:700;color:var(--gold)}
+.stat-label{font-size:8pt;color:#94a3b8;margin-top:2px}
+.callout{background:var(--gold-light);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0;font-size:9pt}
+.callout-info{background:#e8f4f8;border-left-color:var(--navy)}
+.code{background:var(--navy);color:#e2e8f0;padding:10px 14px;border-radius:6px;font-family:Consolas,'Courier New',monospace;font-size:8pt;line-height:1.5;margin:6px 0;white-space:pre-wrap}
+.code .kw{color:var(--gold)}.code .str{color:#86efac}.code .cmt{color:#64748b;font-style:italic}
+.pbar{display:flex;align-items:center;gap:6px}
+.pbar-track{flex:1;height:6px;background:var(--navy-mid);border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;background:var(--gold);border-radius:3px}
+.pbar-label{font-size:8pt;color:var(--text-light);width:30px;text-align:right}
+.highlight-col{background:var(--gold-light)!important;font-weight:600}
+.check{color:var(--success);font-weight:700}.cross{color:var(--danger);font-weight:700}
+.screenshot{width:100%;border:1px solid #e2e0dc;border-radius:8px;margin:4px 0}
+.screenshot-mobile{width:35%;display:block;margin:4px auto}
+.caption{text-align:center;font-size:8pt;color:var(--text-light);margin:2px 0 8px}
+.doc-footer{text-align:center;margin-top:24px;padding-top:16px;border-top:2px solid var(--gold);font-size:9pt;color:var(--text-light)}
+.step{display:flex;gap:10px;align-items:flex-start;margin:4px 0}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11pt;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- ===== P1: 커버 ===== -->
+<div class="cover">
+  <div class="cover-inner">
+    <div style="font-size:9pt;color:#94a3b8;letter-spacing:4px;margin-bottom:30px;">2026 전국 통합데이터 활용 공모전</div>
+    <h1>모두의 길</h1>
+    <div class="cover-bar"></div>
+    <div class="cover-sub">AI 기반 교통약자 통합 이동지원 서비스</div>
+    <div style="font-size:10pt;margin-top:4px;color:#94a3b8;">"하나의 질문, 모든 이동 정보"</div>
+    <div class="cover-url"><a href="https://modugil.vercel.app/">https://modugil.vercel.app/</a></div>
+    <div class="data-icons">
+      <div class="data-icon"><div class="emoji">🚲</div><div class="label">공영자전거</div></div>
+      <div class="data-icon"><div class="emoji">♿</div><div class="label">교통약자 이동지원</div></div>
+      <div class="data-icon"><div class="emoji">📚</div><div class="label">공공도서관</div></div>
+      <div class="data-icon"><div class="emoji">🔒</div><div class="label">물품보관함</div></div>
+      <div class="data-icon"><div class="emoji">🚦</div><div class="label">교통신호</div></div>
+      <div class="data-icon"><div class="emoji">🏢</div><div class="label">민원실</div></div>
+      <div class="data-icon"><div class="emoji">🚌</div><div class="label">버스</div></div>
+      <div class="data-icon" style="border-color:var(--gold);"><div class="emoji">🤖</div><div class="label" style="color:var(--gold);">Claude AI</div></div>
+    </div>
+    <div class="cover-footer">
+      <div><strong>제안자</strong> 박용환 | <strong>GitHub</strong> github.com/yonghwan1106/modugil | <strong>2026. 04</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== P2: 개요 + 배경 ===== -->
+<div class="page-break content">
+  <div class="sh">1. 서비스 개요 및 기획 배경</div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-num">1,500만</div><div class="stat-label">교통약자 인구 (29%)</div></div>
+    <div class="stat-card"><div class="stat-num">7종</div><div class="stat-label">통합 데이터</div></div>
+    <div class="stat-card"><div class="stat-num">20개</div><div class="stat-label">API 엔드포인트</div></div>
+    <div class="stat-card"><div class="stat-num">AI</div><div class="stat-label">Claude Haiku 4.5</div></div>
+  </div>
+  <p style="margin:8px 0;">우리나라 교통약자(장애인·고령자·임산부)는 <strong>약 1,500만 명(전체 인구 29%)</strong>이지만, 이동 정보가 7개 이상 시스템에 분산되어 통합 확인이 어렵습니다. 「교통약자의 이동편의 증진법」 제3조에 따른 이동권 보장을 위해, 7종 공공데이터를 AI 대화형으로 통합 제공하는 서비스를 기획했습니다.</p>
+  <table class="no-break">
+    <tr><th>핵심 문제</th><th>현황</th><th>영향</th></tr>
+    <tr><td>횡단보도 신호 정보 부재</td><td>잔여시간 실시간 확인 불가</td><td>보행 안전 위협</td></tr>
+    <tr><td>교통수단 정보 분산</td><td>저상버스/이동지원 차량 위치 파악 불가</td><td>불필요한 대기</td></tr>
+    <tr><td>목적지 혼잡도 미확인</td><td>도서관 좌석, 민원실 대기시간 사전 확인 불가</td><td>장시간 대기</td></tr>
+    <tr><td>정보 접근성 장벽</td><td>7개 이상 앱/사이트 번갈아 확인</td><td>디지털 취약 계층 소외</td></tr>
+  </table>
+  <div class="sh3">서비스 개요</div>
+  <table class="no-break">
+    <tr><td style="width:90px;font-weight:600;">서비스명</td><td>모두의 길 (modugil)</td></tr>
+    <tr><td style="font-weight:600;">유형</td><td>반응형 웹앱 (모바일/데스크톱)</td></tr>
+    <tr><td style="font-weight:600;">대상</td><td>교통약자 (장애인, 고령자, 임산부) 및 보호자</td></tr>
+    <tr><td style="font-weight:600;">핵심 가치</td><td>"하나의 질문, 모든 이동 정보"</td></tr>
+    <tr><td style="font-weight:600;">데이터</td><td>전국 통합데이터 7종 20개 API — 14개 AI 채팅 활용, 6개 프록시</td></tr>
+    <tr><td style="font-weight:600;">서비스 URL</td><td><a href="https://modugil.vercel.app/" style="color:var(--gold);font-weight:700;">https://modugil.vercel.app/</a></td></tr>
+  </table>
+  <div class="callout">💡 <strong>기획 의도</strong>: 교통약자에게 "대화 한 마디로 안전한 길을 찾아주는 AI 동반자"를 제공합니다. 검색→필터→확인 방식을 자연어 대화로 전환하여, 디지털 기기에 익숙하지 않은 고령자도 쉽게 이용할 수 있습니다.</div>
+</div>
+
+<!-- ===== P3: 기대효과 + 차별성 ===== -->
+<div class="page-break content">
+  <div class="sh">2. 기대효과 및 차별성</div>
+  <table class="no-break">
+    <tr><th>구분</th><th>기대효과</th></tr>
+    <tr><td>안전</td><td>횡단보도 신호 잔여시간 실시간 확인 → 보행 사고 예방</td></tr>
+    <tr><td>편의</td><td>7종 데이터 한 번의 질문으로 통합 조회 → 정보 접근 시간 대폭 단축</td></tr>
+    <tr><td>접근성</td><td>자연어 대화 방식 → 디지털 취약 계층 포용</td></tr>
+    <tr><td>효율</td><td>민원실 대기시간·도서관 좌석 사전 확인 → 불필요한 이동 감소</td></tr>
+    <tr><td>정책 기여</td><td>교통약자 이동편의 증진법 이행 지원, 공공데이터 활용 촉진</td></tr>
+  </table>
+  <div class="sh3">경쟁 서비스 비교</div>
+  <table class="no-break">
+    <tr><th>비교 항목</th><th>카카오맵/네이버지도</th><th>토도웍스</th><th class="highlight-col">모두의 길</th></tr>
+    <tr><td>교통약자 전용</td><td class="cross">✗</td><td>시각장애 특화</td><td class="highlight-col check">✓ 전 유형</td></tr>
+    <tr><td>데이터 종류</td><td>교통 위주</td><td>보행 경로</td><td class="highlight-col"><strong>7종 20개 API</strong></td></tr>
+    <tr><td>인터페이스</td><td>지도 검색</td><td>지도 검색</td><td class="highlight-col"><strong>AI 대화</strong></td></tr>
+    <tr><td>복합 질의</td><td class="cross">✗</td><td class="cross">✗</td><td class="highlight-col check">✓</td></tr>
+    <tr><td>목적지 혼잡도</td><td>일부</td><td class="cross">✗</td><td class="highlight-col check">✓ 실시간</td></tr>
+    <tr><td>자동 연계 추천</td><td class="cross">✗</td><td class="cross">✗</td><td class="highlight-col check">✓</td></tr>
+  </table>
+  <div class="sh3">데이터 통합 활용 시나리오</div>
+  <table class="no-break">
+    <tr><th>시나리오</th><th>통합 데이터</th><th>통합 가치</th></tr>
+    <tr><td>도서관 방문</td><td>좌석 + 교통약자 차량 + 신호등</td><td>빈자리 도서관까지 안전 이동 종합 안내</td></tr>
+    <tr><td>민원실 방문</td><td>대기시간 + 교통약자 차량 + 보관함</td><td>대기 짧은 민원실 + 짐보관 + 이동수단</td></tr>
+    <tr><td>외출 종합</td><td>버스 + 자전거 + 신호등</td><td>교통약자 유형별 복합 이동수단 비교</td></tr>
+  </table>
+</div>
+
+<!-- ===== P4: 기술 구현 ===== -->
+<div class="page-break content">
+  <div class="sh">3. 기술 구현 상세</div>
+  <div class="sh3">3-1. 시스템 아키텍처 (하이브리드)</div>
+  <div style="display:flex;flex-direction:column;gap:6px;margin:8px 0;" class="no-break">
+    <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:8px 12px;text-align:center;">
+      <strong style="color:var(--navy);">Frontend</strong> — React 19.2 + Next.js 16.2 + Naver Maps + Recharts
+    </div>
+    <div style="text-align:center;color:var(--gold);font-size:16pt;">▼</div>
+    <div style="background:var(--navy);color:#fff;border-radius:8px;padding:8px 12px;text-align:center;">
+      <strong style="color:var(--gold);">Backend (Next.js API Route)</strong><br>
+      <span style="font-size:8.5pt;color:#94a3b8;">키워드 라우팅 → 도구 병렬 실행 → Claude AI 자연어 응답</span>
+    </div>
+    <div style="text-align:center;color:var(--gold);font-size:16pt;">▼</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:8px;text-align:center;">
+        <strong>Anthropic API</strong><br><span style="font-size:8pt;color:var(--text-light);">Claude Haiku 4.5</span>
+      </div>
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;border-radius:8px;padding:8px;text-align:center;">
+        <strong>공공데이터 API</strong><br><span style="font-size:8pt;color:var(--text-light);">7종 20개 (apis.data.go.kr)</span>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-info">서버 사이드 키워드 라우팅으로 도구를 자동 선택·병렬 실행 후 Claude에 전달하여 자연어 응답을 생성합니다. Claude tool_use 대비 API 호출 1회로 단축하여 응답 속도를 최적화했습니다.</div>
+  <div class="sh3">3-2. 기술 스택</div>
+  <table class="no-break">
+    <tr><th>계층</th><th>기술</th><th>버전</th><th>용도</th></tr>
+    <tr><td>프론트엔드</td><td>React + Next.js</td><td>19.2 / 16.2</td><td>UI, SSR, 라우팅</td></tr>
+    <tr><td>스타일링</td><td>Tailwind CSS</td><td>4.x</td><td>반응형 디자인</td></tr>
+    <tr><td>지도</td><td>Naver Maps API</td><td>v3</td><td>위치 시각화, 7종 마커</td></tr>
+    <tr><td>AI</td><td>Claude Haiku 4.5</td><td>@anthropic-ai/sdk 0.80</td><td>NLU + NLG</td></tr>
+    <tr><td>차트</td><td>Recharts</td><td>3.8</td><td>대시보드 시각화</td></tr>
+    <tr><td>배포</td><td>Vercel</td><td>-</td><td>자동 배포, 엣지 네트워크</td></tr>
+  </table>
+  <div class="sh3">3-3. 안정성 및 성능</div>
+  <table class="no-break">
+    <tr><th>항목</th><th>구현</th></tr>
+    <tr><td>캐싱</td><td>5분 TTL 인메모리 캐시 (동일 API 호출 절감)</td></tr>
+    <tr><td>장애 대응</td><td>7종 Mock 데이터 자동 폴백 (API 장애 시 서비스 중단 방지)</td></tr>
+    <tr><td>타임아웃</td><td>30초 타임아웃 + 1회 자동 재시도</td></tr>
+    <tr><td>병렬 처리</td><td>Promise.all 기반 다중 API 동시 호출</td></tr>
+    <tr><td>보안</td><td>API 키 서버사이드 환경변수 관리</td></tr>
+  </table>
+</div>
+
+<!-- ===== P5: 핵심 구현 + 맞춤 안내 ===== -->
+<div class="page-break content">
+  <div class="sh">3. 기술 구현 (계속)</div>
+  <div class="sh3">3-4. 선언적 도구 라우팅</div>
+  <div class="code"><span class="kw">const</span> TOOL_ROUTING = [
+  { <span class="str">keywords</span>: <span class="str">/도서관|빈자리|열람실/</span>, <span class="str">tool</span>: <span class="str">'get_library_seats'</span>, <span class="str">alsoInclude</span>: [<span class="str">'get_accessible_transport'</span>] },
+  { <span class="str">keywords</span>: <span class="str">/민원실|대기시간/</span>,  <span class="str">tool</span>: <span class="str">'get_civil_office_wait'</span>, <span class="str">alsoInclude</span>: [<span class="str">'get_accessible_transport'</span>] },
+  { <span class="str">keywords</span>: <span class="str">/신호등|횡단보도/</span>,  <span class="str">tool</span>: <span class="str">'get_traffic_light_status'</span> },
+  { <span class="str">keywords</span>: <span class="str">/버스|저상버스/</span>,   <span class="str">tool</span>: <span class="str">'get_bus_realtime_location'</span> },
+  <span class="cmt">// ... 7종 전체 매핑</span>
+];</div>
+  <p style="font-size:8.5pt;color:var(--text-light);margin:4px 0;">※ 도서관/민원실 조회 시 교통약자 이동지원 차량을 <code>alsoInclude</code>로 자동 연계 — 목적지+이동수단 동시 안내</p>
+  <div class="sh3">3-5. 교통약자 유형별 맞춤 안내</div>
+  <table class="no-break">
+    <tr><th>사용자 유형</th><th>맞춤 안내</th></tr>
+    <tr><td>휠체어 사용자</td><td>저상버스 위치, 경사로/엘리베이터 유무, 이동지원 차량 우선 안내</td></tr>
+    <tr><td>시각장애인</td><td>음향신호기, 잔여시간 음성안내, 점자블록 경로</td></tr>
+    <tr><td>고령자</td><td>충분한 신호 잔여시간, 가까운 시설, 대기 없는 서비스 우선</td></tr>
+    <tr><td>임산부</td><td>교통약자 전용 차량, 좌석 여유 있는 시설 안내</td></tr>
+  </table>
+  <div class="sh3">3-6. 사용자 시나리오: 휠체어 사용자 김철수(45세)의 도서관 방문</div>
+  <div class="step"><div class="step-num">1</div><div><strong>"마포구 도서관 빈자리 있어?"</strong> 입력</div></div>
+  <div class="step"><div class="step-num">2</div><div>AI가 <strong>도서관 좌석 + 교통약자 이동지원 차량</strong> 동시 조회 (alsoInclude 자동 연계)</div></div>
+  <div class="step"><div class="step-num">3</div><div>지도에 <span style="color:#2563eb;">도서관(파랑)</span> + <span style="color:#dc2626;">이동지원센터(빨강)</span> 마커 동시 표시</div></div>
+  <div class="step"><div class="step-num">4</div><div>"마포구립 서강도서관 잔여 좌석 <strong>12석</strong>. 이동지원센터 <strong>3대</strong> 차량 이용 가능합니다."</div></div>
+  <div class="step"><div class="step-num">5</div><div>후속: "이동지원 차량 예약은 02-XXX-XXXX. 근처 저상버스 노선도 확인해볼까요?"</div></div>
+  <div class="callout" style="margin-top:8px;">💡 한 번의 질문으로 <u>목적지 정보</u> + <u>이동수단</u>을 동시에 안내하여, 여러 앱을 번갈아 확인할 필요가 없습니다.</div>
+</div>
+
+<!-- ===== P6: 실제 화면 ===== -->
+<div class="page-break content">
+  <div class="sh">4. 서비스 화면</div>
+  <div class="sh3">4-1. 메인 화면 (지도 + AI 채팅)</div>
+  <img class="screenshot" src="../screenshots/main.png" alt="메인 화면">
+  <div class="caption">▲ 메인 화면 — 네이버 지도(좌) + AI 채팅 패널(우), 7종 컬러 마커 + 추천 질문</div>
+  <div class="sh3">4-2. 실시간 현황 대시보드</div>
+  <img class="screenshot" src="../screenshots/dashboard.png" alt="대시보드">
+  <div class="caption">▲ 대시보드 — 교통약자 차량/도서관/민원실/자전거 요약 카드 + 차트 + 대기현황 테이블</div>
+  <div class="sh3">4-3. 모바일 반응형</div>
+  <img class="screenshot-mobile" src="../screenshots/mobile.png" alt="모바일">
+  <div class="caption">▲ 모바일 — 지도(상단 50vh) + 채팅(하단 50vh) 세로 배치, 터치 친화 UI</div>
+</div>
+
+<!-- ===== P7-8: AI 활용 ===== -->
+<div class="page-break content">
+  <div class="sh">5. AI 활용 상세 (가산점)</div>
+  <table class="no-break">
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>모델</td><td>Claude Haiku 4.5 (Anthropic) — 비용 효율($1/백만 토큰) + 빠른 응답 속도</td></tr>
+    <tr><td>SDK</td><td>@anthropic-ai/sdk v0.80 (서버사이드 API 호출)</td></tr>
+    <tr><td>방식</td><td>하이브리드: 서버 키워드 라우팅(속도) + Claude NLG(자연어 품질)</td></tr>
+  </table>
+  <div class="sh3">AI 활용 범위</div>
+  <table class="no-break">
+    <tr><th>영역</th><th>설명</th></tr>
+    <tr><td><strong>NLU</strong></td><td>한국어 자연어 질문 분석, 복합 질의 ("신호등<strong>과</strong> 저상버스") 처리</td></tr>
+    <tr><td><strong>NLG</strong></td><td>7종 API 원시 데이터를 교통약자 맞춤형 자연어로 변환</td></tr>
+    <tr><td><strong>프롬프트</strong></td><td>6가지 핵심 원칙 + 4유형 맞춤 지침 + 키워드→도구 매핑 규칙</td></tr>
+    <tr><td><strong>안전 판단</strong></td><td>신호 잔여시간 기반 횡단 안전 경고 자동 생성</td></tr>
+  </table>
+  <div class="sh3">AI 변환 예시</div>
+  <div class="sh4">Before (원시 API 데이터)</div>
+  <div class="code">{"crossroadName":"종로4가사거리","phases":[{"direction":"1","color":"GREEN","duration":"32"}]}</div>
+  <div class="sh4">After (AI 자연어 응답)</div>
+  <div style="background:var(--warm-white);border-left:3px solid var(--navy);padding:8px 12px;border-radius:0 6px 6px 0;font-size:9pt;margin:4px 0;">
+    종로4가사거리 신호등 현황입니다. 현재 1방향 <strong>녹색 신호</strong>이며, 잔여시간 <strong>32초</strong>입니다. ⚠️ 고령자분은 보행 속도를 감안하여 다음 신호를 기다리시는 것을 권장합니다.
+  </div>
+  <div class="sh3" style="margin-top:10px;">AI 적용 전후 비교</div>
+  <table class="no-break">
+    <tr><th>비교 항목</th><th>AI 미적용</th><th class="highlight-col">모두의 길 (AI 적용)</th></tr>
+    <tr><td>정보 조회</td><td>7개 앱 각각 방문</td><td class="highlight-col"><strong>한 번의 대화</strong></td></tr>
+    <tr><td>데이터 해석</td><td>원시 JSON 직접 해석</td><td class="highlight-col"><strong>맞춤형 자연어</strong></td></tr>
+    <tr><td>안전 판단</td><td>수동 위험 판단</td><td class="highlight-col"><strong>자동 경고 생성</strong></td></tr>
+    <tr><td>복합 질의</td><td class="cross">✗</td><td class="highlight-col check">✓ 지원</td></tr>
+  </table>
+  <div class="sh3">시스템 프롬프트 핵심</div>
+  <div class="code"><span class="cmt">## 핵심 원칙</span>
+<span class="kw">1.</span> <span class="str">항상 도구를 사용</span>하여 실시간 데이터 조회 후 답변
+<span class="kw">2.</span> 해당하는 <span class="str">모든 도구를 한 번에 동시 호출</span>
+<span class="kw">3.</span> 데이터는 <span class="str">표/목록 형태</span>로 정리
+<span class="kw">4.</span> 위치 데이터 포함 시 <span class="str">"🗺️ 지도에 표시했습니다"</span> 안내
+<span class="cmt">## 교통약자 유형별 맞춤</span>
+- 휠체어: 저상버스, 경사로, 이동지원 차량 <span class="str">우선</span>
+- 시각장애: 음향신호기, 점자블록  - 고령자: 충분한 신호시간
+- 임산부: 전용 차량, 좌석 여유 시설</div>
+</div>
+
+<!-- ===== P9: 활용 데이터 ===== -->
+<div class="page-break content">
+  <div class="sh">6. 활용 데이터 상세</div>
+  <table class="no-break">
+    <tr><th>#</th><th>데이터 분류</th><th>API 명</th><th>수</th><th>AI 채팅</th></tr>
+    <tr><td>1</td><td>공영자전거</td><td>대여소 목록 / 실시간 현황 / 이용이력</td><td>3</td><td>2 활용</td></tr>
+    <tr><td>2</td><td>교통약자 이동지원</td><td>센터 목록 / 차량 / 운행 / 가용현황</td><td>4</td><td>2 활용</td></tr>
+    <tr><td>3</td><td>공공도서관</td><td>도서관 정보 / 현황 / 좌석</td><td>3</td><td>2 활용</td></tr>
+    <tr><td>4</td><td>물품보관함</td><td>보관함 정보 / 상세 / 실시간</td><td>3</td><td>2 활용</td></tr>
+    <tr><td>5</td><td>교통신호</td><td>교차로 목록 / 신호 상태</td><td>2</td><td>2 활용</td></tr>
+    <tr><td>6</td><td>민원실</td><td>민원실 정보 / 실시간 대기</td><td>2</td><td>2 활용</td></tr>
+    <tr><td>7</td><td>버스</td><td>노선 목록 / 정류장 / 실시간 위치</td><td>3</td><td>2 활용</td></tr>
+    <tr style="font-weight:700;"><td></td><td colspan="2" style="text-align:right;">합계</td><td><strong>20</strong></td><td><strong>14</strong></td></tr>
+  </table>
+  <p style="font-size:8pt;color:var(--text-light);">※ 나머지 6개 API(이용이력, 차량현황, 운행현황, 열람실현황, 보관함상세, 정류장)는 데이터 프록시 API(/api/data)를 통해 확장 기능에서 활용</p>
+
+  <div class="sh3" style="margin-top:16px;">프로젝트 구조</div>
+  <div class="code">modugil/
+├── src/app/api/chat/         <span class="cmt"># Claude AI 채팅 (route.ts + tool-executor.ts)</span>
+├── src/app/api/data/         <span class="cmt"># 동적 데이터 프록시 (7종)</span>
+├── src/app/dashboard/        <span class="cmt"># 실시간 대시보드</span>
+├── src/components/chat/      <span class="cmt"># 채팅 패널, 메시지 버블, 데이터 카드</span>
+├── src/components/map/       <span class="cmt"># 네이버 지도, 신호등 상세</span>
+├── src/lib/ai/               <span class="cmt"># Claude 클라이언트, 프롬프트, 도구 정의</span>
+└── src/lib/api/              <span class="cmt"># 공공데이터 클라이언트, 타입, 엔드포인트</span></div>
+</div>
+
+<!-- ===== P10: 평가 대응 + 마무리 ===== -->
+<div class="page-break content">
+  <div class="sh">7. 평가항목 대응표</div>
+  <table class="no-break">
+    <tr><th>평가항목</th><th>배점</th><th>대응 섹션</th><th>핵심 강점</th><th style="width:110px;">충족도</th></tr>
+    <tr>
+      <td><strong>활용성</strong></td><td>30</td><td>1, 6장</td><td>7종 20개 API 전량 연동, 14개 실시간 활용</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:95%"></div></div><div class="pbar-label">95%</div></div></td>
+    </tr>
+    <tr>
+      <td><strong>기획 완성도</strong></td><td>25</td><td>4, 3-6장</td><td>실제 스크린샷, 페르소나 시나리오, 반응형</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:85%"></div></div><div class="pbar-label">85%</div></div></td>
+    </tr>
+    <tr>
+      <td><strong>기술 구현</strong></td><td>20</td><td>3장</td><td>하이브리드 아키텍처, 캐시, Mock 폴백</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:90%"></div></div><div class="pbar-label">90%</div></div></td>
+    </tr>
+    <tr>
+      <td><strong>사회적 기여</strong></td><td>15</td><td>1, 2장</td><td>교통약자 1,500만명, 이동편의 증진법 연계</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:85%"></div></div><div class="pbar-label">85%</div></div></td>
+    </tr>
+    <tr>
+      <td><strong>창의성</strong></td><td>10</td><td>2, 3장</td><td>AI 대화형 통합, 자동 연계, 복합 질의</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:80%"></div></div><div class="pbar-label">80%</div></div></td>
+    </tr>
+    <tr style="background:var(--gold-light);">
+      <td><strong>AI 가산점</strong></td><td>10</td><td>5장</td><td>Claude NLU/NLG, 시스템 프롬프트, 변환 예시</td>
+      <td><div class="pbar"><div class="pbar-track"><div class="pbar-fill" style="width:95%"></div></div><div class="pbar-label">95%</div></div></td>
+    </tr>
+  </table>
+
+  <div class="doc-footer">
+    &mdash; 끝 &mdash;<br>
+    <strong style="font-family:'Noto Serif KR',serif;font-size:13pt;color:var(--navy);">모두의 길</strong> &mdash; AI 기반 교통약자 통합 이동지원 서비스<br>
+    <a href="https://modugil.vercel.app/" style="color:var(--gold);text-decoration:none;font-size:12pt;font-weight:600;">https://modugil.vercel.app/</a><br>
+    <span style="font-size:8.5pt;">제안자: 박용환 | GitHub: github.com/yonghwan1106/modugil | 2026. 04</span>
+  </div>
+</div>
+
+</body>
+</html>
