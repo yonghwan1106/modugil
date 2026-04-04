@@ -82,12 +82,12 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-      <div className="flex items-center gap-1 relative z-10">
+      <div className="flex items-center gap-2 relative z-10">
         <span
-          className="text-xs px-3 py-1 rounded-full font-medium"
+          className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full font-bold"
           style={{ background: '#d4a853', color: '#0f172a' }}
         >
-          전국 통합데이터 활용
+          2026 전국 통합데이터 활용 공모전 출품작
         </span>
       </div>
     </header>
