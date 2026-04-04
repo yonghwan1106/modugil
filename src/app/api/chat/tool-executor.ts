@@ -182,10 +182,11 @@ export async function executeToolCall(
   const cityLevelCd = stdgCd ? stdgCd.slice(0, 2) + '00000000' : '';
   // 교통약자/신호등/보관함: 시 단위에서만 데이터 제공
   const cityParams: Record<string, string> = cityLevelCd ? { stdgCd: cityLevelCd } : {};
-  // 도서관: 구 단위 시도 → 실패 시 stdgCd 없이 재시도
+  // 도서관: 구 단위 시도 → 실패 시 전국 폴백
   const districtParams: Record<string, string> = stdgCd ? { stdgCd } : {};
-  // 민원실/버스: stdgCd를 보내면 NODATA → stdgCd 없이 호출
-  const noRegionParams: Record<string, string> = {};
+  // 민원실/버스: 시 단위 먼저 시도 → K3면 mock 폴백 (noRegion은 다른 지역 데이터가 오므로 사용 금지)
+  // civil: 서울=K3, 부산=K0 / bus: 서울=K3, 울산=K0
+  // → cityParams 사용하되, 해당 지역에 없으면 mock이 더 나음
 
   switch (toolName) {
     case 'get_bicycle_availability': {
@@ -367,7 +368,7 @@ export async function executeToolCall(
 
       const routesResult = await fetchWithFallback<BusRoute>(
         ENDPOINTS.bus.routes,
-        noRegionParams,
+        cityParams,
         mockData.MOCK_BUS_ROUTES,
       );
 
@@ -377,7 +378,7 @@ export async function executeToolCall(
 
       const locationsResult = await fetchWithFallback<BusLocation>(
         ENDPOINTS.bus.locations,
-        noRegionParams,
+        cityParams,
         mockData.MOCK_BUS_LOCATIONS,
       );
 
@@ -431,8 +432,8 @@ export async function executeToolCall(
       // 구 단위에서 mock 폴백된 경우 stdgCd 없이 재시도
       if (librariesResult.source === 'mock' && Object.keys(districtParams).length > 0) {
         [librariesResult, seatsResult] = await Promise.all([
-          fetchWithFallback<Library>(ENDPOINTS.library.info, noRegionParams, mockData.MOCK_LIBRARIES),
-          fetchWithFallback<LibrarySeat>(ENDPOINTS.library.seats, noRegionParams, mockData.MOCK_LIBRARY_SEATS),
+          fetchWithFallback<Library>(ENDPOINTS.library.info, {}, mockData.MOCK_LIBRARIES),
+          fetchWithFallback<LibrarySeat>(ENDPOINTS.library.seats, {}, mockData.MOCK_LIBRARY_SEATS),
         ]);
       }
 
@@ -487,12 +488,12 @@ export async function executeToolCall(
       const [officesResult, waitResult] = await Promise.all([
         fetchWithFallback<CivilOffice>(
           ENDPOINTS.civil.info,
-          noRegionParams,
+          cityParams,
           mockData.MOCK_CIVIL_OFFICES,
         ),
         fetchWithFallback<CivilOfficeWait>(
           ENDPOINTS.civil.realtime,
-          noRegionParams,
+          cityParams,
           mockData.MOCK_CIVIL_WAIT,
         ),
       ]);
