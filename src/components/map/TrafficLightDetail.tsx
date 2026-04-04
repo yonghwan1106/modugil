@@ -33,7 +33,7 @@ const DIRECTION_LABELS: Record<string, { label: string; arrow: string }> = {
 
 function SignalBulb({ signal, remainSeconds, direction }: { signal: string; remainSeconds: number; direction?: string }) {
   const isWarning = remainSeconds <= 10;
-  const sig = signal.toLowerCase();
+  const sig = signal.toLowerCase().replace(/-/g, ' ');
 
   const bulbColor =
     sig.includes('녹') || sig === 'g' || sig.includes('green') || sig.includes('protected movement')
@@ -76,8 +76,8 @@ function SignalBulb({ signal, remainSeconds, direction }: { signal: string; rema
 function getSafetyMessage(directions: Direction[]): { text: string; colorClass: string } {
   // 녹색 신호가 있는 방향 중 최솟값을 기준으로 판단
   const greenDirs = directions.filter((d) => {
-    const s = d.signal.toLowerCase();
-    return s.includes('녹') || s === 'g' || s.includes('green');
+    const s = d.signal.toLowerCase().replace(/-/g, ' ');
+    return s.includes('녹') || s === 'g' || s.includes('green') || s.includes('protected movement');
   });
   if (greenDirs.length === 0) {
     return { text: '대기해 주세요', colorClass: 'text-red-600' };

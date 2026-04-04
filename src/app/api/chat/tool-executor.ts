@@ -254,7 +254,7 @@ export async function executeToolCall(
 
       // 영어 신호 상태를 한글로 변환
       function translateSignal(signal: string): string {
-        const s = signal.toLowerCase();
+        const s = signal.toLowerCase().replace(/-/g, ' ');
         if (s.includes('protected movement')) return '녹색(진행)';
         if (s.includes('stop and remain')) return '적색(정지)';
         if (s.includes('stop then proceed')) return '적색(정지 후 진행)';

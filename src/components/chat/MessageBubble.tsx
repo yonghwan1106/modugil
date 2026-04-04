@@ -94,7 +94,7 @@ function TransportCard({ item }: { item: Record<string, unknown> }) {
 }
 
 function signalToKorean(signal: string): { label: string; color: string } {
-  const s = signal.toLowerCase();
+  const s = signal.toLowerCase().replace(/-/g, ' ');
   if (s.includes('protected movement') || s.includes('green') || s.includes('녹') || s === 'g')
     return { label: '녹색(진행)', color: '#22c55e' };
   if (s.includes('yellow') || s.includes('caution') || s.includes('황') || s === 'y')
