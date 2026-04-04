@@ -55,16 +55,15 @@ export async function fetchPublicData<T>(
   const cached = getCached<T>(cacheKey);
   if (cached) return cached;
 
-  // 쿼리 파라미터 조합
-  const query = new URLSearchParams({
-    serviceKey,
+  // 쿼리 파라미터 조합 — serviceKey는 이미 인코딩된 상태이므로 URLSearchParams를 거치지 않음
+  const otherParams = new URLSearchParams({
     type: 'json',
     pageNo: '1',
     numOfRows: '100',
     ...params,
   });
 
-  const url = `${endpoint}?${query.toString()}`;
+  const url = `${endpoint}?serviceKey=${serviceKey}&${otherParams.toString()}`;
 
   const res = await fetch(url, {
     headers: { Accept: 'application/json' },

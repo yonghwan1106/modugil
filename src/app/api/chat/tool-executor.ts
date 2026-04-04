@@ -157,8 +157,8 @@ async function fetchBikeApi<T>(endpoint: string, params: Record<string, string>)
   const serviceKey = process.env.DATA_API_KEY;
   if (!serviceKey) throw new Error('DATA_API_KEY 환경변수가 설정되지 않았습니다.');
 
-  const query = new URLSearchParams({ serviceKey, type: 'json', pageNo: '1', numOfRows: '50', ...params });
-  const res = await fetch(`${endpoint}?${query.toString()}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+  const otherParams = new URLSearchParams({ type: 'json', pageNo: '1', numOfRows: '50', ...params });
+  const res = await fetch(`${endpoint}?serviceKey=${serviceKey}&${otherParams.toString()}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
   if (!res.ok) throw new Error(`자전거 API 요청 실패: HTTP ${res.status}`);
 
   const json = (await res.json()) as BikeApiResponse<T>;
