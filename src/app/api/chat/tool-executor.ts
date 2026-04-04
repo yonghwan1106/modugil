@@ -251,6 +251,19 @@ export async function executeToolCall(
       const statuses = statusesResult.items;
       const source = crossroadsResult.source === 'live' ? 'live' : 'mock';
 
+      // 영어 신호 상태를 한글로 변환
+      function translateSignal(signal: string): string {
+        const s = signal.toLowerCase();
+        if (s.includes('protected movement')) return '녹색(진행)';
+        if (s.includes('stop and remain')) return '적색(정지)';
+        if (s.includes('stop then proceed')) return '적색(정지 후 진행)';
+        if (s.includes('caution')) return '황색(주의)';
+        if (s.includes('green')) return '녹색';
+        if (s.includes('red')) return '적색';
+        if (s.includes('yellow')) return '황색';
+        return signal || '정보없음';
+      }
+
       const statusMap = new Map<string, TrafficLightStatus[]>();
       for (const s of statuses) {
         const list = statusMap.get(s.crsrdId) ?? [];
@@ -275,14 +288,14 @@ export async function executeToolCall(
               directions.push({
                 direction: `${dirNames[dir]}_보행자`,
                 remainSeconds: Math.round(Number(pdsgRemain || 0) / 10),
-                signal: String(pdsgStatus || ''),
+                signal: translateSignal(String(pdsgStatus || '')),
               });
             }
             if (stsgRemain || stsgStatus) {
               directions.push({
                 direction: `${dirNames[dir]}_차량`,
                 remainSeconds: Math.round(Number(stsgRemain || 0) / 10),
-                signal: String(stsgStatus || ''),
+                signal: translateSignal(String(stsgStatus || '')),
               });
             }
           }
