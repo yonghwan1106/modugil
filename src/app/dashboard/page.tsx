@@ -33,8 +33,8 @@ export default function DashboardPage() {
   const totalTransportCenters = MOCK_TRANSPORT_CENTERS.length;
 
   const avgLibraryUsage = useMemo(() => {
-    const total = MOCK_LIBRARY_SEATS.reduce((sum, s) => sum + s.useSeatCnt, 0);
-    const cap = MOCK_LIBRARY_SEATS.reduce((sum, s) => sum + s.totSeatCnt, 0);
+    const total = MOCK_LIBRARY_SEATS.reduce((sum, s) => sum + Number(s.useSeatCnt), 0);
+    const cap = MOCK_LIBRARY_SEATS.reduce((sum, s) => sum + Number(s.tseatCnt), 0);
     return cap > 0 ? Math.round((total / cap) * 100) : 0;
   }, []);
 
@@ -65,13 +65,13 @@ export default function DashboardPage() {
   // --- 교통약자 차량 현황 차트 데이터 ---
   const transportChartData = useMemo(() => {
     return MOCK_TRANSPORT_CENTERS.map((center) => {
-      const avail = MOCK_TRANSPORT_AVAILABILITY.find((a) => a.centerId === center.centerId);
+      const avail = MOCK_TRANSPORT_AVAILABILITY.find((a) => a.cntrId === center.cntrId);
       // 센터명 줄이기 (차트 가독성)
-      const shortName = center.centerNm.replace('교통약자 이동지원센터', '').replace('서울시 ', '').trim();
+      const shortName = center.cntrNm.replace('교통약자 이동지원센터', '').replace('서울시 ', '').trim();
       return {
         name: shortName,
-        운영차량: avail?.operVhcleCnt ?? 0,
-        가용차량: avail?.usePsbltVhcleCnt ?? 0,
+        운영차량: Number(avail?.oprVhclCntom ?? 0),
+        가용차량: Number(avail?.avlVhclCntom ?? 0),
       };
     });
   }, []);
@@ -79,11 +79,11 @@ export default function DashboardPage() {
   // --- 도서관 좌석 사용률 차트 데이터 ---
   const libraryChartData = useMemo(() => {
     return MOCK_LIBRARIES.map((lib) => {
-      const seats = MOCK_LIBRARY_SEATS.filter((s) => s.lbrryId === lib.lbrryId);
-      const total = seats.reduce((sum, s) => sum + s.totSeatCnt, 0);
-      const used = seats.reduce((sum, s) => sum + s.useSeatCnt, 0);
+      const seats = MOCK_LIBRARY_SEATS.filter((s) => s.pblibId === lib.pblibId);
+      const total = seats.reduce((sum, s) => sum + Number(s.tseatCnt), 0);
+      const used = seats.reduce((sum, s) => sum + Number(s.useSeatCnt), 0);
       const rate = total > 0 ? Math.round((used / total) * 100) : 0;
-      const shortName = lib.lbrryNm.replace('도서관', '관').replace('서울', 'S.');
+      const shortName = lib.pblibNm.replace('도서관', '관').replace('서울', 'S.');
       return { name: shortName, value: rate };
     });
   }, []);

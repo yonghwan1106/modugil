@@ -57,112 +57,77 @@ const BIKE_REGION_CODES: Record<string, string> = {
 };
 
 // =============================================
-// 지역명 → 지자체코드 매핑
+// 지역명 → 지자체코드 매핑 (10자리)
 // =============================================
 
 const REGION_CODES: Record<string, string> = {
-  // 서울특별시 (11)
-  '서울': '11',
-  '서울특별시': '11',
-  '서울 종로구': '1111',
-  '서울 중구': '1114',
-  '서울 용산구': '1117',
-  '서울 성동구': '1120',
-  '서울 광진구': '1121',
-  '서울 동대문구': '1123',
-  '서울 중랑구': '1126',
-  '서울 성북구': '1129',
-  '서울 강북구': '1130',
-  '서울 도봉구': '1132',
-  '서울 노원구': '1135',
-  '서울 은평구': '1138',
-  '서울 서대문구': '1141',
-  '서울 마포구': '1144',
-  '서울 양천구': '1147',
-  '서울 강서구': '1150',
-  '서울 구로구': '1153',
-  '서울 금천구': '1154',
-  '서울 영등포구': '1156',
-  '서울 동작구': '1159',
-  '서울 관악구': '1162',
-  '서울 서초구': '1165',
-  '서울 강남구': '1168',
-  '서울 송파구': '1171',
-  '서울 강동구': '1174',
-  // 부산광역시 (26)
-  '부산': '26',
-  '부산광역시': '26',
-  '부산 해운대구': '2635',
-  '부산 강서구': '2605',
-  '부산 금정구': '2619',
-  '부산 남구': '2608',
-  '부산 동구': '2602',
-  '부산 동래구': '2616',
-  '부산 부산진구': '2611',
-  '부산 북구': '2622',
-  '부산 사상구': '2642',
-  '부산 사하구': '2638',
-  '부산 서구': '2603',
-  '부산 수영구': '2641',
-  '부산 연제구': '2640',
-  '부산 영도구': '2604',
-  '부산 중구': '2601',
-  // 대구광역시 (27)
-  '대구': '27',
-  '대구광역시': '27',
-  '대구 달서구': '2771',
-  '대구 달성군': '2772',
-  '대구 동구': '2723',
-  '대구 북구': '2724',
-  '대구 서구': '2722',
-  '대구 남구': '2725',
-  '대구 수성구': '2726',
-  '대구 중구': '2721',
-  // 인천광역시 (28)
-  '인천': '28',
-  '인천광역시': '28',
-  '인천 부평구': '2817',
-  '인천 계양구': '2821',
-  '인천 남동구': '2818',
-  '인천 미추홀구': '2815',
-  '인천 서구': '2823',
-  '인천 연수구': '2816',
-  '인천 중구': '2811',
-  // 광주광역시 (29)
-  '광주': '29',
-  '광주광역시': '29',
-  '광주 광산구': '2920',
-  '광주 남구': '2915',
-  '광주 동구': '2911',
-  '광주 북구': '2916',
-  '광주 서구': '2912',
-  // 대전광역시 (30)
-  '대전': '30',
-  '대전광역시': '30',
-  '대전 대덕구': '3017',
-  '대전 동구': '3011',
-  '대전 서구': '3014',
-  '대전 유성구': '3016',
-  '대전 중구': '3013',
-  // 울산광역시 (31)
-  '울산': '31',
-  '울산광역시': '31',
-  // 세종특별자치시 (36)
-  '세종': '36',
-  '세종시': '36',
-  // 경기도 (41)
-  '경기': '41',
-  '경기도': '41',
-  '경기 성남시': '4113',
-  '경기 수원시': '4111',
-  '경기 안양시': '4117',
-  '경기 부천시': '4119',
-  '경기 광명시': '4121',
-  '경기 평택시': '4122',
-  '경기 안산시': '4131',
-  '경기 고양시': '4128',
-  '경기 의정부시': '4115',
-  '경기 용인시': '4146',
+  // 서울특별시
+  '서울': '1100000000',
+  '서울특별시': '1100000000',
+  '서울 종로구': '1111000000',
+  '서울 중구': '1114000000',
+  '서울 용산구': '1117000000',
+  '서울 성동구': '1120000000',
+  '서울 광진구': '1121500000',
+  '서울 동대문구': '1123000000',
+  '서울 중랑구': '1126000000',
+  '서울 성북구': '1129000000',
+  '서울 강북구': '1130500000',
+  '서울 도봉구': '1132000000',
+  '서울 노원구': '1135000000',
+  '서울 은평구': '1138000000',
+  '서울 서대문구': '1141000000',
+  '서울 마포구': '1144000000',
+  '서울 양천구': '1147000000',
+  '서울 강서구': '1150000000',
+  '서울 구로구': '1153000000',
+  '서울 금천구': '1154500000',
+  '서울 영등포구': '1156000000',
+  '서울 동작구': '1159000000',
+  '서울 관악구': '1162000000',
+  '서울 서초구': '1165000000',
+  '서울 강남구': '1168000000',
+  '서울 송파구': '1171000000',
+  '서울 강동구': '1174000000',
+  // 부산광역시
+  '부산': '2600000000',
+  '부산광역시': '2600000000',
+  '부산 해운대구': '2635000000',
+  '부산 강서구': '2605300000',
+  '부산 금정구': '2619000000',
+  '부산 남구': '2608000000',
+  '부산 동구': '2602000000',
+  '부산 동래구': '2616000000',
+  '부산 부산진구': '2611000000',
+  '부산 북구': '2622000000',
+  '부산 사상구': '2642000000',
+  '부산 사하구': '2638000000',
+  '부산 서구': '2603000000',
+  '부산 수영구': '2641000000',
+  '부산 연제구': '2640000000',
+  '부산 영도구': '2604000000',
+  '부산 중구': '2601000000',
+  // 대구광역시
+  '대구': '2700000000',
+  '대구광역시': '2700000000',
+  // 인천광역시
+  '인천': '2800000000',
+  '인천광역시': '2800000000',
+  // 광주광역시
+  '광주': '2900000000',
+  '광주광역시': '2900000000',
+  // 대전광역시
+  '대전': '3000000000',
+  '대전광역시': '3000000000',
+  // 울산광역시
+  '울산': '3100000000',
+  '울산광역시': '3100000000',
+  // 세종특별자치시
+  '세종': '3600000000',
+  '세종시': '3600000000',
+  // 경기도
+  '경기': '4100000000',
+  '경기도': '4100000000',
 };
 
 // =============================================
@@ -182,13 +147,7 @@ async function fetchWithFallback<T>(
   }
 }
 
-// lat/lot → lat/lng 변환 (프론트엔드 지도 마커용)
-function normalizeLngLat<T extends object>(item: T): T & { lng: number } {
-  const rec = item as Record<string, unknown>;
-  return { ...item, lng: rec.lot as number };
-}
-
-// 자전거 API는 응답 구조가 다름 (response 래퍼 없음, item 단수, lat/lot 문자열)
+// 자전거 API는 응답 구조가 다름 (item 단수, lat/lot 문자열)
 interface BikeApiResponse<T> {
   header: { resultCode: string; resultMsg: string };
   body: { totalCount: number; pageNo: number; numOfRows: number; item: T[] };
@@ -220,27 +179,30 @@ export async function executeToolCall(
   const regionInput = (input.region as string) ?? '';
   const stdgCd = REGION_CODES[regionInput] ?? regionInput;
   const apiParams: Record<string, string> = stdgCd ? { stdgCd } : {};
+  // 도서관/민원실 API는 구(區) 단위 코드만 지원 — 시 단위(00000000으로 끝남)일 때 stdgCd 생략
+  const isCityLevel = stdgCd.endsWith('00000000');
+  const districtOnlyParams: Record<string, string> = isCityLevel ? {} : apiParams;
 
   switch (toolName) {
     case 'get_bicycle_availability': {
       const lcgvmnInstCd = BIKE_REGION_CODES[regionInput] ?? '1100000000';
       const bikeParams = { lcgvmnInstCd };
 
-      let stations: (BikeStation & { lat: string | number; lot: string | number })[] = [];
-      let availabilities: (BikeAvailability & { lat?: string | number; lot?: string | number })[] = [];
+      let stations: BikeStation[] = [];
+      let availabilities: BikeAvailability[] = [];
       let source: 'live' | 'mock' = 'mock';
 
       try {
         const [stationsRaw, availRaw] = await Promise.all([
-          fetchBikeApi<BikeStation & { lat: string; lot: string }>(ENDPOINTS.bicycle.stations, bikeParams),
-          fetchBikeApi<BikeAvailability & { lat?: string; lot?: string }>(ENDPOINTS.bicycle.availability, bikeParams),
+          fetchBikeApi<BikeStation>(ENDPOINTS.bicycle.stations, bikeParams),
+          fetchBikeApi<BikeAvailability>(ENDPOINTS.bicycle.availability, bikeParams),
         ]);
         stations = stationsRaw;
         availabilities = availRaw;
         source = 'live';
       } catch {
-        stations = mockData.MOCK_BIKE_STATIONS as typeof stations;
-        availabilities = mockData.MOCK_BIKE_AVAILABILITY as typeof availabilities;
+        stations = mockData.MOCK_BIKE_STATIONS;
+        availabilities = mockData.MOCK_BIKE_AVAILABILITY;
       }
 
       const availMap = new Map(availabilities.map((a) => [a.rntstnId, a]));
@@ -262,7 +224,7 @@ export async function executeToolCall(
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 공영자전거 대여소 ${items.length}개 조회`
-        : `${regionInput} 공영자전거 대여소 ${items.length}개 실시간 조회 완료 (총 ${stations.length}개 중 상위 20개)`;
+        : `${regionInput || '서울'} 공영자전거 대여소 ${items.length}개 실시간 조회 완료 (총 ${stations.length}개 중 상위 20개)`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }
@@ -292,22 +254,49 @@ export async function executeToolCall(
         statusMap.set(s.crsrdId, list);
       }
 
-      const items = crossroads.map((c) => ({
-        crossroadId: c.crsrdId,
-        crossroadName: c.crsrdNm,
-        lat: c.lat,
-        lot: c.lot,
-        lng: c.lot,
-        directions: (statusMap.get(c.crsrdId) ?? []).map((s) => ({
-          direction: s.drctCd,
-          remainSeconds: s.rmdrCs,
-          signal: s.lgtStts,
-        })),
-      }));
+      const items = crossroads.slice(0, 20).map((c) => {
+        const dirStatuses = statusMap.get(c.crsrdId) ?? [];
+        // 실제 API에서는 방향별 컬럼이 하나의 row에 다 들어있음
+        const directions: { direction: string; remainSeconds: number; signal: string }[] = [];
+        if (dirStatuses.length > 0) {
+          const s = dirStatuses[0];
+          const dirPrefixes = ['nt', 'et', 'st', 'wt', 'ne', 'se', 'sw', 'nw'];
+          const dirNames: Record<string, string> = { nt: '북', et: '동', st: '남', wt: '서', ne: '북동', se: '남동', sw: '남서', nw: '북서' };
+          for (const dir of dirPrefixes) {
+            const pdsgRemain = s[`${dir}PdsgRmndCs`];
+            const pdsgStatus = s[`${dir}PdsgSttsNm`];
+            const stsgRemain = s[`${dir}StsgRmndCs`];
+            const stsgStatus = s[`${dir}StsgSttsNm`];
+            if (pdsgRemain || pdsgStatus) {
+              directions.push({
+                direction: `${dirNames[dir]}_보행자`,
+                remainSeconds: Math.round(Number(pdsgRemain || 0) / 10),
+                signal: String(pdsgStatus || ''),
+              });
+            }
+            if (stsgRemain || stsgStatus) {
+              directions.push({
+                direction: `${dirNames[dir]}_차량`,
+                remainSeconds: Math.round(Number(stsgRemain || 0) / 10),
+                signal: String(stsgStatus || ''),
+              });
+            }
+          }
+        }
+
+        return {
+          crossroadId: c.crsrdId,
+          crossroadName: c.crsrdNm,
+          lat: Number(c.mapCtptIntLat),
+          lot: Number(c.mapCtptIntLot),
+          lng: Number(c.mapCtptIntLot),
+          directions,
+        };
+      });
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 신호등 교차로 ${items.length}개 조회`
-        : `${regionInput} 신호등 교차로 ${items.length}개 실시간 조회 완료`;
+        : `${regionInput || '서울'} 신호등 교차로 ${items.length}개 실시간 조회 완료`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }
@@ -330,27 +319,28 @@ export async function executeToolCall(
       const availability = availResult.items;
       const source = centersResult.source === 'live' ? 'live' : 'mock';
 
-      const availMap = new Map(availability.map((a) => [a.centerId, a]));
+      const availMap = new Map(availability.map((a) => [a.cntrId, a]));
 
       const items = centers.map((c) => {
-        const avail = availMap.get(c.centerId);
+        const avail = availMap.get(c.cntrId);
         return {
-          centerId: c.centerId,
-          centerName: c.centerNm,
-          lat: c.lat,
-          lot: c.lot,
-          lng: c.lot,
-          tel: c.telNo,
-          operVehicles: avail?.operVhcleCnt ?? 0,
-          availableVehicles: avail?.usePsbltVhcleCnt ?? 0,
-          reservations: avail?.rsrvtnCnt ?? 0,
-          waiting: avail?.wtngCnt ?? 0,
+          centerId: c.cntrId,
+          centerName: c.cntrNm,
+          lat: Number(c.lat),
+          lot: Number(c.lot),
+          lng: Number(c.lot),
+          tel: c.cntrTelno,
+          totalVehicles: Number(avail?.tvhclCntom ?? 0),
+          operVehicles: Number(avail?.oprVhclCntom ?? 0),
+          availableVehicles: Number(avail?.avlVhclCntom ?? 0),
+          reservations: Number(avail?.rsvtNocs ?? 0),
+          waiting: Number(avail?.wtngNocs ?? 0),
         };
       });
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 교통약자 이동지원센터 ${items.length}개 조회`
-        : `${regionInput} 교통약자 이동지원센터 ${items.length}개 실시간 조회 완료`;
+        : `${regionInput || '서울'} 교통약자 이동지원센터 ${items.length}개 실시간 조회 완료`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }
@@ -365,7 +355,7 @@ export async function executeToolCall(
       );
 
       const filteredRoutes = routeNo
-        ? routesResult.items.filter((r) => r.routeNo === routeNo)
+        ? routesResult.items.filter((r) => r.rteNo === routeNo)
         : routesResult.items;
 
       const locationsResult = await fetchWithFallback<BusLocation>(
@@ -378,23 +368,28 @@ export async function executeToolCall(
 
       const locationsByRoute = new Map<string, BusLocation[]>();
       for (const loc of locationsResult.items) {
-        const list = locationsByRoute.get(loc.routeId) ?? [];
+        const list = locationsByRoute.get(loc.rteId) ?? [];
         list.push(loc);
-        locationsByRoute.set(loc.routeId, list);
+        locationsByRoute.set(loc.rteId, list);
       }
 
       const items = filteredRoutes.slice(0, 10).map((route) => ({
-        routeId: route.routeId,
-        routeNo: route.routeNo,
-        routeType: route.routeTp,
-        startStop: route.stNm,
-        endStop: route.edNm,
-        realtimeLocations: (locationsByRoute.get(route.routeId) ?? []).map(normalizeLngLat),
+        routeId: route.rteId,
+        routeNo: route.rteNo,
+        routeType: route.rteType,
+        startStop: route.stpnt,
+        endStop: route.edpnt,
+        realtimeLocations: (locationsByRoute.get(route.rteId) ?? []).map((loc) => ({
+          ...loc,
+          lat: Number(loc.lat),
+          lot: Number(loc.lot),
+          lng: Number(loc.lot),
+        })),
       }));
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 버스 노선 ${items.length}개 조회`
-        : `${regionInput} 버스 노선 ${items.length}개 실시간 위치 조회 완료`;
+        : `${regionInput || '서울'} 버스 노선 ${items.length}개 실시간 위치 조회 완료`;
 
       return { source, region: regionInput, routeCount: items.length, summary, items };
     }
@@ -405,12 +400,12 @@ export async function executeToolCall(
       const [librariesResult, seatsResult] = await Promise.all([
         fetchWithFallback<Library>(
           ENDPOINTS.library.info,
-          apiParams,
+          districtOnlyParams,
           mockData.MOCK_LIBRARIES,
         ),
         fetchWithFallback<LibrarySeat>(
           ENDPOINTS.library.seats,
-          apiParams,
+          districtOnlyParams,
           mockData.MOCK_LIBRARY_SEATS,
         ),
       ]);
@@ -418,42 +413,42 @@ export async function executeToolCall(
       const source = librariesResult.source === 'live' ? 'live' : 'mock';
 
       const filteredLibraries = libraryName
-        ? librariesResult.items.filter((l) => l.lbrryNm.includes(libraryName))
+        ? librariesResult.items.filter((l) => l.pblibNm.includes(libraryName))
         : librariesResult.items;
 
       const seatsByLibrary = new Map<string, LibrarySeat[]>();
       for (const seat of seatsResult.items) {
-        const list = seatsByLibrary.get(seat.lbrryId) ?? [];
+        const list = seatsByLibrary.get(seat.pblibId) ?? [];
         list.push(seat);
-        seatsByLibrary.set(seat.lbrryId, list);
+        seatsByLibrary.set(seat.pblibId, list);
       }
 
       const items = filteredLibraries.map((lib) => {
-        const libSeats = seatsByLibrary.get(lib.lbrryId) ?? [];
-        const totalSeats = libSeats.reduce((sum, s) => sum + s.totSeatCnt, 0);
-        const usedSeats = libSeats.reduce((sum, s) => sum + s.useSeatCnt, 0);
+        const libSeats = seatsByLibrary.get(lib.pblibId) ?? [];
+        const totalSeats = libSeats.reduce((sum, s) => sum + Number(s.tseatCnt), 0);
+        const usedSeats = libSeats.reduce((sum, s) => sum + Number(s.useSeatCnt), 0);
         return {
-          libraryId: lib.lbrryId,
-          libraryName: lib.lbrryNm,
-          address: lib.roadNmAddr,
-          lat: lib.lat,
-          lot: lib.lot,
-          lng: lib.lot,
+          libraryId: lib.pblibId,
+          libraryName: lib.pblibNm,
+          address: lib.pblibRoadNmAddr,
+          lat: Number(lib.lat),
+          lot: Number(lib.lot),
+          lng: Number(lib.lot),
           totalSeats,
           usedSeats,
           availableSeats: totalSeats - usedSeats,
           readingRooms: libSeats.map((s) => ({
             name: s.rdrmNm,
-            total: s.totSeatCnt,
-            used: s.useSeatCnt,
-            available: s.totSeatCnt - s.useSeatCnt,
+            total: Number(s.tseatCnt),
+            used: Number(s.useSeatCnt),
+            available: Number(s.rmndSeatCnt),
           })),
         };
       });
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 도서관 ${items.length}개 좌석 현황 조회`
-        : `${regionInput} 도서관 ${items.length}개 실시간 좌석 조회 완료`;
+        : `${regionInput || '서울'} 도서관 ${items.length}개 실시간 좌석 조회 완료`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }
@@ -464,12 +459,12 @@ export async function executeToolCall(
       const [officesResult, waitResult] = await Promise.all([
         fetchWithFallback<CivilOffice>(
           ENDPOINTS.civil.info,
-          apiParams,
+          districtOnlyParams,
           mockData.MOCK_CIVIL_OFFICES,
         ),
         fetchWithFallback<CivilOfficeWait>(
           ENDPOINTS.civil.realtime,
-          apiParams,
+          districtOnlyParams,
           mockData.MOCK_CIVIL_WAIT,
         ),
       ]);
@@ -492,22 +487,22 @@ export async function executeToolCall(
           officeId: office.csoSn,
           officeName: office.csoNm,
           address: office.roadNmAddr,
-          lat: office.lat,
-          lot: office.lot,
-          lng: office.lot,
+          lat: Number(office.lat),
+          lot: Number(office.lot),
+          lng: Number(office.lot),
           openTime: office.wkdyOperBgngTm,
           closeTime: office.wkdyOperEndTm,
           tasks: tasks.map((t) => ({
             taskName: t.taskNm,
             waitingCount: t.wtngCnt,
-            estimatedWaitMinutes: t.totDt,
+            ticketNo: t.clotNo,
           })),
         };
       });
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 민원실 ${items.length}개 대기 현황 조회`
-        : `${regionInput} 민원실 ${items.length}개 실시간 대기 조회 완료`;
+        : `${regionInput || '서울'} 민원실 ${items.length}개 실시간 대기 조회 완료`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }
@@ -528,28 +523,28 @@ export async function executeToolCall(
 
       const source = lockersResult.source === 'live' ? 'live' : 'mock';
 
-      const realtimeMap = new Map(realtimeResult.items.map((r) => [r.lckrId, r]));
+      const realtimeMap = new Map(realtimeResult.items.map((r) => [r.stlckId, r]));
 
       const items = lockersResult.items.map((locker) => {
-        const rt = realtimeMap.get(locker.lckrId);
+        const rt = realtimeMap.get(locker.stlckId);
         return {
-          lockerId: locker.lckrId,
-          lockerName: locker.lckrNm,
-          address: locker.roadNmAddr,
-          lat: locker.lat,
-          lot: locker.lot,
-          lng: locker.lot,
+          lockerId: locker.stlckId,
+          lockerName: locker.stlckRprsPstnNm,
+          address: locker.fcltRoadNmAddr,
+          lat: Number(locker.lat),
+          lot: Number(locker.lot),
+          lng: Number(locker.lot),
           available: {
-            large: rt?.lgLckrUsePsbltCnt ?? 0,
-            medium: rt?.mdLckrUsePsbltCnt ?? 0,
-            small: rt?.smLckrUsePsbltCnt ?? 0,
+            large: Number(rt?.usePsbltyLrgszStlckCnt ?? 0),
+            medium: Number(rt?.usePsbltyMdmszStlckCnt ?? 0),
+            small: Number(rt?.usePsbltySmlszStlckCnt ?? 0),
           },
         };
       });
 
       const summary = source === 'mock'
         ? `[Mock] ${regionInput || '서울'} 물품보관함 ${items.length}개 가용 현황 조회`
-        : `${regionInput} 물품보관함 ${items.length}개 실시간 가용 조회 완료`;
+        : `${regionInput || '서울'} 물품보관함 ${items.length}개 실시간 가용 조회 완료`;
 
       return { source, region: regionInput, count: items.length, summary, items };
     }

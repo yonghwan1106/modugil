@@ -2,8 +2,6 @@
 // 공공데이터포털 API 공통 클라이언트
 // =============================================
 
-import type { ApiResponse } from './types';
-
 // ----------------------
 // 메모리 캐시 (Map + TTL)
 // ----------------------
@@ -38,12 +36,10 @@ function setCached<T>(key: string, data: T[]): void {
 /**
  * 공공데이터포털 API를 호출하고 items 배열을 반환합니다.
  *
- * @param endpoint - ENDPOINTS 상수에서 가져온 엔드포인트 URL
- * @param params   - 추가 쿼리 파라미터 (예: stdgCd, pageNo, numOfRows 등)
- * @returns items 배열
- *
- * @example
- * const stations = await fetchPublicData<BikeStation>(ENDPOINTS.bicycle.stations, { stdgCd: '11' });
+ * 응답 포맷 3가지를 자동 감지합니다:
+ * - v2 API (transport/library/locker): {header, body: {item: []}}
+ * - rti/cso/rte API (traffic/civil/bus): {header, body: {items: {item: []}}}
+ * - response 래핑: {response: {header, body: {items: []}}}
  */
 export async function fetchPublicData<T>(
   endpoint: string,
@@ -72,7 +68,6 @@ export async function fetchPublicData<T>(
 
   const res = await fetch(url, {
     headers: { Accept: 'application/json' },
-    // Next.js 캐시 비활성화 (실시간 데이터이므로)
     cache: 'no-store',
   });
 
@@ -80,15 +75,20 @@ export async function fetchPublicData<T>(
     throw new Error(`API 요청 실패: HTTP ${res.status} — ${url}`);
   }
 
-  const json = (await res.json()) as ApiResponse<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const json = await res.json() as any;
 
-  // HTTP 200이어도 body의 resultCode 확인
-  const { resultCode, resultMsg } = json.response.header;
-  if (resultCode !== '00') {
+  // 응답 구조 자동 감지
+  const root = json.response ?? json;
+  const { resultCode, resultMsg } = root.header;
+
+  if (resultCode !== '00' && resultCode !== 'K0') {
     throw new Error(`API 오류 [${resultCode}]: ${resultMsg}`);
   }
 
-  const items = json.response.body.items ?? [];
+  const body = root.body;
+  // body.items.item (rti/cso/rte), body.item (v2), body.items (legacy)
+  const items: T[] = body?.items?.item ?? body?.item ?? body?.items ?? [];
   setCached<T>(cacheKey, items);
   return items;
 }
