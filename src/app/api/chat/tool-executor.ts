@@ -249,11 +249,119 @@ async function fetchBikeApi<T>(endpoint: string, params: Record<string, string>)
 // 도구 실행 함수
 // =============================================
 
+// =============================================
+// userType 하드 필터 헬퍼
+// =============================================
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function applyUserTypeFilter(toolName: string, userType: string | undefined, result: any): any {
+  if (!userType) return result;
+
+  const type = userType.trim();
+
+  // 휠체어 / 고령자
+  if (type === '휠체어' || type === '고령자') {
+    if (toolName === 'get_bus_realtime_location' && Array.isArray(result.items)) {
+      // routeType 필드로 저상버스 필터 (필드가 없으면 원본 유지)
+      const lowFloorTypes = ['저상', '13', '14', '15']; // 공공데이터 저상버스 타입 코드 포함
+      const filtered = result.items.filter((item: any) =>
+        !item.routeType || lowFloorTypes.some((t) => String(item.routeType).includes(t))
+      );
+      // 필터 결과가 0건이면 원본 유지 (안전)
+      const items = filtered.length > 0 ? filtered : result.items;
+      return {
+        ...result,
+        items,
+        count: items.length,
+        userTypeFilter: '저상버스 우선 (휠체어·고령자)',
+      };
+    }
+    if (toolName === 'get_accessible_transport' && Array.isArray(result.items)) {
+      // 가용 차량 많은 순으로 재정렬 → 접근성 높은 곳 우선
+      const items = [...result.items].sort(
+        (a: any, b: any) => (b.availableVehicles ?? 0) - (a.availableVehicles ?? 0)
+      );
+      return {
+        ...result,
+        items,
+        userTypeFilter: '가용 차량 많은 센터 우선 (휠체어·고령자)',
+      };
+    }
+    if (toolName === 'get_library_seats' && Array.isArray(result.items)) {
+      // 정보에 엘리베이터·경사로 언급 추가 (주소 기반 힌트)
+      const items = result.items.map((item: any) => ({
+        ...item,
+        accessibilityNote: '엘리베이터·경사로 현장 확인 권장',
+      }));
+      return { ...result, items, userTypeFilter: '접근성 정보 포함 (휠체어·고령자)' };
+    }
+  }
+
+  // 시각장애
+  if (type === '시각장애' || type === '시각장애인') {
+    if (toolName === 'get_traffic_light_status' && Array.isArray(result.items)) {
+      const items = result.items.map((item: any) => {
+        // countdown(remainSeconds)를 directions 배열 최상위로 정렬
+        const sortedDirections = Array.isArray(item.directions)
+          ? [...item.directions].sort((a: any, b: any) => (b.remainSeconds ?? 0) - (a.remainSeconds ?? 0))
+          : item.directions;
+        return {
+          // countdown 및 acousticSignal을 최상위로 노출
+          countdown: sortedDirections?.[0]?.remainSeconds ?? null,
+          acousticSignal: item.acousticSignal ?? null,
+          ...item,
+          directions: sortedDirections,
+        };
+      });
+      return {
+        ...result,
+        items,
+        userTypeFilter: '잔여시간(countdown) 최상위 노출, 음향신호기 우선 (시각장애)',
+      };
+    }
+  }
+
+  // 임산부
+  if (type === '임산부') {
+    if (toolName === 'get_civil_office_wait' && Array.isArray(result.items)) {
+      const items = result.items.map((item: any) => {
+        // tasks 중 대기시간 15분 초과 시 warning 플래그
+        const tasks = Array.isArray(item.tasks)
+          ? item.tasks.map((task: any) => ({
+              ...task,
+              warning: Number(task.waitingCount ?? 0) > 15,
+            }))
+          : item.tasks;
+        return { ...item, tasks };
+      });
+      return {
+        ...result,
+        items,
+        userTypeFilter: '대기시간 15분 초과 경고 포함 (임산부)',
+      };
+    }
+    if (toolName === 'get_library_seats' && Array.isArray(result.items)) {
+      // 빈자리(availableSeats > 0) 우선 정렬
+      const items = [...result.items].sort(
+        (a: any, b: any) => (b.availableSeats ?? 0) - (a.availableSeats ?? 0)
+      );
+      return {
+        ...result,
+        items,
+        userTypeFilter: '빈자리 많은 도서관 우선 (임산부)',
+      };
+    }
+  }
+
+  return result;
+}
+
 export async function executeToolCall(
   toolName: string,
   input: Record<string, unknown>,
 ): Promise<unknown> {
   const regionInput = (input.region as string) ?? '';
+  const userType = (input.userType as string | undefined);
   const stdgCd = REGION_CODES[regionInput] ?? regionInput;
   // 시/도 단위 코드 추출 (구 단위 → 시 단위 폴백: 1168000000 → 1100000000)
   const cityLevelCd = stdgCd ? stdgCd.slice(0, 2) + '00000000' : '';
@@ -308,7 +416,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 공영자전거 대여소 ${items.length}개 조회`
         : `${regionInput || '서울'} 공영자전거 대여소 ${items.length}개 실시간 조회 완료 (총 ${stations.length}개 중 상위 20개)`;
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: items.length, summary, items });
     }
 
     case 'get_traffic_light_status': {
@@ -394,7 +502,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 신호등 교차로 ${items.length}개 조회`
         : `${regionInput || '서울'} 신호등 교차로 ${items.length}개 실시간 조회 완료`;
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: items.length, summary, items });
     }
 
     case 'get_accessible_transport': {
@@ -438,7 +546,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 교통약자 이동지원센터 ${items.length}개 조회`
         : `${regionInput || '서울'} 교통약자 이동지원센터 ${items.length}개 실시간 조회 완료`;
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: items.length, summary, items });
     }
 
     case 'get_bus_realtime_location': {
@@ -487,7 +595,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 버스 노선 ${items.length}개 조회`
         : `${regionInput || '서울'} 버스 노선 ${items.length}개 실시간 위치 조회 완료`;
 
-      return { source, region: regionInput, routeCount: items.length, summary, items };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, routeCount: items.length, summary, items });
     }
 
     case 'get_library_seats': {
@@ -558,7 +666,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 도서관 ${limitedItems.length}개 좌석 현황 조회`
         : `${regionInput || '서울'} 도서관 ${limitedItems.length}개 실시간 좌석 조회 완료 (총 ${items.length}개 중)`;
 
-      return { source, region: regionInput, count: limitedItems.length, summary, items: limitedItems };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: limitedItems.length, summary, items: limitedItems });
     }
 
     case 'get_civil_office_wait': {
@@ -615,7 +723,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 민원실 ${limitedCivilItems.length}개 대기 현황 조회`
         : `${regionInput || '서울'} 민원실 ${limitedCivilItems.length}개 실시간 대기 조회 완료 (총 ${items.length}개 중)`;
 
-      return { source, region: regionInput, count: limitedCivilItems.length, summary, items: limitedCivilItems };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: limitedCivilItems.length, summary, items: limitedCivilItems });
     }
 
     case 'get_locker_availability': {
@@ -657,7 +765,7 @@ export async function executeToolCall(
         ? `[Mock] ${regionInput || '서울'} 물품보관함 ${items.length}개 가용 현황 조회`
         : `${regionInput || '서울'} 물품보관함 ${items.length}개 실시간 가용 조회 완료`;
 
-      return { source, region: regionInput, count: items.length, summary, items };
+      return applyUserTypeFilter(toolName, userType, { source, region: regionInput, count: items.length, summary, items });
     }
 
     default:

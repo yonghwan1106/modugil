@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import Header from '@/components/ui/Header';
 import NaverMap from '@/components/map/NaverMap';
 import ChatPanel from '@/components/chat/ChatPanel';
 import TrafficLightDetail from '@/components/map/TrafficLightDetail';
+import JudgeDemoBanner from '@/components/JudgeDemoBanner';
 
 // MapMarker 타입 정의
 export interface MapMarker {
@@ -25,11 +28,27 @@ const USER_TYPES = [
 
 type UserTypeKey = (typeof USER_TYPES)[number]['key'];
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
   const [showLanding, setShowLanding] = useState(true);
   const [userType, setUserType] = useState<UserTypeKey | null>(null);
+  const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined);
+
+  // URL 쿼리스트링에서 userType과 q를 읽어 자동 세팅
+  useEffect(() => {
+    const qUserType = searchParams.get('userType') as UserTypeKey | null;
+    const qQuery = searchParams.get('q');
+    if (qUserType && USER_TYPES.some((u) => u.key === qUserType)) {
+      setUserType(qUserType);
+      setShowLanding(false);
+      if (qQuery) {
+        setInitialQuery(decodeURIComponent(qQuery.replace(/\+/g, ' ')));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToolResults = (results: unknown[]) => {
     // AI 챗봇의 tool 결과에서 위치 데이터를 추출하여 지도 마커에 추가
@@ -95,6 +114,9 @@ export default function Home() {
         className="h-screen w-full overflow-hidden flex flex-col items-center justify-center px-4 py-6"
         style={{ backgroundColor: '#0f172a' }}
       >
+        {/* 심사위원 데모 배너 */}
+        <JudgeDemoBanner />
+
         {/* 상단 배지 */}
         <div
           className="mb-4 px-3 py-1 rounded-full text-xs font-medium tracking-wide"
@@ -117,16 +139,19 @@ export default function Home() {
         {/* stat 카드 3개 */}
         <div className="grid grid-cols-3 gap-3 w-full max-w-lg mb-5">
           {[
-            { value: '1,500만 명', label: '교통약자 인구 (29%)' },
-            { value: '7개 이상', label: '분산된 이동 정보 시스템' },
-            { value: '30분+', label: '평균 이동지원 대기시간' },
+            { value: '1,500만 명', label: '교통약자 인구 (29%)', footnote: '1' },
+            { value: '7개 이상', label: '분산된 이동 정보 시스템', footnote: '2' },
+            { value: '30분+', label: '평균 이동지원 대기시간', footnote: '3' },
           ].map((s) => (
             <div
               key={s.value}
               className="rounded-xl p-3 text-center"
               style={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
             >
-              <div className="font-semibold text-sm" style={{ color: '#d4a853' }}>{s.value}</div>
+              <div className="font-semibold text-sm" style={{ color: '#d4a853' }}>
+                {s.value}
+                <sup style={{ color: '#94a3b8', fontSize: '9px', marginLeft: '2px' }}>{s.footnote}</sup>
+              </div>
               <div className="mt-0.5" style={{ color: '#94a3b8', fontSize: '10px', lineHeight: '1.3' }}>{s.label}</div>
             </div>
           ))}
@@ -155,6 +180,44 @@ export default function Home() {
           ))}
         </div>
 
+        {/* 내비게이션 링크 */}
+        <div className="flex gap-3 mb-5">
+          <Link
+            href="/data"
+            aria-label="활용 공공데이터 목록 보기"
+            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#d4a853';
+              e.currentTarget.style.color = '#d4a853';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#334155';
+              e.currentTarget.style.color = '#94a3b8';
+            }}
+          >
+            <span>📊</span>
+            <span>활용 공공데이터</span>
+          </Link>
+          <Link
+            href="/roadmap"
+            aria-label="발전 로드맵 보기"
+            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#d4a853';
+              e.currentTarget.style.color = '#d4a853';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#334155';
+              e.currentTarget.style.color = '#94a3b8';
+            }}
+          >
+            <span>🗺️</span>
+            <span>발전 로드맵</span>
+          </Link>
+        </div>
+
         {/* 사용자 유형 선택 */}
         <p className="text-center text-xs mb-3" style={{ color: '#94a3b8' }}>나의 유형을 선택하면 맞춤 안내를 받을 수 있어요</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-lg mb-5">
@@ -179,6 +242,78 @@ export default function Home() {
               <span>{ut.label}</span>
             </button>
           ))}
+        </div>
+
+        {/* footnote */}
+        <div className="w-full max-w-lg mb-4 rounded-xl p-3" style={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}>
+          <ol className="space-y-1" style={{ color: '#64748b', fontSize: '10px', lineHeight: '1.5', listStyleType: 'none', padding: 0, margin: 0 }}>
+            <li>
+              <sup style={{ color: '#94a3b8' }}>1</sup>{' '}
+              통계청 2023년 장애인 인구 추계 (등록 장애인 265만, 65세 이상 944만, 임산부 등 포함) —{' '}
+              <a
+                href="https://kostat.go.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#64748b', textDecoration: 'underline' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
+                aria-label="통계청 웹사이트 (새 탭)"
+              >
+                kostat.go.kr
+              </a>{' '}(통계청 기반 추정)
+            </li>
+            <li>
+              <sup style={{ color: '#94a3b8' }}>2</sup>{' '}
+              공공데이터포털 전국 통합데이터 7종 (교통약자이동지원·버스·신호등·도서관·민원실·자전거·보관함) —{' '}
+              <a
+                href="https://www.data.go.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#64748b', textDecoration: 'underline' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
+                aria-label="공공데이터포털 (새 탭)"
+              >
+                data.go.kr
+              </a>
+            </li>
+            <li>
+              <sup style={{ color: '#94a3b8' }}>3</sup>{' '}
+              서울시설공단 교통약자 이동지원센터 2024 운영통계 —{' '}
+              <a
+                href="https://www.sisul.or.kr"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#64748b', textDecoration: 'underline' }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
+                aria-label="서울시설공단 (새 탭)"
+              >
+                sisul.or.kr
+              </a>
+            </li>
+          </ol>
+        </div>
+
+        {/* 데이터 출처 뱃지 */}
+        <div
+          className="mb-4 px-3 py-1.5 rounded-full text-xs flex items-center gap-2"
+          style={{ backgroundColor: 'rgba(100,116,139,0.1)', border: '1px solid #334155', color: '#64748b' }}
+        >
+          <span>Powered by</span>
+          <a
+            href="https://www.data.go.kr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#64748b', textDecoration: 'underline' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#94a3b8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
+            aria-label="공공데이터포털 (새 탭)"
+          >
+            공공데이터포털
+          </a>
+          <span>·</span>
+          <span>한국지역정보개발원</span>
         </div>
 
         {/* 하단 링크 */}
@@ -238,9 +373,17 @@ export default function Home() {
         />
         {/* 챗봇 패널 (데스크톱 30%/min 360px, 모바일 full/50vh) */}
         <div className="w-full md:w-[400px] md:min-w-[360px] h-[50vh] md:h-auto flex flex-col">
-          <ChatPanel onToolResults={handleToolResults} userType={userType ?? undefined} />
+          <ChatPanel onToolResults={handleToolResults} userType={userType ?? undefined} initialQuery={initialQuery} />
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import type Anthropic from '@anthropic-ai/sdk';
-import { chat } from '@/lib/ai/claude';
+import { chatStream } from '@/lib/ai/claude';
 import { executeToolCall } from './tool-executor';
 import type { ToolResult } from '@/lib/ai/claude';
 
@@ -62,32 +62,7 @@ function extractRegion(text: string): string {
 }
 
 // =============================================
-// Claude 호출 헬퍼
-// =============================================
-
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  const timeout = new Promise<never>((_, reject) =>
-    setTimeout(() => reject(new Error('요청 시간이 초과되었습니다. 다시 시도해 주세요.')), ms),
-  );
-  return Promise.race([promise, timeout]);
-}
-
-async function chatWithRetry(
-  messages: Anthropic.Messages.MessageParam[],
-  retries = 1,
-): Promise<Awaited<ReturnType<typeof chat>>> {
-  try {
-    return await withTimeout(chat(messages), TIMEOUT_MS);
-  } catch (err) {
-    if (retries > 0) {
-      return chatWithRetry(messages, retries - 1);
-    }
-    throw err;
-  }
-}
-
-// =============================================
-// POST handler
+// POST handler — SSE streaming
 // =============================================
 
 export async function POST(request: NextRequest) {
@@ -128,10 +103,10 @@ export async function POST(request: NextRequest) {
     const requiredTools = getRequiredTools(userText);
     const region = extractRegion(userText);
 
-    // 필요한 도구를 서버에서 직접 병렬 실행
+    // 필요한 도구를 서버에서 직접 병렬 실행 (pre-exec 플로우 — 변경 없음)
     const preExecutedResults = await Promise.all(
       requiredTools.map(async (toolName) => {
-        const input: Record<string, unknown> = { region };
+        const input: Record<string, unknown> = { region, ...(userType ? { userType } : {}) };
         try {
           const output = await executeToolCall(toolName, input);
           return { toolName, input, output, isError: false };
@@ -155,7 +130,6 @@ export async function POST(request: NextRequest) {
     }));
 
     // Claude에게 도구 결과를 포함한 컨텍스트로 자연어 응답 생성 요청
-    // tool_use 없이 직접 데이터를 사용자 메시지에 포함
     const toolDataSummary = preExecutedResults
       .map(({ toolName, output }) => `[${toolName} 결과]\n${JSON.stringify(output, null, 2)}`)
       .join('\n\n');
@@ -168,16 +142,63 @@ export async function POST(request: NextRequest) {
       },
     ];
 
-    // Claude 호출 (도구 없이 텍스트 응답만)
-    const response = await chatWithRetry(augmentedMessages);
+    // SSE ReadableStream 생성
+    const encoder = new TextEncoder();
 
-    const textBlock = response.content.find(
-      (b): b is Anthropic.Messages.TextBlock => b.type === 'text',
-    );
+    const stream = new ReadableStream({
+      async start(controller) {
+        const enqueue = (obj: unknown) => {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify(obj)}\n\n`),
+          );
+        };
 
-    return Response.json({
-      message: textBlock?.text ?? '',
-      toolResults,
+        try {
+          // 1) toolResults를 지도 마커용으로 먼저 전송
+          enqueue({ type: 'toolResults', data: toolResults });
+
+          // 2) Claude stream 시작 (timeout 래핑)
+          const claudeStream = chatStream(augmentedMessages);
+
+          const timeoutId = setTimeout(() => {
+            claudeStream.abort();
+          }, TIMEOUT_MS);
+
+          try {
+            for await (const event of claudeStream) {
+              if (
+                event.type === 'content_block_delta' &&
+                event.delta.type === 'text_delta'
+              ) {
+                enqueue({ type: 'text', data: event.delta.text });
+              }
+            }
+          } finally {
+            clearTimeout(timeoutId);
+          }
+
+          // 3) 완료 신호
+          enqueue({ type: 'done' });
+        } catch (err) {
+          console.error('[chat/route] stream error:', err);
+          const errorMessage =
+            err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
+          enqueue({
+            type: 'error',
+            data: `죄송합니다. ${errorMessage} 잠시 후 다시 시도해 주세요.`,
+          });
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   } catch (err) {
     console.error('[chat/route] error:', err);

@@ -11,13 +11,32 @@ export interface ToolResult {
   output: unknown;
 }
 
+const CACHED_SYSTEM: Anthropic.Messages.TextBlockParam[] = [
+  {
+    type: 'text' as const,
+    text: SYSTEM_PROMPT,
+    cache_control: { type: 'ephemeral' as const },
+  },
+];
+
 export async function chat(
   messages: Anthropic.Messages.MessageParam[],
 ): Promise<Anthropic.Messages.Message> {
   return client.messages.create({
     model: MODEL,
     max_tokens: 4096,
-    system: SYSTEM_PROMPT,
+    system: CACHED_SYSTEM,
+    messages,
+  });
+}
+
+export function chatStream(
+  messages: Anthropic.Messages.MessageParam[],
+): ReturnType<typeof client.messages.stream> {
+  return client.messages.stream({
+    model: MODEL,
+    max_tokens: 4096,
+    system: CACHED_SYSTEM,
     messages,
   });
 }

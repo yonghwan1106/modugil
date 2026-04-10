@@ -3,6 +3,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import MessageBubble from './MessageBubble';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import {
+  isSttSupported,
+  isTtsSupported,
+  startStt,
+  speak,
+  stopSpeaking,
+} from '@/lib/voice';
 
 interface Message {
   id: string;
@@ -16,6 +23,7 @@ interface Message {
 interface ChatPanelProps {
   onToolResults?: (results: unknown[]) => void;
   userType?: string;
+  initialQuery?: string;
 }
 
 const SUGGESTED_QUESTIONS_BY_TYPE: Record<string, string[]> = {
@@ -49,12 +57,24 @@ const DEFAULT_SUGGESTED_QUESTIONS = [
   '강남역 근처 저상버스 노선 알려줘',
 ];
 
-export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
+export default function ChatPanel({ onToolResults, userType, initialQuery }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastUserText, setLastUserText] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isTtsPlaying, setIsTtsPlaying] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState({ stt: false, tts: false });
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sttControllerRef = useRef<{ stop: () => void } | null>(null);
+
+  // 음성 지원 여부는 클라이언트 마운트 이후에만 체크 (SSR 안전)
+  useEffect(() => {
+    setVoiceSupported({ stt: isSttSupported(), tts: isTtsSupported() });
+    // 시각장애 페르소나는 기본적으로 TTS 자동 재생 켜기
+    if (userType === '시각장애') setAutoSpeak(true);
+  }, [userType]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -98,10 +118,8 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
         body: JSON.stringify({ messages: history, userType }),
       });
 
-      const data = await res.json() as { message?: string; content?: string; toolResults?: unknown[]; error?: boolean };
-
-      if (!res.ok || data.error) {
-        const errContent = data.message ?? `서버 오류 (${res.status}). 다시 시도해 주세요.`;
+      if (!res.ok || !res.body) {
+        const errContent = `서버 오류 (${res.status}). 다시 시도해 주세요.`;
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
@@ -112,20 +130,81 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
         return;
       }
 
-      const assistantContent: string = data.content ?? data.message ?? '응답을 받지 못했습니다.';
-      const toolResults: unknown[] = data.toolResults ?? [];
+      // SSE 스트림 파싱
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let accumulatedText = '';
+      let toolResults: unknown[] = [];
+      const assistantId = `assistant-${Date.now()}`;
 
-      const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
+      // loading 메시지를 빈 assistant 메시지로 교체 (점진적 업데이트를 위해)
+      setMessages((prev) => prev.filter((m) => !m.isLoading).concat({
+        id: assistantId,
         role: 'assistant',
-        content: assistantContent,
-        toolResults: toolResults.length > 0 ? toolResults : undefined,
-      };
+        content: '',
+      }));
 
-      setMessages((prev) => prev.filter((m) => !m.isLoading).concat(assistantMessage));
+      let done = false;
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+        }
 
-      if (toolResults.length > 0 && onToolResults) {
-        onToolResults(toolResults);
+        // SSE 이벤트 파싱: "data: {...}\n\n" 단위로 처리
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (!trimmedLine.startsWith('data: ')) continue;
+          const jsonStr = trimmedLine.slice(6);
+          try {
+            const event = JSON.parse(jsonStr) as { type: string; data?: unknown };
+
+            if (event.type === 'toolResults') {
+              toolResults = (event.data as unknown[]) ?? [];
+              if (toolResults.length > 0 && onToolResults) {
+                onToolResults(toolResults);
+              }
+            } else if (event.type === 'text') {
+              accumulatedText += (event.data as string) ?? '';
+              const currentText = accumulatedText;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: currentText, toolResults: toolResults.length > 0 ? toolResults : undefined }
+                    : m,
+                ),
+              );
+            } else if (event.type === 'error') {
+              const errMsg = (event.data as string) ?? '오류가 발생했습니다.';
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: errMsg, isError: true }
+                    : m,
+                ),
+              );
+              done = true;
+            } else if (event.type === 'done') {
+              done = true;
+            }
+          } catch {
+            // JSON 파싱 실패는 무시
+          }
+        }
+      }
+
+      // TTS 자동 재생 — stream 완료 후 전체 텍스트로 1회 호출
+      if (autoSpeak && voiceSupported.tts && accumulatedText) {
+        setIsTtsPlaying(true);
+        speak(accumulatedText, {
+          onEnd: () => setIsTtsPlaying(false),
+          onError: () => setIsTtsPlaying(false),
+        });
       }
     } catch (err) {
       const errorMessage: Message = {
@@ -138,7 +217,16 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
     } finally {
       setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, messages, onToolResults, userType]);
+
+  // initialQuery: 마운트 시 1회 자동 전송
+  useEffect(() => {
+    if (initialQuery) {
+      void sendMessage(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRetry = useCallback(() => {
     if (lastUserText) {
@@ -169,18 +257,123 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
     }
   };
 
+  // 마이크 버튼: STT 시작/중단 토글
+  const handleMicToggle = useCallback(() => {
+    if (isListening) {
+      sttControllerRef.current?.stop();
+      sttControllerRef.current = null;
+      setIsListening(false);
+      return;
+    }
+
+    setIsListening(true);
+    const controller = startStt({
+      onResult: (transcript, isFinal) => {
+        setInput(transcript);
+        if (isFinal && transcript.trim()) {
+          // 최종 결과가 나오면 자동 전송
+          setIsListening(false);
+          sttControllerRef.current = null;
+          void sendMessage(transcript);
+        }
+      },
+      onError: (errMsg) => {
+        setIsListening(false);
+        sttControllerRef.current = null;
+        const errorMessage: Message = {
+          id: `voice-error-${Date.now()}`,
+          role: 'assistant',
+          content: errMsg,
+          isError: true,
+        };
+        setMessages((prev) => prev.concat(errorMessage));
+      },
+      onEnd: () => {
+        setIsListening(false);
+        sttControllerRef.current = null;
+      },
+    });
+    if (controller) {
+      sttControllerRef.current = controller;
+    } else {
+      setIsListening(false);
+    }
+  }, [isListening, sendMessage]);
+
+  // 스피커 토글: TTS 자동 재생 on/off + 현재 재생 중단
+  const handleTtsToggle = useCallback(() => {
+    const next = !autoSpeak;
+    setAutoSpeak(next);
+    if (!next) {
+      stopSpeaking();
+      setIsTtsPlaying(false);
+    }
+  }, [autoSpeak]);
+
+  // 언마운트 시 음성 세션 정리
+  useEffect(() => {
+    return () => {
+      sttControllerRef.current?.stop();
+      stopSpeaking();
+    };
+  }, []);
+
   const lastMessage = messages[messages.length - 1];
   const showRetry = lastMessage?.isError && !isLoading;
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: '#ffffff', borderTop: '3px solid #f1efe9' }}>
+      {/* 건너뛰기 링크 (스크린리더·키보드 전용) */}
+      <a
+        href="#chat-input"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:rounded focus:top-2 focus:left-2"
+        style={{ backgroundColor: '#d4a853', color: '#0f172a' }}
+      >
+        본문 바로가기
+      </a>
+
+      {/* 스크린리더 실시간 상태 알림 */}
+      <div aria-live="polite" role="status" className="sr-only">
+        {isListening ? '음성 인식 중입니다' : isTtsPlaying ? '음성 안내 재생 중입니다' : ''}
+      </div>
+
       {/* 패널 헤더 */}
-      <div className="px-4 py-3 shrink-0" style={{ backgroundColor: '#0f172a' }}>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#d4a853' }} />
-          <h2 className="text-sm font-semibold" style={{ color: '#d4a853' }}>AI 이동 어시스턴트</h2>
+      <div className="px-4 py-3 shrink-0 flex items-center justify-between" style={{ backgroundColor: '#0f172a' }}>
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#d4a853' }} />
+            <h2 className="text-sm font-semibold" style={{ color: '#d4a853' }}>AI 이동 어시스턴트</h2>
+          </div>
+          <p className="font-serif mt-0.5" style={{ color: '#faf9f7', fontSize: '11px', letterSpacing: '0.02em' }}>모두의 길 · Powered by Claude Sonnet 4.6</p>
         </div>
-        <p className="font-serif mt-0.5" style={{ color: '#faf9f7', fontSize: '11px', letterSpacing: '0.02em' }}>모두의 길</p>
+        {voiceSupported.tts && (
+          <button
+            type="button"
+            onClick={handleTtsToggle}
+            aria-label={autoSpeak ? '음성 안내 끄기' : '음성 안내 켜기'}
+            aria-pressed={autoSpeak}
+            title={autoSpeak ? '음성 안내 켜짐 — 클릭해 끄기' : '음성 안내 꺼짐 — 클릭해 켜기'}
+            className="shrink-0 rounded-full p-1.5 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
+            style={{
+              backgroundColor: autoSpeak ? '#d4a853' : 'transparent',
+              border: `1px solid ${autoSpeak ? '#d4a853' : '#d4a853'}`,
+              color: autoSpeak ? '#0f172a' : '#d4a853',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              {autoSpeak ? (
+                <>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </>
+              ) : (
+                <line x1="23" y1="9" x2="17" y2="15"/>
+              )}
+              {!autoSpeak && <line x1="17" y1="9" x2="23" y2="15"/>}
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* 메시지 목록 */}
@@ -316,15 +509,49 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
       </div>
 
       {/* 입력창 */}
-      <div className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
+      <div id="chat-input" className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
+        {(isListening || isTtsPlaying) && (
+          <div
+            className="mb-2 text-xs flex items-center gap-2 px-3 py-1.5 rounded-lg"
+            style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fde68a' }}
+            aria-live="polite"
+          >
+            <span className="inline-block w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#d97706' }} />
+            {isListening ? '음성을 듣고 있습니다... 말씀해 주세요.' : '음성으로 안내 중...'}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="flex gap-2">
+          {voiceSupported.stt && (
+            <button
+              type="button"
+              onClick={handleMicToggle}
+              aria-label={isListening ? '음성 입력 중단' : '음성으로 질문하기'}
+              aria-pressed={isListening}
+              disabled={isLoading}
+              className="shrink-0 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
+              style={{
+                backgroundColor: isListening ? '#dc2626' : '#ffffff',
+                border: `1px solid ${isListening ? '#dc2626' : '#1e293b'}`,
+                color: isListening ? '#ffffff' : '#0f172a',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+          )}
+          <span id="chat-input-hint" className="sr-only">Enter 키로 전송, 또는 마이크 버튼으로 음성 입력</span>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             aria-label="이동 관련 질문 입력"
-            placeholder="이동 관련 질문을 입력하세요..."
+            aria-describedby="chat-input-hint"
+            placeholder={isListening ? '듣고 있습니다...' : '이동 관련 질문을 입력하세요...'}
             disabled={isLoading}
             className="flex-1 text-sm rounded-xl px-4 py-2.5 outline-none transition-all duration-200 disabled:opacity-50"
             style={{
@@ -345,7 +572,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
             type="submit"
             aria-label="메시지 전송"
             disabled={!input.trim() || isLoading}
-            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
             style={{
               backgroundColor: '#d4a853',
               color: '#0f172a',
