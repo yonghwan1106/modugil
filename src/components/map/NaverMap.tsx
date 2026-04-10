@@ -142,11 +142,19 @@ export default function NaverMap({ markers, onMarkerClick }: NaverMapProps) {
 
   return (
     <div className="relative w-full h-full">
+      {/* 스크린리더용 마커 요약 */}
+      <div className="sr-only">
+        이 지도는 {markers.length}개의 위치를 표시합니다
+        {markers.length > 0 && (
+          <>: {markers.map((m) => `${MARKER_LABELS[m.type]} — ${m.title}`).join(', ')}</>
+        )}
+      </div>
+
       <div
         ref={mapContainerRef}
         className="w-full h-full"
         role="application"
-        aria-label="교통약자 이동정보 지도"
+        aria-label="네이버 지도 — 키보드 방향키로 탐색 가능"
       />
       <div
         className="absolute bottom-4 left-4 rounded-xl p-3 text-xs space-y-1.5"
@@ -166,6 +174,25 @@ export default function NaverMap({ markers, onMarkerClick }: NaverMapProps) {
           </div>
         ))}
       </div>
+
+      {/* 키보드 사용자용 마커 접근 버튼 목록 (sr-only, 포커스 시 노출) */}
+      {markers.length > 0 && (
+        <div className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:bottom-4 focus-within:right-4 focus-within:z-10 focus-within:max-h-48 focus-within:overflow-y-auto focus-within:rounded-xl focus-within:p-3 focus-within:space-y-1" style={{ backgroundColor: 'rgba(15,23,42,0.92)', border: '1px solid rgba(212,168,83,0.4)' }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: '#d4a853' }}>마커 목록 (키보드 접근)</p>
+          {markers.map((marker) => (
+            <button
+              key={`kb-marker-${marker.title}-${marker.lat}-${marker.lng}`}
+              type="button"
+              aria-label={`마커 선택: ${marker.title} (${MARKER_LABELS[marker.type]})`}
+              onClick={() => onMarkerClick?.(marker)}
+              className="block w-full text-left text-xs px-2 py-1 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d4a853]"
+              style={{ color: '#faf9f7', backgroundColor: 'transparent' }}
+            >
+              {MARKER_LABELS[marker.type]} — {marker.title}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -313,6 +313,20 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: '#ffffff', borderTop: '3px solid #f1efe9' }}>
+      {/* 건너뛰기 링크 (스크린리더·키보드 전용) */}
+      <a
+        href="#chat-input"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:rounded focus:top-2 focus:left-2"
+        style={{ backgroundColor: '#d4a853', color: '#0f172a' }}
+      >
+        본문 바로가기
+      </a>
+
+      {/* 스크린리더 실시간 상태 알림 */}
+      <div aria-live="polite" role="status" className="sr-only">
+        {isListening ? '음성 인식 중입니다' : isTtsPlaying ? '음성 안내 재생 중입니다' : ''}
+      </div>
+
       {/* 패널 헤더 */}
       <div className="px-4 py-3 shrink-0 flex items-center justify-between" style={{ backgroundColor: '#0f172a' }}>
         <div>
@@ -329,7 +343,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
             aria-label={autoSpeak ? '음성 안내 끄기' : '음성 안내 켜기'}
             aria-pressed={autoSpeak}
             title={autoSpeak ? '음성 안내 켜짐 — 클릭해 끄기' : '음성 안내 꺼짐 — 클릭해 켜기'}
-            className="shrink-0 rounded-full p-1.5 transition-all duration-200"
+            className="shrink-0 rounded-full p-1.5 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
             style={{
               backgroundColor: autoSpeak ? '#d4a853' : 'transparent',
               border: `1px solid ${autoSpeak ? '#d4a853' : '#d4a853'}`,
@@ -485,7 +499,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
       </div>
 
       {/* 입력창 */}
-      <div className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
+      <div id="chat-input" className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
         {(isListening || isTtsPlaying) && (
           <div
             className="mb-2 text-xs flex items-center gap-2 px-3 py-1.5 rounded-lg"
@@ -504,7 +518,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
               aria-label={isListening ? '음성 입력 중단' : '음성으로 질문하기'}
               aria-pressed={isListening}
               disabled={isLoading}
-              className="shrink-0 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="shrink-0 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
               style={{
                 backgroundColor: isListening ? '#dc2626' : '#ffffff',
                 border: `1px solid ${isListening ? '#dc2626' : '#1e293b'}`,
@@ -519,12 +533,14 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
               </svg>
             </button>
           )}
+          <span id="chat-input-hint" className="sr-only">Enter 키로 전송, 또는 마이크 버튼으로 음성 입력</span>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             aria-label="이동 관련 질문 입력"
+            aria-describedby="chat-input-hint"
             placeholder={isListening ? '듣고 있습니다...' : '이동 관련 질문을 입력하세요...'}
             disabled={isLoading}
             className="flex-1 text-sm rounded-xl px-4 py-2.5 outline-none transition-all duration-200 disabled:opacity-50"
@@ -546,7 +562,7 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
             type="submit"
             aria-label="메시지 전송"
             disabled={!input.trim() || isLoading}
-            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a853]"
             style={{
               backgroundColor: '#d4a853',
               color: '#0f172a',
