@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     // 필요한 도구를 서버에서 직접 병렬 실행 (pre-exec 플로우 — 변경 없음)
     const preExecutedResults = await Promise.all(
       requiredTools.map(async (toolName) => {
-        const input: Record<string, unknown> = { region };
+        const input: Record<string, unknown> = { region, ...(userType ? { userType } : {}) };
         try {
           const output = await executeToolCall(toolName, input);
           return { toolName, input, output, isError: false };
