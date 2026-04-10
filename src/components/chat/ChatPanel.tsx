@@ -3,6 +3,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import MessageBubble from './MessageBubble';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import {
+  isSttSupported,
+  isTtsSupported,
+  startStt,
+  speak,
+  stopSpeaking,
+} from '@/lib/voice';
 
 interface Message {
   id: string;
@@ -54,7 +61,19 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastUserText, setLastUserText] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [isTtsPlaying, setIsTtsPlaying] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState({ stt: false, tts: false });
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sttControllerRef = useRef<{ stop: () => void } | null>(null);
+
+  // 음성 지원 여부는 클라이언트 마운트 이후에만 체크 (SSR 안전)
+  useEffect(() => {
+    setVoiceSupported({ stt: isSttSupported(), tts: isTtsSupported() });
+    // 시각장애 페르소나는 기본적으로 TTS 자동 재생 켜기
+    if (userType === '시각장애') setAutoSpeak(true);
+  }, [userType]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -127,6 +146,15 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
       if (toolResults.length > 0 && onToolResults) {
         onToolResults(toolResults);
       }
+
+      // TTS 자동 재생 (시각장애 페르소나 또는 사용자가 수동 활성화한 경우)
+      if (autoSpeak && voiceSupported.tts && assistantContent) {
+        setIsTtsPlaying(true);
+        speak(assistantContent, {
+          onEnd: () => setIsTtsPlaying(false),
+          onError: () => setIsTtsPlaying(false),
+        });
+      }
     } catch (err) {
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
@@ -169,18 +197,109 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
     }
   };
 
+  // 마이크 버튼: STT 시작/중단 토글
+  const handleMicToggle = useCallback(() => {
+    if (isListening) {
+      sttControllerRef.current?.stop();
+      sttControllerRef.current = null;
+      setIsListening(false);
+      return;
+    }
+
+    setIsListening(true);
+    const controller = startStt({
+      onResult: (transcript, isFinal) => {
+        setInput(transcript);
+        if (isFinal && transcript.trim()) {
+          // 최종 결과가 나오면 자동 전송
+          setIsListening(false);
+          sttControllerRef.current = null;
+          void sendMessage(transcript);
+        }
+      },
+      onError: (errMsg) => {
+        setIsListening(false);
+        sttControllerRef.current = null;
+        const errorMessage: Message = {
+          id: `voice-error-${Date.now()}`,
+          role: 'assistant',
+          content: errMsg,
+          isError: true,
+        };
+        setMessages((prev) => prev.concat(errorMessage));
+      },
+      onEnd: () => {
+        setIsListening(false);
+        sttControllerRef.current = null;
+      },
+    });
+    if (controller) {
+      sttControllerRef.current = controller;
+    } else {
+      setIsListening(false);
+    }
+  }, [isListening, sendMessage]);
+
+  // 스피커 토글: TTS 자동 재생 on/off + 현재 재생 중단
+  const handleTtsToggle = useCallback(() => {
+    const next = !autoSpeak;
+    setAutoSpeak(next);
+    if (!next) {
+      stopSpeaking();
+      setIsTtsPlaying(false);
+    }
+  }, [autoSpeak]);
+
+  // 언마운트 시 음성 세션 정리
+  useEffect(() => {
+    return () => {
+      sttControllerRef.current?.stop();
+      stopSpeaking();
+    };
+  }, []);
+
   const lastMessage = messages[messages.length - 1];
   const showRetry = lastMessage?.isError && !isLoading;
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: '#ffffff', borderTop: '3px solid #f1efe9' }}>
       {/* 패널 헤더 */}
-      <div className="px-4 py-3 shrink-0" style={{ backgroundColor: '#0f172a' }}>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#d4a853' }} />
-          <h2 className="text-sm font-semibold" style={{ color: '#d4a853' }}>AI 이동 어시스턴트</h2>
+      <div className="px-4 py-3 shrink-0 flex items-center justify-between" style={{ backgroundColor: '#0f172a' }}>
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#d4a853' }} />
+            <h2 className="text-sm font-semibold" style={{ color: '#d4a853' }}>AI 이동 어시스턴트</h2>
+          </div>
+          <p className="font-serif mt-0.5" style={{ color: '#faf9f7', fontSize: '11px', letterSpacing: '0.02em' }}>모두의 길 · Powered by Claude Sonnet 4.6</p>
         </div>
-        <p className="font-serif mt-0.5" style={{ color: '#faf9f7', fontSize: '11px', letterSpacing: '0.02em' }}>모두의 길</p>
+        {voiceSupported.tts && (
+          <button
+            type="button"
+            onClick={handleTtsToggle}
+            aria-label={autoSpeak ? '음성 안내 끄기' : '음성 안내 켜기'}
+            aria-pressed={autoSpeak}
+            title={autoSpeak ? '음성 안내 켜짐 — 클릭해 끄기' : '음성 안내 꺼짐 — 클릭해 켜기'}
+            className="shrink-0 rounded-full p-1.5 transition-all duration-200"
+            style={{
+              backgroundColor: autoSpeak ? '#d4a853' : 'transparent',
+              border: `1px solid ${autoSpeak ? '#d4a853' : '#d4a853'}`,
+              color: autoSpeak ? '#0f172a' : '#d4a853',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              {autoSpeak ? (
+                <>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </>
+              ) : (
+                <line x1="23" y1="9" x2="17" y2="15"/>
+              )}
+              {!autoSpeak && <line x1="17" y1="9" x2="23" y2="15"/>}
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* 메시지 목록 */}
@@ -317,14 +436,46 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
 
       {/* 입력창 */}
       <div className="shrink-0 p-3" style={{ backgroundColor: '#faf9f7', borderTop: '1px solid #f1efe9' }}>
+        {(isListening || isTtsPlaying) && (
+          <div
+            className="mb-2 text-xs flex items-center gap-2 px-3 py-1.5 rounded-lg"
+            style={{ backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fde68a' }}
+            aria-live="polite"
+          >
+            <span className="inline-block w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#d97706' }} />
+            {isListening ? '음성을 듣고 있습니다... 말씀해 주세요.' : '음성으로 안내 중...'}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="flex gap-2">
+          {voiceSupported.stt && (
+            <button
+              type="button"
+              onClick={handleMicToggle}
+              aria-label={isListening ? '음성 입력 중단' : '음성으로 질문하기'}
+              aria-pressed={isListening}
+              disabled={isLoading}
+              className="shrink-0 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: isListening ? '#dc2626' : '#ffffff',
+                border: `1px solid ${isListening ? '#dc2626' : '#1e293b'}`,
+                color: isListening ? '#ffffff' : '#0f172a',
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'block' }}>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </button>
+          )}
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             aria-label="이동 관련 질문 입력"
-            placeholder="이동 관련 질문을 입력하세요..."
+            placeholder={isListening ? '듣고 있습니다...' : '이동 관련 질문을 입력하세요...'}
             disabled={isLoading}
             className="flex-1 text-sm rounded-xl px-4 py-2.5 outline-none transition-all duration-200 disabled:opacity-50"
             style={{
