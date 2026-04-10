@@ -27,7 +27,7 @@ npm run lint     # ESLint (eslint-config-next core-web-vitals + typescript)
 
 ### Tech Stack
 - Next.js 16 (App Router), React 19, TypeScript 5, Tailwind CSS 4, Recharts 3
-- AI: `@anthropic-ai/sdk` → Claude Haiku 4.5 (`claude-haiku-4-5-20251001`)
+- AI: `@anthropic-ai/sdk` → Claude Sonnet 4.6 (`claude-sonnet-4-6`)
 - 지도: Naver Maps API v3 (Script in layout.tsx, `beforeInteractive`)
 - Path alias: `@/*` → `./src/*`
 
