@@ -23,6 +23,7 @@ interface Message {
 interface ChatPanelProps {
   onToolResults?: (results: unknown[]) => void;
   userType?: string;
+  initialQuery?: string;
 }
 
 const SUGGESTED_QUESTIONS_BY_TYPE: Record<string, string[]> = {
@@ -56,7 +57,7 @@ const DEFAULT_SUGGESTED_QUESTIONS = [
   '강남역 근처 저상버스 노선 알려줘',
 ];
 
-export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
+export default function ChatPanel({ onToolResults, userType, initialQuery }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -216,7 +217,16 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
     } finally {
       setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, messages, onToolResults, userType]);
+
+  // initialQuery: 마운트 시 1회 자동 전송
+  useEffect(() => {
+    if (initialQuery) {
+      void sendMessage(initialQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRetry = useCallback(() => {
     if (lastUserText) {

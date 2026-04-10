@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/ui/Header';
 import NaverMap from '@/components/map/NaverMap';
 import ChatPanel from '@/components/chat/ChatPanel';
 import TrafficLightDetail from '@/components/map/TrafficLightDetail';
+import JudgeDemoBanner from '@/components/JudgeDemoBanner';
 
 // MapMarker 타입 정의
 export interface MapMarker {
@@ -26,11 +28,27 @@ const USER_TYPES = [
 
 type UserTypeKey = (typeof USER_TYPES)[number]['key'];
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
   const [showLanding, setShowLanding] = useState(true);
   const [userType, setUserType] = useState<UserTypeKey | null>(null);
+  const [initialQuery, setInitialQuery] = useState<string | undefined>(undefined);
+
+  // URL 쿼리스트링에서 userType과 q를 읽어 자동 세팅
+  useEffect(() => {
+    const qUserType = searchParams.get('userType') as UserTypeKey | null;
+    const qQuery = searchParams.get('q');
+    if (qUserType && USER_TYPES.some((u) => u.key === qUserType)) {
+      setUserType(qUserType);
+      setShowLanding(false);
+      if (qQuery) {
+        setInitialQuery(decodeURIComponent(qQuery.replace(/\+/g, ' ')));
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToolResults = (results: unknown[]) => {
     // AI 챗봇의 tool 결과에서 위치 데이터를 추출하여 지도 마커에 추가
@@ -96,6 +114,9 @@ export default function Home() {
         className="h-screen w-full overflow-hidden flex flex-col items-center justify-center px-4 py-6"
         style={{ backgroundColor: '#0f172a' }}
       >
+        {/* 심사위원 데모 배너 */}
+        <JudgeDemoBanner />
+
         {/* 상단 배지 */}
         <div
           className="mb-4 px-3 py-1 rounded-full text-xs font-medium tracking-wide"
@@ -352,9 +373,17 @@ export default function Home() {
         />
         {/* 챗봇 패널 (데스크톱 30%/min 360px, 모바일 full/50vh) */}
         <div className="w-full md:w-[400px] md:min-w-[360px] h-[50vh] md:h-auto flex flex-col">
-          <ChatPanel onToolResults={handleToolResults} userType={userType ?? undefined} />
+          <ChatPanel onToolResults={handleToolResults} userType={userType ?? undefined} initialQuery={initialQuery} />
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense>
+      <HomeContent />
+    </Suspense>
   );
 }
