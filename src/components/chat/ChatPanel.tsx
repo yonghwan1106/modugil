@@ -117,10 +117,8 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
         body: JSON.stringify({ messages: history, userType }),
       });
 
-      const data = await res.json() as { message?: string; content?: string; toolResults?: unknown[]; error?: boolean };
-
-      if (!res.ok || data.error) {
-        const errContent = data.message ?? `서버 오류 (${res.status}). 다시 시도해 주세요.`;
+      if (!res.ok || !res.body) {
+        const errContent = `서버 오류 (${res.status}). 다시 시도해 주세요.`;
         const errorMessage: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
@@ -131,26 +129,78 @@ export default function ChatPanel({ onToolResults, userType }: ChatPanelProps) {
         return;
       }
 
-      const assistantContent: string = data.content ?? data.message ?? '응답을 받지 못했습니다.';
-      const toolResults: unknown[] = data.toolResults ?? [];
+      // SSE 스트림 파싱
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let accumulatedText = '';
+      let toolResults: unknown[] = [];
+      const assistantId = `assistant-${Date.now()}`;
 
-      const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
+      // loading 메시지를 빈 assistant 메시지로 교체 (점진적 업데이트를 위해)
+      setMessages((prev) => prev.filter((m) => !m.isLoading).concat({
+        id: assistantId,
         role: 'assistant',
-        content: assistantContent,
-        toolResults: toolResults.length > 0 ? toolResults : undefined,
-      };
+        content: '',
+      }));
 
-      setMessages((prev) => prev.filter((m) => !m.isLoading).concat(assistantMessage));
+      let done = false;
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+        }
 
-      if (toolResults.length > 0 && onToolResults) {
-        onToolResults(toolResults);
+        // SSE 이벤트 파싱: "data: {...}\n\n" 단위로 처리
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() ?? '';
+
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (!trimmedLine.startsWith('data: ')) continue;
+          const jsonStr = trimmedLine.slice(6);
+          try {
+            const event = JSON.parse(jsonStr) as { type: string; data?: unknown };
+
+            if (event.type === 'toolResults') {
+              toolResults = (event.data as unknown[]) ?? [];
+              if (toolResults.length > 0 && onToolResults) {
+                onToolResults(toolResults);
+              }
+            } else if (event.type === 'text') {
+              accumulatedText += (event.data as string) ?? '';
+              const currentText = accumulatedText;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: currentText, toolResults: toolResults.length > 0 ? toolResults : undefined }
+                    : m,
+                ),
+              );
+            } else if (event.type === 'error') {
+              const errMsg = (event.data as string) ?? '오류가 발생했습니다.';
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: errMsg, isError: true }
+                    : m,
+                ),
+              );
+              done = true;
+            } else if (event.type === 'done') {
+              done = true;
+            }
+          } catch {
+            // JSON 파싱 실패는 무시
+          }
+        }
       }
 
-      // TTS 자동 재생 (시각장애 페르소나 또는 사용자가 수동 활성화한 경우)
-      if (autoSpeak && voiceSupported.tts && assistantContent) {
+      // TTS 자동 재생 — stream 완료 후 전체 텍스트로 1회 호출
+      if (autoSpeak && voiceSupported.tts && accumulatedText) {
         setIsTtsPlaying(true);
-        speak(assistantContent, {
+        speak(accumulatedText, {
           onEnd: () => setIsTtsPlaying(false),
           onError: () => setIsTtsPlaying(false),
         });
