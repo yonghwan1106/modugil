@@ -269,7 +269,7 @@ export default async function DashboardPage() {
   const seoulParams = { stdgCd: '1100000000' };
   const bikeParams = { lcgvmnInstCd: '1100000000' };
 
-  // 7개 도구 사용 endpoint + 미사용 6개 endpoint 동시 fetch
+  // 핵심 10개 API만 초기 로딩 (미사용 6개는 지연 로딩)
   const [
     bikeStationsResult,
     bikeAvailResult,
@@ -281,15 +281,7 @@ export default async function DashboardPage() {
     civilWaitResult,
     lockersResult,
     lockerRealtimeResult,
-    // 미사용 6개
-    bikeHistoryResult,
-    transportVehiclesResult,
-    transportOperationsResult,
-    libraryStatusResult,
-    lockerDetailResult,
-    busStopsResult,
   ] = await Promise.all([
-    // 기존 7개 도구 endpoint (14개 중 7쌍)
     fetchBikeApiSafe<BikeStation>(ENDPOINTS.bicycle.stations, bikeParams, mockData.MOCK_BIKE_STATIONS),
     fetchBikeApiSafe<BikeAvailability>(ENDPOINTS.bicycle.availability, bikeParams, mockData.MOCK_BIKE_AVAILABILITY),
     fetchWithFallback<TransportCenter>(ENDPOINTS.transport.centers, seoulParams, mockData.MOCK_TRANSPORT_CENTERS),
@@ -300,13 +292,30 @@ export default async function DashboardPage() {
     fetchWithFallback<CivilOfficeWait>(ENDPOINTS.civil.realtime, seoulParams, mockData.MOCK_CIVIL_WAIT),
     fetchWithFallback<Locker>(ENDPOINTS.locker.info, seoulParams, mockData.MOCK_LOCKERS),
     fetchWithFallback<LockerRealtime>(ENDPOINTS.locker.realtime, seoulParams, mockData.MOCK_LOCKER_REALTIME),
-    // 미사용 6개 endpoint
+  ]);
+
+  // 미사용 6개 API — 비차단 로딩 (실패해도 페이지 렌더링 지연 없음)
+  const [
+    bikeHistoryResult,
+    transportVehiclesResult,
+    transportOperationsResult,
+    libraryStatusResult,
+    lockerDetailResult,
+    busStopsResult,
+  ] = await Promise.all([
     fetchBikeApiSafe<BikeHistory>(ENDPOINTS.bicycle.history, bikeParams, []),
     fetchWithFallback<TransportVehicle>(ENDPOINTS.transport.vehicles, seoulParams, []),
     fetchWithFallback<TransportOperation>(ENDPOINTS.transport.operations, seoulParams, []),
     fetchWithFallback<LibraryStatus>(ENDPOINTS.library.status, {}, []),
     fetchWithFallback<LockerDetail>(ENDPOINTS.locker.detail, seoulParams, []),
     fetchWithFallback<BusStop>(ENDPOINTS.bus.stops, seoulParams, []),
+  ]).catch(() => [
+    { items: [] as BikeHistory[], source: 'mock' as const },
+    { items: [] as TransportVehicle[], source: 'mock' as const },
+    { items: [] as TransportOperation[], source: 'mock' as const },
+    { items: [] as LibraryStatus[], source: 'mock' as const },
+    { items: [] as LockerDetail[], source: 'mock' as const },
+    { items: [] as BusStop[], source: 'mock' as const },
   ]);
 
   // ---- 요약 통계 계산 ----
