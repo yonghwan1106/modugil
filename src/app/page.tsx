@@ -119,7 +119,7 @@ function HomeContent() {
 
         {/* 상단 배지 */}
         <div
-          className="mb-4 px-3 py-1 rounded-full text-xs font-medium tracking-wide"
+          className="mb-6 px-3 py-1 rounded-full text-xs font-medium tracking-wide"
           style={{ backgroundColor: 'rgba(212,168,83,0.15)', color: '#d4a853', border: '1px solid rgba(212,168,83,0.3)' }}
         >
           2026 전국 통합데이터 활용 공모전
@@ -127,105 +127,26 @@ function HomeContent() {
 
         {/* 메인 타이틀 */}
         <h1
-          className="font-serif text-center mb-1"
+          className="font-serif text-center mb-2"
           style={{ color: '#faf9f7', fontSize: 'clamp(2.5rem, 7vw, 4rem)', fontFamily: "'Noto Serif KR', serif", letterSpacing: '-0.02em' }}
         >
           모두의 길
         </h1>
-        <p className="text-center mb-5" style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+        <p className="text-center mb-3" style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
           AI 기반 교통약자 통합 이동지원 서비스
         </p>
-
-        {/* stat 카드 3개 */}
-        <div className="grid grid-cols-3 gap-3 w-full max-w-lg mb-5">
-          {[
-            { value: '1,500만 명', label: '교통약자 인구 (29%)', footnote: '1' },
-            { value: '7개 이상', label: '분산된 이동 정보 시스템', footnote: '2' },
-            { value: '30분+', label: '평균 이동지원 대기시간', footnote: '3' },
-          ].map((s) => (
-            <div
-              key={s.value}
-              className="rounded-xl p-3 text-center"
-              style={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-            >
-              <div className="font-semibold text-sm" style={{ color: '#d4a853' }}>
-                {s.value}
-                <sup style={{ color: '#94a3b8', fontSize: '9px', marginLeft: '2px' }}>{s.footnote}</sup>
-              </div>
-              <div className="mt-0.5" style={{ color: '#94a3b8', fontSize: '10px', lineHeight: '1.3' }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* 한 줄 요약 */}
-        <p className="text-center text-sm mb-4" style={{ color: '#cbd5e1' }}>
+        <p className="text-center text-sm mb-10" style={{ color: '#cbd5e1' }}>
           7종 공공데이터 × AI = <span style={{ color: '#d4a853' }}>하나의 질문, 모든 이동 정보</span>
         </p>
 
-        {/* 7종 데이터 아이콘 그리드 */}
-        <div className="grid grid-cols-7 gap-2 w-full max-w-lg mb-5">
-          {[
-            { icon: '🚲', label: '자전거' },
-            { icon: '🚐', label: '교통약자차량' },
-            { icon: '📚', label: '도서관' },
-            { icon: '🗄️', label: '보관함' },
-            { icon: '🚦', label: '신호등' },
-            { icon: '🏛️', label: '민원실' },
-            { icon: '🚌', label: '버스' },
-          ].map((item) => (
-            <div key={item.label} className="flex flex-col items-center gap-1">
-              <span style={{ fontSize: '1.25rem' }}>{item.icon}</span>
-              <span style={{ color: '#64748b', fontSize: '9px', textAlign: 'center', lineHeight: '1.2' }}>{item.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* 내비게이션 링크 */}
-        <div className="flex gap-3 mb-5">
-          <Link
-            href="/data"
-            aria-label="활용 공공데이터 목록 보기"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#d4a853';
-              e.currentTarget.style.color = '#d4a853';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#334155';
-              e.currentTarget.style.color = '#94a3b8';
-            }}
-          >
-            <span>📊</span>
-            <span>활용 공공데이터</span>
-          </Link>
-          <Link
-            href="/roadmap"
-            aria-label="발전 로드맵 보기"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#94a3b8' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#d4a853';
-              e.currentTarget.style.color = '#d4a853';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#334155';
-              e.currentTarget.style.color = '#94a3b8';
-            }}
-          >
-            <span>🗺️</span>
-            <span>발전 로드맵</span>
-          </Link>
-        </div>
-
         {/* 사용자 유형 선택 */}
-        <p className="text-center text-xs mb-3" style={{ color: '#94a3b8' }}>나의 유형을 선택하면 맞춤 안내를 받을 수 있어요</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-lg mb-5">
+        <p className="text-center text-sm mb-4 font-medium" style={{ color: '#e2e8f0' }}>나의 유형을 선택하면 맞춤 안내를 받을 수 있어요</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-lg mb-8">
           {USER_TYPES.map((ut) => (
             <button
               key={ut.key}
               onClick={() => handleSelectUserType(ut.key)}
-              className="flex flex-col items-center gap-2 rounded-xl py-4 px-3 font-medium text-sm transition-all duration-200"
+              className="flex flex-col items-center gap-3 rounded-xl py-5 px-3 font-medium text-sm transition-all duration-200"
               style={{ backgroundColor: '#1e293b', border: '1px solid #334155', color: '#e2e8f0' }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = '#d4a853';
@@ -238,99 +159,16 @@ function HomeContent() {
                 e.currentTarget.style.color = '#e2e8f0';
               }}
             >
-              <span style={{ fontSize: '1.5rem' }}>{ut.icon}</span>
+              <span style={{ fontSize: '2rem' }}>{ut.icon}</span>
               <span>{ut.label}</span>
             </button>
           ))}
         </div>
 
-        {/* footnote */}
-        <div className="w-full max-w-lg mb-4 rounded-xl p-3" style={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}>
-          <ol className="space-y-1" style={{ color: '#64748b', fontSize: '10px', lineHeight: '1.5', listStyleType: 'none', padding: 0, margin: 0 }}>
-            <li>
-              <sup style={{ color: '#94a3b8' }}>1</sup>{' '}
-              통계청 2023년 장애인 인구 추계 (등록 장애인 265만, 65세 이상 944만, 임산부 등 포함) —{' '}
-              <a
-                href="https://kostat.go.kr"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#64748b', textDecoration: 'underline' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
-                aria-label="통계청 웹사이트 (새 탭)"
-              >
-                kostat.go.kr
-              </a>{' '}(통계청 기반 추정)
-            </li>
-            <li>
-              <sup style={{ color: '#94a3b8' }}>2</sup>{' '}
-              공공데이터포털 전국 통합데이터 7종 (교통약자이동지원·버스·신호등·도서관·민원실·자전거·보관함) —{' '}
-              <a
-                href="https://www.data.go.kr"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#64748b', textDecoration: 'underline' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
-                aria-label="공공데이터포털 (새 탭)"
-              >
-                data.go.kr
-              </a>
-            </li>
-            <li>
-              <sup style={{ color: '#94a3b8' }}>3</sup>{' '}
-              서울시설공단 교통약자 이동지원센터 2024 운영통계 —{' '}
-              <a
-                href="https://www.sisul.or.kr"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#64748b', textDecoration: 'underline' }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
-                aria-label="서울시설공단 (새 탭)"
-              >
-                sisul.or.kr
-              </a>
-            </li>
-          </ol>
-        </div>
-
-        {/* 데이터 출처 뱃지 */}
-        <div
-          className="mb-4 px-3 py-1.5 rounded-full text-xs flex items-center gap-2"
-          style={{ backgroundColor: 'rgba(100,116,139,0.1)', border: '1px solid #334155', color: '#64748b' }}
-        >
-          <span>Powered by</span>
-          <a
-            href="https://www.data.go.kr"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#64748b', textDecoration: 'underline' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#94a3b8'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#64748b'; }}
-            aria-label="공공데이터포털 (새 탭)"
-          >
-            공공데이터포털
-          </a>
-          <span>·</span>
-          <span>한국지역정보개발원</span>
-        </div>
-
-        {/* 하단 링크 */}
-        <div className="flex gap-4 text-xs" style={{ color: '#475569' }}>
-          <span>modugil.vercel.app</span>
-          <span>·</span>
-          <a
-            href="https://github.com/yonghwan1106/modugil"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: '#475569' }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = '#d4a853'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = '#475569'; }}
-          >
-            GitHub
-          </a>
-        </div>
+        {/* 하단 출처 */}
+        <p className="text-center text-xs" style={{ color: '#475569' }}>
+          공공데이터포털 (data.go.kr) · 한국지역정보개발원
+        </p>
       </div>
     );
   }
