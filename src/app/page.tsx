@@ -337,7 +337,7 @@ function HomeContent() {
 
   return (
     <div
-      className="h-full flex flex-col bg-[#faf9f7]"
+      className="h-screen flex flex-col bg-[#faf9f7] overflow-hidden"
       style={{ animation: 'fadeIn 0.4s ease' }}
     >
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
