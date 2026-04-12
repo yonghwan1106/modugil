@@ -65,13 +65,33 @@ export async function fetchPublicData<T>(
 
   const url = `${endpoint}?serviceKey=${serviceKey}&${otherParams.toString()}`;
 
-  const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    cache: 'no-store',
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8_000);
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      signal: controller.signal,
+    });
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new Error('API 응답 시간 초과 (8초)');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     throw new Error(`API 요청 실패: HTTP ${res.status} — ${url}`);
+  }
+
+  const contentType = res.headers.get('content-type') ?? '';
+  if (!contentType.includes('json')) {
+    throw new Error(`API가 JSON이 아닌 응답 반환 (${res.status}, ${contentType})`);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

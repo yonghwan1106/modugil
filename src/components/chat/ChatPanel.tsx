@@ -18,6 +18,7 @@ interface Message {
   toolResults?: unknown[];
   isLoading?: boolean;
   isError?: boolean;
+  isStatus?: boolean;
 }
 
 interface ChatPanelProps {
@@ -164,7 +165,16 @@ export default function ChatPanel({ onToolResults, userType, initialQuery }: Cha
           try {
             const event = JSON.parse(jsonStr) as { type: string; data?: unknown };
 
-            if (event.type === 'toolResults') {
+            if (event.type === 'status') {
+              const statusText = (event.data as string) ?? '';
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: statusText, isStatus: true }
+                    : m,
+                ),
+              );
+            } else if (event.type === 'toolResults') {
               toolResults = (event.data as unknown[]) ?? [];
               if (toolResults.length > 0 && onToolResults) {
                 onToolResults(toolResults);
@@ -466,6 +476,7 @@ export default function ChatPanel({ onToolResults, userType, initialQuery }: Cha
               content={msg.content}
               toolResults={msg.toolResults}
               isLoading={msg.isLoading}
+              isStatus={msg.isStatus}
             />
           ))
         )}

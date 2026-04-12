@@ -14,6 +14,7 @@ interface MessageBubbleProps {
   content: string;
   toolResults?: unknown[];
   isLoading?: boolean;
+  isStatus?: boolean;
 }
 
 function ProgressBar({ value, max }: { value: number; max: number }) {
@@ -335,7 +336,7 @@ function ToolResultCard({ result }: { result: ToolResult }) {
   );
 }
 
-export default function MessageBubble({ role, content, toolResults, isLoading }: MessageBubbleProps) {
+export default function MessageBubble({ role, content, toolResults, isLoading, isStatus }: MessageBubbleProps) {
   const isUser = role === 'user';
 
   const typedResults = (toolResults ?? []).filter(
@@ -378,8 +379,36 @@ export default function MessageBubble({ role, content, toolResults, isLoading }:
               style={{ backgroundColor: '#0f172a' }}
             />
           </div>
+        ) : isStatus ? (
+          <div className="flex items-center gap-2 py-0.5">
+            <span
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: '#d4a853' }}
+            />
+            <span className="text-xs" style={{ color: '#64748b' }}>{content}</span>
+          </div>
         ) : (
-          <p className="whitespace-pre-wrap">{content}</p>
+          <div className="whitespace-pre-wrap space-y-2">
+            {content.split('\n\n').map((paragraph, pIdx) => {
+              const lines = paragraph.split('\n');
+              const isList = lines.length > 1 && lines.every((l) => /^\d+[\.\)]\s/.test(l.trim()));
+              if (isList) {
+                return (
+                  <ol key={pIdx} className="space-y-1 pl-1">
+                    {lines.map((line, lIdx) => (
+                      <li key={lIdx} className="flex gap-2">
+                        <span style={{ color: '#d4a853', fontWeight: 600, flexShrink: 0 }}>
+                          {line.match(/^\d+[\.\)]/)?.[0]}
+                        </span>
+                        <span>{line.replace(/^\d+[\.\)]\s*/, '')}</span>
+                      </li>
+                    ))}
+                  </ol>
+                );
+              }
+              return <p key={pIdx}>{paragraph}</p>;
+            })}
+          </div>
         )}
       </div>
 

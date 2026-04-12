@@ -9,7 +9,7 @@ const SCENARIOS = [
   {
     label: '휠체어 · 도서관 찾기',
     userType: '휠체어',
-    query: '강남역+근처+저상버스와+교통약자+차량+현황',
+    query: '종로구+도서관+빈자리+엘리베이터+휠체어',
     ariaLabel: '시나리오 1: 휠체어 사용자 도서관 찾기 데모 실행',
   },
   {
@@ -21,8 +21,14 @@ const SCENARIOS = [
   {
     label: '임산부 · 민원실 대기',
     userType: '임산부',
-    query: '종로구+교통약자+이동지원+차량',
+    query: '서울역+민원실+대기시간+임산부',
     ariaLabel: '시나리오 3: 임산부 민원실 대기 데모 실행',
+  },
+  {
+    label: '고령자 · 자전거 대여',
+    userType: '고령자',
+    query: '마포구+공공자전거+대여현황',
+    ariaLabel: '시나리오 4: 고령자 자전거 대여 데모 실행',
   },
 ] as const;
 

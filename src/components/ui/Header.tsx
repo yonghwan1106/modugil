@@ -82,6 +82,38 @@ export default function Header() {
           >
             대시보드
           </Link>
+          <Link
+            href="/data"
+            aria-current={pathname === '/data' ? 'page' : undefined}
+            className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+              pathname === '/data'
+                ? 'text-white border-b-2'
+                : 'text-slate-400 hover:text-white'
+            }`}
+            style={
+              pathname === '/data'
+                ? { borderBottomColor: '#d4a853', color: '#ffffff' }
+                : undefined
+            }
+          >
+            데이터
+          </Link>
+          <Link
+            href="/roadmap"
+            aria-current={pathname === '/roadmap' ? 'page' : undefined}
+            className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+              pathname === '/roadmap'
+                ? 'text-white border-b-2'
+                : 'text-slate-400 hover:text-white'
+            }`}
+            style={
+              pathname === '/roadmap'
+                ? { borderBottomColor: '#d4a853', color: '#ffffff' }
+                : undefined
+            }
+          >
+            로드맵
+          </Link>
         </nav>
       </div>
       <div className="flex items-center gap-2 relative z-10">

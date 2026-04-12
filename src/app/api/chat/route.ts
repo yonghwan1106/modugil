@@ -7,6 +7,25 @@ import type { ToolResult } from '@/lib/ai/claude';
 const TIMEOUT_MS = 30_000;
 
 // =============================================
+// Rate Limiting (인메모리 토큰 버킷)
+// =============================================
+
+const ipBuckets = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = { requests: 20, windowMs: 60_000 };
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const bucket = ipBuckets.get(ip);
+  if (!bucket || now > bucket.resetAt) {
+    ipBuckets.set(ip, { count: 1, resetAt: now + RATE_LIMIT.windowMs });
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT.requests) return false;
+  bucket.count++;
+  return true;
+}
+
+// =============================================
 // 키워드 기반 도구 라우터 (선언적 설정)
 // =============================================
 
@@ -52,6 +71,27 @@ function extractRegion(text: string): string {
     '강서': '서울 강서구', '강서구': '서울 강서구',
     '은평': '서울 은평구', '은평구': '서울 은평구',
     '서대문': '서울 서대문구', '서대문구': '서울 서대문구',
+    '강동': '서울 강동구', '강동구': '서울 강동구',
+    '강북': '서울 강북구', '강북구': '서울 강북구',
+    '광진': '서울 광진구', '광진구': '서울 광진구',
+    '구로': '서울 구로구', '구로구': '서울 구로구',
+    '금천': '서울 금천구', '금천구': '서울 금천구',
+    '도봉': '서울 도봉구', '도봉구': '서울 도봉구',
+    '동대문': '서울 동대문구', '동대문구': '서울 동대문구',
+    '성북': '서울 성북구', '성북구': '서울 성북구',
+    '양천': '서울 양천구', '양천구': '서울 양천구',
+    '중랑': '서울 중랑구', '중랑구': '서울 중랑구',
+    // 주요 랜드마크 → 구 매핑
+    '여의도': '서울 영등포구', '잠실': '서울 송파구', '잠실역': '서울 송파구',
+    '홍대': '서울 마포구', '홍대입구': '서울 마포구', '합정': '서울 마포구',
+    '이태원': '서울 용산구', '한남': '서울 용산구',
+    '신촌': '서울 서대문구', '연대': '서울 서대문구',
+    '건대': '서울 광진구', '건대입구': '서울 광진구',
+    '목동': '서울 양천구', '신림': '서울 관악구', '신림역': '서울 관악구',
+    '왕십리': '서울 성동구', '성수': '서울 성동구', '성수동': '서울 성동구',
+    '혜화': '서울 종로구', '대학로': '서울 종로구', '광화문': '서울 종로구',
+    '명동': '서울 중구',
+    '사당': '서울 동작구', '노량진': '서울 동작구',
     '부산': '부산', '대구': '대구', '인천': '인천',
     '광주': '광주', '대전': '대전', '울산': '울산', '세종': '세종',
   };
@@ -75,6 +115,14 @@ export async function POST(request: NextRequest) {
         error: true,
       },
       { status: 503 },
+    );
+  }
+
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ?? 'unknown';
+  if (!checkRateLimit(ip)) {
+    return Response.json(
+      { message: '요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.', toolResults: [], error: true },
+      { status: 429 },
     );
   }
 
@@ -154,6 +202,9 @@ export async function POST(request: NextRequest) {
         };
 
         try {
+          // 0) 상태 안내
+          enqueue({ type: 'status', data: '공공데이터 조회 완료, AI 분석 중...' });
+
           // 1) toolResults를 지도 마커용으로 먼저 전송
           enqueue({ type: 'toolResults', data: toolResults });
 
