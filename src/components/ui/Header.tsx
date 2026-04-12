@@ -85,7 +85,7 @@ export default function Header() {
           <Link
             href="/data"
             aria-current={pathname === '/data' ? 'page' : undefined}
-            className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`hidden sm:inline-block px-3 py-1.5 text-sm font-medium transition-colors ${
               pathname === '/data'
                 ? 'text-white border-b-2'
                 : 'text-slate-400 hover:text-white'
@@ -101,7 +101,7 @@ export default function Header() {
           <Link
             href="/roadmap"
             aria-current={pathname === '/roadmap' ? 'page' : undefined}
-            className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+            className={`hidden sm:inline-block px-3 py-1.5 text-sm font-medium transition-colors ${
               pathname === '/roadmap'
                 ? 'text-white border-b-2'
                 : 'text-slate-400 hover:text-white'
