@@ -111,7 +111,7 @@ function HomeContent() {
   if (showLanding) {
     return (
       <div
-        className="h-screen w-full overflow-hidden flex flex-col items-center justify-center px-4 py-6"
+        className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center px-4 py-6 z-10"
         style={{ backgroundColor: '#0f172a' }}
       >
         {/* 심사위원 데모 배너 */}
@@ -337,7 +337,7 @@ function HomeContent() {
 
   return (
     <div
-      className="h-screen flex flex-col bg-[#faf9f7] overflow-hidden"
+      className="fixed inset-0 flex flex-col bg-[#faf9f7] overflow-hidden z-10"
       style={{ animation: 'fadeIn 0.4s ease' }}
     >
       <style>{`@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
