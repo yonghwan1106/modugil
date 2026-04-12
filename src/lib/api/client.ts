@@ -43,7 +43,8 @@ function setCached<T>(key: string, data: T[]): void {
  */
 export async function fetchPublicData<T>(
   endpoint: string,
-  params?: Record<string, string>
+  params?: Record<string, string>,
+  options?: { revalidate?: number }
 ): Promise<T[]> {
   const serviceKey = process.env.DATA_API_KEY;
   if (!serviceKey) {
@@ -72,7 +73,9 @@ export async function fetchPublicData<T>(
   try {
     res = await fetch(url, {
       headers: { Accept: 'application/json' },
-      cache: 'no-store',
+      ...(options?.revalidate
+        ? { next: { revalidate: options.revalidate } }
+        : { cache: 'no-store' as const }),
       signal: controller.signal,
     });
   } catch (err) {
