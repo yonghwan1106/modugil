@@ -209,7 +209,7 @@ export default function DataPage() {
 
   return (
     <main
-      className="min-h-screen"
+      className="h-screen overflow-y-auto"
       style={{ backgroundColor: '#0f172a', color: '#faf9f7' }}
     >
       {/* ── 상단 네비 ── */}

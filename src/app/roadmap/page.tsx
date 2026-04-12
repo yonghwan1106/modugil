@@ -77,7 +77,7 @@ const OPEN_ISSUES: Issue[] = [
 export default function RoadmapPage() {
   return (
     <main
-      className="min-h-screen px-4 py-10 md:px-8 md:py-16"
+      className="h-screen overflow-y-auto px-4 py-10 md:px-8 md:py-16"
       style={{ backgroundColor: '#0f172a', color: '#faf9f7' }}
     >
       {/* 홈 링크 */}
